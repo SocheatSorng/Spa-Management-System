@@ -32,19 +32,19 @@
             label4 = new Label();
             label3 = new Label();
             label2 = new Label();
-            textBox5 = new TextBox();
-            textBox4 = new TextBox();
-            textBox3 = new TextBox();
-            textBox2 = new TextBox();
+            txtCustomerID = new TextBox();
+            txtNote = new TextBox();
+            txtIssuedTime = new TextBox();
+            txtID = new TextBox();
             label1 = new Label();
-            textBox1 = new TextBox();
-            button5 = new Button();
-            button4 = new Button();
-            button3 = new Button();
-            button2 = new Button();
-            button1 = new Button();
-            dataGridView1 = new DataGridView();
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            btnSearch = new TextBox();
+            Clear = new Button();
+            btnNew = new Button();
+            btnDelete = new Button();
+            btnUpdate = new Button();
+            btnInsert = new Button();
+            dgvCustomer = new DataGridView();
+            ((System.ComponentModel.ISupportInitialize)dgvCustomer).BeginInit();
             SuspendLayout();
             // 
             // label5
@@ -83,33 +83,33 @@
             label2.TabIndex = 49;
             label2.Text = "Customer ID";
             // 
-            // textBox5
+            // txtCustomerID
             // 
-            textBox5.Location = new Point(112, 97);
-            textBox5.Name = "textBox5";
-            textBox5.Size = new Size(100, 23);
-            textBox5.TabIndex = 47;
+            txtCustomerID.Location = new Point(112, 97);
+            txtCustomerID.Name = "txtCustomerID";
+            txtCustomerID.Size = new Size(100, 23);
+            txtCustomerID.TabIndex = 47;
             // 
-            // textBox4
+            // txtNote
             // 
-            textBox4.Location = new Point(112, 155);
-            textBox4.Name = "textBox4";
-            textBox4.Size = new Size(100, 23);
-            textBox4.TabIndex = 46;
+            txtNote.Location = new Point(112, 155);
+            txtNote.Name = "txtNote";
+            txtNote.Size = new Size(100, 23);
+            txtNote.TabIndex = 46;
             // 
-            // textBox3
+            // txtIssuedTime
             // 
-            textBox3.Location = new Point(112, 126);
-            textBox3.Name = "textBox3";
-            textBox3.Size = new Size(100, 23);
-            textBox3.TabIndex = 45;
+            txtIssuedTime.Location = new Point(112, 126);
+            txtIssuedTime.Name = "txtIssuedTime";
+            txtIssuedTime.Size = new Size(100, 23);
+            txtIssuedTime.TabIndex = 45;
             // 
-            // textBox2
+            // txtID
             // 
-            textBox2.Location = new Point(112, 68);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(100, 23);
-            textBox2.TabIndex = 44;
+            txtID.Location = new Point(112, 68);
+            txtID.Name = "txtID";
+            txtID.Size = new Size(100, 23);
+            txtID.TabIndex = 44;
             // 
             // label1
             // 
@@ -120,65 +120,65 @@
             label1.TabIndex = 43;
             label1.Text = "search";
             // 
-            // textBox1
+            // btnSearch
             // 
-            textBox1.Location = new Point(112, 12);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(100, 23);
-            textBox1.TabIndex = 42;
+            btnSearch.Location = new Point(112, 12);
+            btnSearch.Name = "btnSearch";
+            btnSearch.Size = new Size(100, 23);
+            btnSearch.TabIndex = 42;
             // 
-            // button5
+            // Clear
             // 
-            button5.Location = new Point(392, 184);
-            button5.Name = "button5";
-            button5.Size = new Size(75, 23);
-            button5.TabIndex = 41;
-            button5.Text = "Clear";
-            button5.UseVisualStyleBackColor = true;
+            Clear.Location = new Point(392, 184);
+            Clear.Name = "Clear";
+            Clear.Size = new Size(75, 23);
+            Clear.TabIndex = 41;
+            Clear.Text = "Clear";
+            Clear.UseVisualStyleBackColor = true;
             // 
-            // button4
+            // btnNew
             // 
-            button4.Location = new Point(392, 158);
-            button4.Name = "button4";
-            button4.Size = new Size(75, 23);
-            button4.TabIndex = 40;
-            button4.Text = "New";
-            button4.UseVisualStyleBackColor = true;
+            btnNew.Location = new Point(392, 158);
+            btnNew.Name = "btnNew";
+            btnNew.Size = new Size(75, 23);
+            btnNew.TabIndex = 40;
+            btnNew.Text = "New";
+            btnNew.UseVisualStyleBackColor = true;
             // 
-            // button3
+            // btnDelete
             // 
-            button3.Location = new Point(392, 129);
-            button3.Name = "button3";
-            button3.Size = new Size(75, 23);
-            button3.TabIndex = 39;
-            button3.Text = "Delete";
-            button3.UseVisualStyleBackColor = true;
+            btnDelete.Location = new Point(392, 129);
+            btnDelete.Name = "btnDelete";
+            btnDelete.Size = new Size(75, 23);
+            btnDelete.TabIndex = 39;
+            btnDelete.Text = "Delete";
+            btnDelete.UseVisualStyleBackColor = true;
             // 
-            // button2
+            // btnUpdate
             // 
-            button2.Location = new Point(392, 100);
-            button2.Name = "button2";
-            button2.Size = new Size(75, 23);
-            button2.TabIndex = 38;
-            button2.Text = "Update";
-            button2.UseVisualStyleBackColor = true;
+            btnUpdate.Location = new Point(392, 100);
+            btnUpdate.Name = "btnUpdate";
+            btnUpdate.Size = new Size(75, 23);
+            btnUpdate.TabIndex = 38;
+            btnUpdate.Text = "Update";
+            btnUpdate.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // btnInsert
             // 
-            button1.Location = new Point(392, 71);
-            button1.Name = "button1";
-            button1.Size = new Size(75, 23);
-            button1.TabIndex = 37;
-            button1.Text = "Insert";
-            button1.UseVisualStyleBackColor = true;
+            btnInsert.Location = new Point(392, 71);
+            btnInsert.Name = "btnInsert";
+            btnInsert.Size = new Size(75, 23);
+            btnInsert.TabIndex = 37;
+            btnInsert.Text = "Insert";
+            btnInsert.UseVisualStyleBackColor = true;
             // 
-            // dataGridView1
+            // dgvCustomer
             // 
-            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(17, 213);
-            dataGridView1.Name = "dataGridView1";
-            dataGridView1.Size = new Size(450, 136);
-            dataGridView1.TabIndex = 36;
+            dgvCustomer.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvCustomer.Location = new Point(17, 213);
+            dgvCustomer.Name = "dgvCustomer";
+            dgvCustomer.Size = new Size(450, 136);
+            dgvCustomer.TabIndex = 36;
             // 
             // Customer
             // 
@@ -189,21 +189,21 @@
             Controls.Add(label4);
             Controls.Add(label3);
             Controls.Add(label2);
-            Controls.Add(textBox5);
-            Controls.Add(textBox4);
-            Controls.Add(textBox3);
-            Controls.Add(textBox2);
+            Controls.Add(txtCustomerID);
+            Controls.Add(txtNote);
+            Controls.Add(txtIssuedTime);
+            Controls.Add(txtID);
             Controls.Add(label1);
-            Controls.Add(textBox1);
-            Controls.Add(button5);
-            Controls.Add(button4);
-            Controls.Add(button3);
-            Controls.Add(button2);
-            Controls.Add(button1);
-            Controls.Add(dataGridView1);
+            Controls.Add(btnSearch);
+            Controls.Add(Clear);
+            Controls.Add(btnNew);
+            Controls.Add(btnDelete);
+            Controls.Add(btnUpdate);
+            Controls.Add(btnInsert);
+            Controls.Add(dgvCustomer);
             Name = "Customer";
             Text = "Customer";
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvCustomer).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -213,17 +213,17 @@
         private Label label4;
         private Label label3;
         private Label label2;
-        private TextBox textBox5;
-        private TextBox textBox4;
-        private TextBox textBox3;
-        private TextBox textBox2;
+        private TextBox txtCustomerID;
+        private TextBox txtNote;
+        private TextBox txtIssuedTime;
+        private TextBox txtID;
         private Label label1;
-        private TextBox textBox1;
-        private Button button5;
-        private Button button4;
-        private Button button3;
-        private Button button2;
-        private Button button1;
-        private DataGridView dataGridView1;
+        private TextBox btnSearch;
+        private Button Clear;
+        private Button btnNew;
+        private Button btnDelete;
+        private Button btnUpdate;
+        private Button btnInsert;
+        private DataGridView dgvCustomer;
     }
 }
