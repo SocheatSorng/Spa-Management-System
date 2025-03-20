@@ -28,92 +28,92 @@
         /// </summary>
         private void InitializeComponent()
         {
-            dataGridView1 = new DataGridView();
-            button1 = new Button();
-            button2 = new Button();
-            button3 = new Button();
-            button4 = new Button();
-            button5 = new Button();
-            textBox1 = new TextBox();
+            dgvConsumable = new DataGridView();
+            btnInsert = new Button();
+            btnUpdate = new Button();
+            btnDelete = new Button();
+            btnNew = new Button();
+            btnClear = new Button();
+            txtSearch = new TextBox();
             label1 = new Label();
-            textBox2 = new TextBox();
-            textBox3 = new TextBox();
-            textBox4 = new TextBox();
-            textBox5 = new TextBox();
-            textBox6 = new TextBox();
+            txtID = new TextBox();
+            txtName = new TextBox();
+            txtPrice = new TextBox();
+            txtCategory = new TextBox();
+            txtQuantity = new TextBox();
             label2 = new Label();
             label3 = new Label();
             label4 = new Label();
             label5 = new Label();
             label6 = new Label();
             label7 = new Label();
-            textBox7 = new TextBox();
+            txtDescription = new TextBox();
             label8 = new Label();
-            textBox8 = new TextBox();
+            txtCreatedAt = new TextBox();
             label9 = new Label();
-            textBox9 = new TextBox();
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            txtModifiedAt = new TextBox();
+            ((System.ComponentModel.ISupportInitialize)dgvConsumable).BeginInit();
             SuspendLayout();
             // 
-            // dataGridView1
+            // dgvConsumable
             // 
-            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(12, 300);
-            dataGridView1.Name = "dataGridView1";
-            dataGridView1.Size = new Size(460, 49);
-            dataGridView1.TabIndex = 0;
+            dgvConsumable.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvConsumable.Location = new Point(12, 300);
+            dgvConsumable.Name = "dgvConsumable";
+            dgvConsumable.Size = new Size(460, 49);
+            dgvConsumable.TabIndex = 0;
             // 
-            // button1
+            // btnInsert
             // 
-            button1.Location = new Point(397, 71);
-            button1.Name = "button1";
-            button1.Size = new Size(75, 23);
-            button1.TabIndex = 1;
-            button1.Text = "Insert";
-            button1.UseVisualStyleBackColor = true;
+            btnInsert.Location = new Point(397, 71);
+            btnInsert.Name = "btnInsert";
+            btnInsert.Size = new Size(75, 23);
+            btnInsert.TabIndex = 1;
+            btnInsert.Text = "Insert";
+            btnInsert.UseVisualStyleBackColor = true;
             // 
-            // button2
+            // btnUpdate
             // 
-            button2.Location = new Point(397, 100);
-            button2.Name = "button2";
-            button2.Size = new Size(75, 23);
-            button2.TabIndex = 2;
-            button2.Text = "Update";
-            button2.UseVisualStyleBackColor = true;
+            btnUpdate.Location = new Point(397, 100);
+            btnUpdate.Name = "btnUpdate";
+            btnUpdate.Size = new Size(75, 23);
+            btnUpdate.TabIndex = 2;
+            btnUpdate.Text = "Update";
+            btnUpdate.UseVisualStyleBackColor = true;
             // 
-            // button3
+            // btnDelete
             // 
-            button3.Location = new Point(397, 129);
-            button3.Name = "button3";
-            button3.Size = new Size(75, 23);
-            button3.TabIndex = 3;
-            button3.Text = "Delete";
-            button3.UseVisualStyleBackColor = true;
+            btnDelete.Location = new Point(397, 129);
+            btnDelete.Name = "btnDelete";
+            btnDelete.Size = new Size(75, 23);
+            btnDelete.TabIndex = 3;
+            btnDelete.Text = "Delete";
+            btnDelete.UseVisualStyleBackColor = true;
             // 
-            // button4
+            // btnNew
             // 
-            button4.Location = new Point(397, 158);
-            button4.Name = "button4";
-            button4.Size = new Size(75, 23);
-            button4.TabIndex = 4;
-            button4.Text = "New";
-            button4.UseVisualStyleBackColor = true;
+            btnNew.Location = new Point(397, 158);
+            btnNew.Name = "btnNew";
+            btnNew.Size = new Size(75, 23);
+            btnNew.TabIndex = 4;
+            btnNew.Text = "New";
+            btnNew.UseVisualStyleBackColor = true;
             // 
-            // button5
+            // btnClear
             // 
-            button5.Location = new Point(397, 191);
-            button5.Name = "button5";
-            button5.Size = new Size(75, 23);
-            button5.TabIndex = 5;
-            button5.Text = "Clear";
-            button5.UseVisualStyleBackColor = true;
+            btnClear.Location = new Point(397, 191);
+            btnClear.Name = "btnClear";
+            btnClear.Size = new Size(75, 23);
+            btnClear.TabIndex = 5;
+            btnClear.Text = "Clear";
+            btnClear.UseVisualStyleBackColor = true;
             // 
-            // textBox1
+            // txtSearch
             // 
-            textBox1.Location = new Point(107, 12);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(100, 23);
-            textBox1.TabIndex = 6;
+            txtSearch.Location = new Point(107, 12);
+            txtSearch.Name = "txtSearch";
+            txtSearch.Size = new Size(100, 23);
+            txtSearch.TabIndex = 6;
             // 
             // label1
             // 
@@ -124,40 +124,40 @@
             label1.TabIndex = 7;
             label1.Text = "search";
             // 
-            // textBox2
+            // txtID
             // 
-            textBox2.Location = new Point(107, 68);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(100, 23);
-            textBox2.TabIndex = 8;
+            txtID.Location = new Point(107, 68);
+            txtID.Name = "txtID";
+            txtID.Size = new Size(100, 23);
+            txtID.TabIndex = 8;
             // 
-            // textBox3
+            // txtName
             // 
-            textBox3.Location = new Point(107, 126);
-            textBox3.Name = "textBox3";
-            textBox3.Size = new Size(100, 23);
-            textBox3.TabIndex = 9;
+            txtName.Location = new Point(107, 126);
+            txtName.Name = "txtName";
+            txtName.Size = new Size(100, 23);
+            txtName.TabIndex = 9;
             // 
-            // textBox4
+            // txtPrice
             // 
-            textBox4.Location = new Point(107, 155);
-            textBox4.Name = "textBox4";
-            textBox4.Size = new Size(100, 23);
-            textBox4.TabIndex = 10;
+            txtPrice.Location = new Point(107, 155);
+            txtPrice.Name = "txtPrice";
+            txtPrice.Size = new Size(100, 23);
+            txtPrice.TabIndex = 10;
             // 
-            // textBox5
+            // txtCategory
             // 
-            textBox5.Location = new Point(107, 97);
-            textBox5.Name = "textBox5";
-            textBox5.Size = new Size(100, 23);
-            textBox5.TabIndex = 11;
+            txtCategory.Location = new Point(107, 97);
+            txtCategory.Name = "txtCategory";
+            txtCategory.Size = new Size(100, 23);
+            txtCategory.TabIndex = 11;
             // 
-            // textBox6
+            // txtQuantity
             // 
-            textBox6.Location = new Point(107, 184);
-            textBox6.Name = "textBox6";
-            textBox6.Size = new Size(100, 23);
-            textBox6.TabIndex = 12;
+            txtQuantity.Location = new Point(107, 184);
+            txtQuantity.Name = "txtQuantity";
+            txtQuantity.Size = new Size(100, 23);
+            txtQuantity.TabIndex = 12;
             // 
             // label2
             // 
@@ -213,12 +213,12 @@
             label7.TabIndex = 39;
             label7.Text = "Description";
             // 
-            // textBox7
+            // txtDescription
             // 
-            textBox7.Location = new Point(107, 213);
-            textBox7.Name = "textBox7";
-            textBox7.Size = new Size(100, 23);
-            textBox7.TabIndex = 38;
+            txtDescription.Location = new Point(107, 213);
+            txtDescription.Name = "txtDescription";
+            txtDescription.Size = new Size(100, 23);
+            txtDescription.TabIndex = 38;
             // 
             // label8
             // 
@@ -229,12 +229,12 @@
             label8.TabIndex = 41;
             label8.Text = "Created";
             // 
-            // textBox8
+            // txtCreatedAt
             // 
-            textBox8.Location = new Point(107, 242);
-            textBox8.Name = "textBox8";
-            textBox8.Size = new Size(100, 23);
-            textBox8.TabIndex = 40;
+            txtCreatedAt.Location = new Point(107, 242);
+            txtCreatedAt.Name = "txtCreatedAt";
+            txtCreatedAt.Size = new Size(100, 23);
+            txtCreatedAt.TabIndex = 40;
             // 
             // label9
             // 
@@ -245,12 +245,12 @@
             label9.TabIndex = 43;
             label9.Text = "Modified";
             // 
-            // textBox9
+            // txtModifiedAt
             // 
-            textBox9.Location = new Point(107, 271);
-            textBox9.Name = "textBox9";
-            textBox9.Size = new Size(100, 23);
-            textBox9.TabIndex = 42;
+            txtModifiedAt.Location = new Point(107, 271);
+            txtModifiedAt.Name = "txtModifiedAt";
+            txtModifiedAt.Size = new Size(100, 23);
+            txtModifiedAt.TabIndex = 42;
             // 
             // Consumable
             // 
@@ -258,61 +258,61 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(484, 361);
             Controls.Add(label9);
-            Controls.Add(textBox9);
+            Controls.Add(txtModifiedAt);
             Controls.Add(label8);
-            Controls.Add(textBox8);
+            Controls.Add(txtCreatedAt);
             Controls.Add(label7);
-            Controls.Add(textBox7);
+            Controls.Add(txtDescription);
             Controls.Add(label6);
             Controls.Add(label5);
             Controls.Add(label4);
             Controls.Add(label3);
             Controls.Add(label2);
-            Controls.Add(textBox6);
-            Controls.Add(textBox5);
-            Controls.Add(textBox4);
-            Controls.Add(textBox3);
-            Controls.Add(textBox2);
+            Controls.Add(txtQuantity);
+            Controls.Add(txtCategory);
+            Controls.Add(txtPrice);
+            Controls.Add(txtName);
+            Controls.Add(txtID);
             Controls.Add(label1);
-            Controls.Add(textBox1);
-            Controls.Add(button5);
-            Controls.Add(button4);
-            Controls.Add(button3);
-            Controls.Add(button2);
-            Controls.Add(button1);
-            Controls.Add(dataGridView1);
+            Controls.Add(txtSearch);
+            Controls.Add(btnClear);
+            Controls.Add(btnNew);
+            Controls.Add(btnDelete);
+            Controls.Add(btnUpdate);
+            Controls.Add(btnInsert);
+            Controls.Add(dgvConsumable);
             Name = "Consumable";
             Text = "Form1";
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvConsumable).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        private DataGridView dataGridView1;
-        private Button button1;
-        private Button button2;
-        private Button button3;
-        private Button button4;
-        private Button button5;
-        private TextBox textBox1;
+        private DataGridView dgvConsumable;
+        private Button btnInsert;
+        private Button btnUpdate;
+        private Button btnDelete;
+        private Button btnNew;
+        private Button btnClear;
+        private TextBox txtSearch;
         private Label label1;
-        private TextBox textBox2;
-        private TextBox textBox3;
-        private TextBox textBox4;
-        private TextBox textBox5;
-        private TextBox textBox6;
+        private TextBox txtID;
+        private TextBox txtName;
+        private TextBox txtPrice;
+        private TextBox txtCategory;
+        private TextBox txtQuantity;
         private Label label2;
         private Label label3;
         private Label label4;
         private Label label5;
         private Label label6;
         private Label label7;
-        private TextBox textBox7;
+        private TextBox txtDescription;
         private Label label8;
-        private TextBox textBox8;
+        private TextBox txtCreatedAt;
         private Label label9;
-        private TextBox textBox9;
+        private TextBox txtModifiedAt;
     }
 }
