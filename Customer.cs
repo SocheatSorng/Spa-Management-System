@@ -11,6 +11,7 @@ using System.Windows.Forms;
 
 namespace Spa_Management_System
 {
+    public delegate void CardScannedEventHandler(object sender, string cardId);
     public partial class Customer : Form
     {
         // Customer model class
@@ -33,7 +34,10 @@ namespace Spa_Management_System
                 // Get singleton instance of connection manager
                 _connectionManager = SqlConnectionManager.Instance;
             }
-
+            public DataTable ExecuteQuery(string query, params SqlParameter[] parameters)
+            {
+                return _connectionManager.ExecuteQuery(query, parameters);
+            }
             public List<CustomerModel> GetAll()
             {
                 List<CustomerModel> customers = new List<CustomerModel>();
@@ -236,6 +240,8 @@ namespace Spa_Management_System
             SetupEventHandlers();
         }
 
+        public event CardScannedEventHandler CardScanned;
+
         private void SetupEventHandlers()
         {
             // Wire up button click events
@@ -246,7 +252,97 @@ namespace Spa_Management_System
             Clear.Click += BtnClear_Click;
             btnSearch.TextChanged += TxtSearch_TextChanged;
             dgvCustomer.CellClick += DgvCustomer_CellClick;
+            // Add these new event handlers for card scanning
+            txtCustomerID.KeyDown += TxtCustomerID_KeyDown;
+            // Subscribe to our custom event
+            CardScanned += Customer_CardScanned;
         }
+        private void TxtCustomerID_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+
+                string cardId = txtCustomerID.Text.Trim();
+                if (!string.IsNullOrEmpty(cardId))
+                {
+                    // Trigger the card scanned event
+                    CardScanned?.Invoke(this, cardId);
+                }
+            }
+        }
+        private void Customer_CardScanned(object sender, string cardId)
+        {
+            try
+            {
+                // Check if card exists and get its status
+                string query = "EXEC sp_CheckCardStatus @CardId";
+                SqlParameter parameter = new SqlParameter("@CardId", cardId);
+
+                DataTable cardStatus = _repository.ExecuteQuery(query, parameter);
+
+                if (cardStatus.Rows.Count == 0)
+                {
+                    MessageBox.Show("Card not found in the system.");
+                    return;
+                }
+
+                string status = cardStatus.Rows[0]["Status"].ToString();
+
+                if (status == "Available")
+                {
+                    // If available, ask to issue to new customer
+                    DialogResult result = MessageBox.Show(
+                        $"Card {cardId} is available. Do you want to issue it to a new customer?",
+                        "Issue Card",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        string notes = txtNote.Text.Trim();
+                        int customerId = _repository.IssueCardToCustomer(cardId, notes);
+
+                        if (customerId > 0)
+                        {
+                            MessageBox.Show($"Card {cardId} issued to new customer successfully.");
+                            ClearFields();
+                            LoadData();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Failed to issue card.");
+                        }
+                    }
+                }
+                else if (status == "InUse")
+                {
+                    // If in use, load customer details
+                    int customerId = Convert.ToInt32(cardStatus.Rows[0]["CustomerId"]);
+                    CustomerModel customer = _repository.GetById(customerId);
+
+                    if (customer != null)
+                    {
+                        txtID.Text = customer.CustomerId.ToString();
+                        txtCustomerID.Text = customer.CardId;
+                        txtIssuedTime.Text = customer.IssuedTime.ToString("yyyy-MM-dd HH:mm:ss");
+                        txtNote.Text = customer.Notes;
+
+                        MessageBox.Show($"Card {cardId} is currently in use by customer ID {customerId}.");
+                    }
+                }
+                else if (status == "Damaged")
+                {
+                    MessageBox.Show($"Card {cardId} is marked as damaged and cannot be used.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error processing card: " + ex.Message);
+            }
+        }
+
 
         private void LoadData()
         {
