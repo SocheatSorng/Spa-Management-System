@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace Spa_Management_System
 {
-    public partial class Cashier : Form
+    public partial class User : Form
     {
-        public Cashier()
+        public User()
         {
             InitializeComponent();
         }
