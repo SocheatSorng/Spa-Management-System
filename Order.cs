@@ -7,13 +7,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
-using System;
-using System.Data;
-using System.Windows.Forms;
+using Microsoft.Data.SqlClient;
 
 namespace Spa_Management_System
 {
+    // Observer Pattern: Interface for observers to receive notifications about order updates
+    public interface IOrderObserver
+    {
+        void OnOrderUpdated(); // Called when an order is inserted, updated, or deleted
+    }
+
     public partial class Order : Form, IOrderObserver
     {
         private readonly OrderManager _orderManager;
@@ -23,7 +26,7 @@ namespace Spa_Management_System
         {
             InitializeComponent();
             _orderManager = new OrderManager();
-            _orderManager.AddObserver(this); // Register form as an observer
+            _orderManager.AddObserver(this); // Observer Pattern: Register form as an observer
             LoadOrders();
             WireUpEvents();
         }
@@ -222,10 +225,129 @@ namespace Spa_Management_System
             }
         }
 
-        // Observer implementation
+        // Observer Pattern: Implementation of IOrderObserver interface
         public void OnOrderUpdated()
         {
             LoadOrders(); // Refresh the DataGridView when notified
+        }
+    }
+
+    // Manager class implementing Observer Pattern for business logic
+    public class OrderManager
+    {
+        private readonly OrderDAO _dao;
+        private readonly List<IOrderObserver> _observers;
+
+        public OrderManager()
+        {
+            _dao = new OrderDAO();
+            _observers = new List<IOrderObserver>();
+        }
+
+        // Observer Pattern: Methods to register and notify observers
+        public void AddObserver(IOrderObserver observer)
+        {
+            _observers.Add(observer);
+        }
+
+        public void RemoveObserver(IOrderObserver observer)
+        {
+            _observers.Remove(observer);
+        }
+
+        private void NotifyObservers()
+        {
+            foreach (var observer in _observers)
+            {
+                // Using explicit cast to avoid ambiguity errors
+                ((IOrderObserver)observer).OnOrderUpdated();
+            }
+        }
+
+        public DataTable GetAllOrders()
+        {
+            return _dao.GetAllOrders();
+        }
+
+        public void InsertOrder(OrderModel order)
+        {
+            _dao.InsertOrder(order);
+            NotifyObservers();
+        }
+
+        public void UpdateOrder(OrderModel order)
+        {
+            _dao.UpdateOrder(order);
+            NotifyObservers();
+        }
+
+        public void DeleteOrder(int orderId)
+        {
+            _dao.DeleteOrder(orderId);
+            NotifyObservers();
+        }
+    }
+
+    // DAO Pattern: Data Access Object for Order
+    public class OrderDAO
+    {
+        // Singleton Pattern: Using the SqlConnectionManager Singleton
+        private readonly SqlConnectionManager _connectionManager;
+
+        public OrderDAO()
+        {
+            _connectionManager = SqlConnectionManager.Instance;
+        }
+
+        public DataTable GetAllOrders()
+        {
+            string query = "SELECT OrderId, CustomerId, UserId, OrderTime, TotalAmount, Discount, FinalAmount, Notes, Status FROM tbOrder";
+            return _connectionManager.ExecuteQuery(query);
+        }
+
+        public void InsertOrder(OrderModel order)
+        {
+            string query = "INSERT INTO tbOrder (CustomerId, UserId, OrderTime, TotalAmount, Discount, FinalAmount, Notes, Status) " +
+                           "VALUES (@CustomerId, @UserId, @OrderTime, @TotalAmount, @Discount, @FinalAmount, @Notes, @Status)";
+            SqlParameter[] parameters = {
+                new SqlParameter("@CustomerId", order.CustomerId),
+                new SqlParameter("@UserId", order.UserId),
+                new SqlParameter("@OrderTime", order.OrderTime),
+                new SqlParameter("@TotalAmount", order.TotalAmount),
+                new SqlParameter("@Discount", order.Discount),
+                new SqlParameter("@FinalAmount", order.FinalAmount),
+                new SqlParameter("@Notes", order.Notes ?? (object)DBNull.Value),
+                new SqlParameter("@Status", order.Status ?? (object)DBNull.Value)
+            };
+            _connectionManager.ExecuteNonQuery(query, parameters);
+        }
+
+        public void UpdateOrder(OrderModel order)
+        {
+            string query = "UPDATE tbOrder SET CustomerId = @CustomerId, UserId = @UserId, OrderTime = @OrderTime, " +
+                           "TotalAmount = @TotalAmount, Discount = @Discount, FinalAmount = @FinalAmount, Notes = @Notes, " +
+                           "Status = @Status WHERE OrderId = @OrderId";
+            SqlParameter[] parameters = {
+                new SqlParameter("@CustomerId", order.CustomerId),
+                new SqlParameter("@UserId", order.UserId),
+                new SqlParameter("@OrderTime", order.OrderTime),
+                new SqlParameter("@TotalAmount", order.TotalAmount),
+                new SqlParameter("@Discount", order.Discount),
+                new SqlParameter("@FinalAmount", order.FinalAmount),
+                new SqlParameter("@Notes", order.Notes ?? (object)DBNull.Value),
+                new SqlParameter("@Status", order.Status ?? (object)DBNull.Value),
+                new SqlParameter("@OrderId", order.OrderId)
+            };
+            _connectionManager.ExecuteNonQuery(query, parameters);
+        }
+
+        public void DeleteOrder(int orderId)
+        {
+            string query = "DELETE FROM tbOrder WHERE OrderId = @OrderId";
+            SqlParameter[] parameters = {
+                new SqlParameter("@OrderId", orderId)
+            };
+            _connectionManager.ExecuteNonQuery(query, parameters);
         }
     }
 }

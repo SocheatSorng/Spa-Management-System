@@ -7,9 +7,98 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
+using Microsoft.Data.SqlClient;
 
 namespace Spa_Management_System
 {
+    // Factory Pattern: Creates ServiceModel objects
+    public static class ServiceFactory
+    {
+        // Factory Method: Creates a new ServiceModel for insertion
+        public static ServiceModel CreateService(string serviceName, string description, decimal price)
+        {
+            return new ServiceModel
+            {
+                ServiceName = serviceName,
+                Description = description,
+                Price = price,
+                CreatedDate = DateTime.Now,
+                ModifiedDate = DateTime.Now
+            };
+        }
+
+        // Factory Method: Creates a ServiceModel with existing ID for update
+        public static ServiceModel CreateService(int serviceId, string serviceName, string description, decimal price, DateTime createdDate, DateTime modifiedDate)
+        {
+            return new ServiceModel
+            {
+                ServiceId = serviceId,
+                ServiceName = serviceName,
+                Description = description,
+                Price = price,
+                CreatedDate = createdDate,
+                ModifiedDate = modifiedDate
+            };
+        }
+    }
+
+    // DAO Pattern: Data Access Object for Service
+    public class ServiceDAO
+    {
+        // Singleton Pattern: Using SqlConnectionManager singleton
+        private readonly SqlConnectionManager _connectionManager;
+
+        public ServiceDAO()
+        {
+            _connectionManager = SqlConnectionManager.Instance;
+        }
+
+        public DataTable GetAllServices()
+        {
+            string query = "SELECT ServiceId, ServiceName, Description, Price, CreatedDate, ModifiedDate FROM tbService";
+            return _connectionManager.ExecuteQuery(query);
+        }
+
+        public void InsertService(ServiceModel service)
+        {
+            string query = "INSERT INTO tbService (ServiceName, Description, Price, CreatedDate, ModifiedDate) " +
+                           "VALUES (@ServiceName, @Description, @Price, @CreatedDate, @ModifiedDate)";
+            SqlParameter[] parameters = {
+                new SqlParameter("@ServiceName", service.ServiceName),
+                new SqlParameter("@Description", service.Description),
+                new SqlParameter("@Price", service.Price),
+                new SqlParameter("@CreatedDate", service.CreatedDate),
+                new SqlParameter("@ModifiedDate", service.ModifiedDate)
+            };
+            _connectionManager.ExecuteNonQuery(query, parameters);
+        }
+
+        public void UpdateService(ServiceModel service)
+        {
+            string query = "UPDATE tbService SET ServiceName = @ServiceName, Description = @Description, Price = @Price, " +
+                           "ModifiedDate = @ModifiedDate WHERE ServiceId = @ServiceId";
+            SqlParameter[] parameters = {
+                new SqlParameter("@ServiceName", service.ServiceName),
+                new SqlParameter("@Description", service.Description),
+                new SqlParameter("@Price", service.Price),
+                new SqlParameter("@ModifiedDate", DateTime.Now),
+                new SqlParameter("@ServiceId", service.ServiceId)
+            };
+            _connectionManager.ExecuteNonQuery(query, parameters);
+        }
+
+        public void DeleteService(int serviceId)
+        {
+            string query = "DELETE FROM tbService WHERE ServiceId = @ServiceId";
+            SqlParameter[] parameters = {
+                new SqlParameter("@ServiceId", serviceId)
+            };
+            _connectionManager.ExecuteNonQuery(query, parameters);
+        }
+    }
+
+    // View component in MVC pattern
     public partial class Service : Form
     {
         private ServiceDAO _dao;
@@ -68,7 +157,7 @@ namespace Spa_Management_System
                     return;
                 }
 
-                // Use Factory to create a new ServiceModel
+                // Factory Pattern: Use Factory to create a new ServiceModel
                 ServiceModel newService = ServiceFactory.CreateService(serviceName, description, price);
                 _dao.InsertService(newService);
                 LoadServices();
@@ -104,7 +193,7 @@ namespace Spa_Management_System
                     return;
                 }
 
-                // Use Factory to create an updated ServiceModel
+                // Factory Pattern: Use Factory to create an updated ServiceModel
                 ServiceModel updatedService = ServiceFactory.CreateService(serviceId, serviceName, description, price, createdDate, DateTime.Now);
                 _dao.UpdateService(updatedService);
                 LoadServices();
@@ -117,7 +206,7 @@ namespace Spa_Management_System
             }
         }
 
-        // Delete button click (Updated)
+        // Delete button click
         private void BtnDelete_Click(object sender, EventArgs e)
         {
             try

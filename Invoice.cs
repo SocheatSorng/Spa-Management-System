@@ -7,9 +7,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Data.SqlClient;
 
 namespace Spa_Management_System
 {
+    // Interface for Observer Pattern
+    public interface IInvoiceObserver
+    {
+        void OnInvoiceUpdated();
+    }
+
     public partial class Invoice : Form, IInvoiceObserver
     {
         private readonly InvoiceManager _invoiceManager;
@@ -194,7 +201,7 @@ namespace Spa_Management_System
             }
         }
 
-        // Observer implementation
+        // Observer Pattern implementation
         public void OnInvoiceUpdated()
         {
             LoadInvoices(); // Refresh the DataGridView when notified
@@ -203,6 +210,115 @@ namespace Spa_Management_System
         private void label2_Click(object sender, EventArgs e)
         {
             // Empty event handler from designer, can be removed if not needed
+        }
+    }
+
+    // Manager class implementing Observer Pattern
+    public class InvoiceManager
+    {
+        private readonly InvoiceDAO _dao;
+        private readonly List<IInvoiceObserver> _observers;
+
+        public InvoiceManager()
+        {
+            _dao = new InvoiceDAO();
+            _observers = new List<IInvoiceObserver>();
+        }
+
+        // Observer Pattern: Methods to register and notify observers
+        public void AddObserver(IInvoiceObserver observer)
+        {
+            _observers.Add(observer);
+        }
+
+        public void RemoveObserver(IInvoiceObserver observer)
+        {
+            _observers.Remove(observer);
+        }
+
+        private void NotifyObservers()
+        {
+            foreach (var observer in _observers)
+            {
+                observer.OnInvoiceUpdated();
+            }
+        }
+
+        public DataTable GetAllInvoices()
+        {
+            return _dao.GetAllInvoices();
+        }
+
+        public void InsertInvoice(InvoiceModel invoice)
+        {
+            _dao.InsertInvoice(invoice);
+            NotifyObservers();
+        }
+
+        public void UpdateInvoice(InvoiceModel invoice)
+        {
+            _dao.UpdateInvoice(invoice);
+            NotifyObservers();
+        }
+
+        public void DeleteInvoice(int invoiceId)
+        {
+            _dao.DeleteInvoice(invoiceId);
+            NotifyObservers();
+        }
+    }
+
+    // DAO Pattern: Data Access Object for Invoice
+    public class InvoiceDAO
+    {
+        // Singleton Pattern: Using the SqlConnectionManager Singleton
+        private readonly SqlConnectionManager _connectionManager;
+
+        public InvoiceDAO()
+        {
+            _connectionManager = SqlConnectionManager.Instance;
+        }
+
+        public DataTable GetAllInvoices()
+        {
+            string query = "SELECT InvoiceId, OrderId, InvoiceDate, TotalAmount, Notes FROM tbInvoice";
+            return _connectionManager.ExecuteQuery(query);
+        }
+
+        public void InsertInvoice(InvoiceModel invoice)
+        {
+            string query = "INSERT INTO tbInvoice (OrderId, InvoiceDate, TotalAmount, Notes) " +
+                           "VALUES (@OrderId, @InvoiceDate, @TotalAmount, @Notes)";
+            SqlParameter[] parameters = {
+                new SqlParameter("@OrderId", invoice.OrderId),
+                new SqlParameter("@InvoiceDate", invoice.InvoiceDate),
+                new SqlParameter("@TotalAmount", invoice.TotalAmount),
+                new SqlParameter("@Notes", invoice.Notes ?? (object)DBNull.Value)
+            };
+            _connectionManager.ExecuteNonQuery(query, parameters);
+        }
+
+        public void UpdateInvoice(InvoiceModel invoice)
+        {
+            string query = "UPDATE tbInvoice SET OrderId = @OrderId, InvoiceDate = @InvoiceDate, " +
+                           "TotalAmount = @TotalAmount, Notes = @Notes WHERE InvoiceId = @InvoiceId";
+            SqlParameter[] parameters = {
+                new SqlParameter("@OrderId", invoice.OrderId),
+                new SqlParameter("@InvoiceDate", invoice.InvoiceDate),
+                new SqlParameter("@TotalAmount", invoice.TotalAmount),
+                new SqlParameter("@Notes", invoice.Notes ?? (object)DBNull.Value),
+                new SqlParameter("@InvoiceId", invoice.InvoiceId)
+            };
+            _connectionManager.ExecuteNonQuery(query, parameters);
+        }
+
+        public void DeleteInvoice(int invoiceId)
+        {
+            string query = "DELETE FROM tbInvoice WHERE InvoiceId = @InvoiceId";
+            SqlParameter[] parameters = {
+                new SqlParameter("@InvoiceId", invoiceId)
+            };
+            _connectionManager.ExecuteNonQuery(query, parameters);
         }
     }
 }
