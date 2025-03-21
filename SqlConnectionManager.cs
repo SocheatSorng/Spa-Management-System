@@ -13,7 +13,7 @@ namespace Spa_Management_System
         // Private constructor for Singleton pattern
         private SqlConnectionManager()
         {
-            _connectionString = "Data Source=localhost;Initial Catalog=SpaManagement;Integrated Security=True;TrustServerCertificate=True";
+            _connectionString = "data source=SOCHEAT\\MSSQLEXPRESS2022; initial catalog=SpaManagement; trusted_connection=true; encrypt=false";
         }
 
         // Singleton instance property with thread-safe double-check locking

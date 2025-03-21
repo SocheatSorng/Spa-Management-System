@@ -31,24 +31,24 @@
             label6 = new Label();
             label3 = new Label();
             label2 = new Label();
-            textBox6 = new TextBox();
-            textBox5 = new TextBox();
-            textBox3 = new TextBox();
+            txtCreatedAt = new TextBox();
+            txtName = new TextBox();
+            txtPrice = new TextBox();
             label1 = new Label();
-            textBox1 = new TextBox();
-            button5 = new Button();
-            button4 = new Button();
-            button3 = new Button();
-            button2 = new Button();
-            button1 = new Button();
-            dataGridView1 = new DataGridView();
-            textBox4 = new TextBox();
+            txtSearch = new TextBox();
+            btnClear = new Button();
+            btnNew = new Button();
+            btnDelete = new Button();
+            btnUpdate = new Button();
+            btnInsert = new Button();
+            dgvService = new DataGridView();
+            txtDescription = new TextBox();
             label5 = new Label();
-            textBox2 = new TextBox();
+            txtID = new TextBox();
             label4 = new Label();
             label7 = new Label();
-            textBox7 = new TextBox();
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            txtModifiedAt = new TextBox();
+            ((System.ComponentModel.ISupportInitialize)dgvService).BeginInit();
             SuspendLayout();
             // 
             // label6
@@ -78,26 +78,26 @@
             label2.TabIndex = 31;
             label2.Text = "Name";
             // 
-            // textBox6
+            // txtCreatedAt
             // 
-            textBox6.Location = new Point(117, 184);
-            textBox6.Name = "textBox6";
-            textBox6.Size = new Size(100, 23);
-            textBox6.TabIndex = 30;
+            txtCreatedAt.Location = new Point(117, 184);
+            txtCreatedAt.Name = "txtCreatedAt";
+            txtCreatedAt.Size = new Size(100, 23);
+            txtCreatedAt.TabIndex = 30;
             // 
-            // textBox5
+            // txtName
             // 
-            textBox5.Location = new Point(117, 97);
-            textBox5.Name = "textBox5";
-            textBox5.Size = new Size(100, 23);
-            textBox5.TabIndex = 29;
+            txtName.Location = new Point(117, 97);
+            txtName.Name = "txtName";
+            txtName.Size = new Size(100, 23);
+            txtName.TabIndex = 29;
             // 
-            // textBox3
+            // txtPrice
             // 
-            textBox3.Location = new Point(117, 126);
-            textBox3.Name = "textBox3";
-            textBox3.Size = new Size(100, 23);
-            textBox3.TabIndex = 27;
+            txtPrice.Location = new Point(117, 126);
+            txtPrice.Name = "txtPrice";
+            txtPrice.Size = new Size(100, 23);
+            txtPrice.TabIndex = 27;
             // 
             // label1
             // 
@@ -108,72 +108,72 @@
             label1.TabIndex = 25;
             label1.Text = "search";
             // 
-            // textBox1
+            // txtSearch
             // 
-            textBox1.Location = new Point(117, 12);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(100, 23);
-            textBox1.TabIndex = 24;
+            txtSearch.Location = new Point(117, 12);
+            txtSearch.Name = "txtSearch";
+            txtSearch.Size = new Size(100, 23);
+            txtSearch.TabIndex = 24;
             // 
-            // button5
+            // btnClear
             // 
-            button5.Location = new Point(397, 184);
-            button5.Name = "button5";
-            button5.Size = new Size(75, 23);
-            button5.TabIndex = 23;
-            button5.Text = "Clear";
-            button5.UseVisualStyleBackColor = true;
+            btnClear.Location = new Point(397, 184);
+            btnClear.Name = "btnClear";
+            btnClear.Size = new Size(75, 23);
+            btnClear.TabIndex = 23;
+            btnClear.Text = "Clear";
+            btnClear.UseVisualStyleBackColor = true;
             // 
-            // button4
+            // btnNew
             // 
-            button4.Location = new Point(397, 158);
-            button4.Name = "button4";
-            button4.Size = new Size(75, 23);
-            button4.TabIndex = 22;
-            button4.Text = "New";
-            button4.UseVisualStyleBackColor = true;
+            btnNew.Location = new Point(397, 158);
+            btnNew.Name = "btnNew";
+            btnNew.Size = new Size(75, 23);
+            btnNew.TabIndex = 22;
+            btnNew.Text = "New";
+            btnNew.UseVisualStyleBackColor = true;
             // 
-            // button3
+            // btnDelete
             // 
-            button3.Location = new Point(397, 129);
-            button3.Name = "button3";
-            button3.Size = new Size(75, 23);
-            button3.TabIndex = 21;
-            button3.Text = "Delete";
-            button3.UseVisualStyleBackColor = true;
+            btnDelete.Location = new Point(397, 129);
+            btnDelete.Name = "btnDelete";
+            btnDelete.Size = new Size(75, 23);
+            btnDelete.TabIndex = 21;
+            btnDelete.Text = "Delete";
+            btnDelete.UseVisualStyleBackColor = true;
             // 
-            // button2
+            // btnUpdate
             // 
-            button2.Location = new Point(397, 100);
-            button2.Name = "button2";
-            button2.Size = new Size(75, 23);
-            button2.TabIndex = 20;
-            button2.Text = "Update";
-            button2.UseVisualStyleBackColor = true;
+            btnUpdate.Location = new Point(397, 100);
+            btnUpdate.Name = "btnUpdate";
+            btnUpdate.Size = new Size(75, 23);
+            btnUpdate.TabIndex = 20;
+            btnUpdate.Text = "Update";
+            btnUpdate.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // btnInsert
             // 
-            button1.Location = new Point(397, 71);
-            button1.Name = "button1";
-            button1.Size = new Size(75, 23);
-            button1.TabIndex = 19;
-            button1.Text = "Insert";
-            button1.UseVisualStyleBackColor = true;
+            btnInsert.Location = new Point(397, 71);
+            btnInsert.Name = "btnInsert";
+            btnInsert.Size = new Size(75, 23);
+            btnInsert.TabIndex = 19;
+            btnInsert.Text = "Insert";
+            btnInsert.UseVisualStyleBackColor = true;
             // 
-            // dataGridView1
+            // dgvService
             // 
-            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(22, 242);
-            dataGridView1.Name = "dataGridView1";
-            dataGridView1.Size = new Size(450, 107);
-            dataGridView1.TabIndex = 18;
+            dgvService.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvService.Location = new Point(22, 242);
+            dgvService.Name = "dgvService";
+            dgvService.Size = new Size(450, 107);
+            dgvService.TabIndex = 18;
             // 
-            // textBox4
+            // txtDescription
             // 
-            textBox4.Location = new Point(117, 155);
-            textBox4.Name = "textBox4";
-            textBox4.Size = new Size(100, 23);
-            textBox4.TabIndex = 28;
+            txtDescription.Location = new Point(117, 155);
+            txtDescription.Name = "txtDescription";
+            txtDescription.Size = new Size(100, 23);
+            txtDescription.TabIndex = 28;
             // 
             // label5
             // 
@@ -184,12 +184,12 @@
             label5.TabIndex = 34;
             label5.Text = "Description";
             // 
-            // textBox2
+            // txtID
             // 
-            textBox2.Location = new Point(117, 68);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(100, 23);
-            textBox2.TabIndex = 26;
+            txtID.Location = new Point(117, 68);
+            txtID.Name = "txtID";
+            txtID.Size = new Size(100, 23);
+            txtID.TabIndex = 26;
             // 
             // label4
             // 
@@ -209,12 +209,12 @@
             label7.TabIndex = 37;
             label7.Text = "Modified";
             // 
-            // textBox7
+            // txtModifiedAt
             // 
-            textBox7.Location = new Point(117, 213);
-            textBox7.Name = "textBox7";
-            textBox7.Size = new Size(100, 23);
-            textBox7.TabIndex = 36;
+            txtModifiedAt.Location = new Point(117, 213);
+            txtModifiedAt.Name = "txtModifiedAt";
+            txtModifiedAt.Size = new Size(100, 23);
+            txtModifiedAt.TabIndex = 36;
             // 
             // Service
             // 
@@ -222,28 +222,28 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(484, 361);
             Controls.Add(label7);
-            Controls.Add(textBox7);
+            Controls.Add(txtModifiedAt);
             Controls.Add(label6);
             Controls.Add(label5);
             Controls.Add(label4);
             Controls.Add(label3);
             Controls.Add(label2);
-            Controls.Add(textBox6);
-            Controls.Add(textBox5);
-            Controls.Add(textBox4);
-            Controls.Add(textBox3);
-            Controls.Add(textBox2);
+            Controls.Add(txtCreatedAt);
+            Controls.Add(txtName);
+            Controls.Add(txtDescription);
+            Controls.Add(txtPrice);
+            Controls.Add(txtID);
             Controls.Add(label1);
-            Controls.Add(textBox1);
-            Controls.Add(button5);
-            Controls.Add(button4);
-            Controls.Add(button3);
-            Controls.Add(button2);
-            Controls.Add(button1);
-            Controls.Add(dataGridView1);
+            Controls.Add(txtSearch);
+            Controls.Add(btnClear);
+            Controls.Add(btnNew);
+            Controls.Add(btnDelete);
+            Controls.Add(btnUpdate);
+            Controls.Add(btnInsert);
+            Controls.Add(dgvService);
             Name = "Service";
             Text = "Form1";
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvService).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -253,22 +253,22 @@
         private Label label6;
         private Label label3;
         private Label label2;
-        private TextBox textBox6;
-        private TextBox textBox5;
-        private TextBox textBox3;
+        private TextBox txtCreatedAt;
+        private TextBox txtName;
+        private TextBox txtPrice;
         private Label label1;
-        private TextBox textBox1;
-        private Button button5;
-        private Button button4;
-        private Button button3;
-        private Button button2;
-        private Button button1;
-        private DataGridView dataGridView1;
-        private TextBox textBox4;
+        private TextBox txtSearch;
+        private Button btnClear;
+        private Button btnNew;
+        private Button btnDelete;
+        private Button btnUpdate;
+        private Button btnInsert;
+        private DataGridView dgvService;
+        private TextBox txtDescription;
         private Label label5;
-        private TextBox textBox2;
+        private TextBox txtID;
         private Label label4;
         private Label label7;
-        private TextBox textBox7;
+        private TextBox txtModifiedAt;
     }
 }

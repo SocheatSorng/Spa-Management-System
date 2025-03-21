@@ -60,7 +60,7 @@
             dgvConsumable.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvConsumable.Location = new Point(12, 300);
             dgvConsumable.Name = "dgvConsumable";
-            dgvConsumable.Size = new Size(460, 49);
+            dgvConsumable.Size = new Size(460, 119);
             dgvConsumable.TabIndex = 0;
             // 
             // btnInsert
@@ -256,7 +256,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(484, 361);
+            ClientSize = new Size(484, 431);
             Controls.Add(label9);
             Controls.Add(txtModifiedAt);
             Controls.Add(label8);

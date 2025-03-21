@@ -29,30 +29,32 @@
         private void InitializeComponent()
         {
             label9 = new Label();
-            textBox9 = new TextBox();
+            txtDiscount = new TextBox();
             label8 = new Label();
-            textBox8 = new TextBox();
+            txtUserID = new TextBox();
             label7 = new Label();
-            textBox7 = new TextBox();
+            txtNotes = new TextBox();
             label6 = new Label();
             label5 = new Label();
             label4 = new Label();
             label3 = new Label();
             label2 = new Label();
-            textBox6 = new TextBox();
-            textBox5 = new TextBox();
-            textBox4 = new TextBox();
-            textBox3 = new TextBox();
-            textBox2 = new TextBox();
+            txtFinalAmount = new TextBox();
+            txtCustomerID = new TextBox();
+            txtTotalAmount = new TextBox();
+            txtOrderTime = new TextBox();
+            txtID = new TextBox();
             label1 = new Label();
-            textBox1 = new TextBox();
-            button5 = new Button();
-            button4 = new Button();
-            button3 = new Button();
-            button2 = new Button();
-            button1 = new Button();
-            dataGridView1 = new DataGridView();
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            txtSearch = new TextBox();
+            btnClear = new Button();
+            btnNew = new Button();
+            btnDelete = new Button();
+            btnUpdate = new Button();
+            btnInsert = new Button();
+            dgvOrder = new DataGridView();
+            label10 = new Label();
+            txtStatus = new TextBox();
+            ((System.ComponentModel.ISupportInitialize)dgvOrder).BeginInit();
             SuspendLayout();
             // 
             // label9
@@ -64,62 +66,62 @@
             label9.TabIndex = 85;
             label9.Text = "Discount";
             // 
-            // textBox9
+            // txtDiscount
             // 
-            textBox9.Location = new Point(125, 213);
-            textBox9.Name = "textBox9";
-            textBox9.Size = new Size(100, 23);
-            textBox9.TabIndex = 84;
+            txtDiscount.Location = new Point(125, 213);
+            txtDiscount.Name = "txtDiscount";
+            txtDiscount.Size = new Size(100, 23);
+            txtDiscount.TabIndex = 84;
             // 
             // label8
             // 
             label8.AutoSize = true;
             label8.Location = new Point(19, 129);
             label8.Name = "label8";
-            label8.Size = new Size(60, 15);
+            label8.Size = new Size(44, 15);
             label8.TabIndex = 83;
-            label8.Text = "Cashier ID";
+            label8.Text = "User ID";
             // 
-            // textBox8
+            // txtUserID
             // 
-            textBox8.Location = new Point(125, 126);
-            textBox8.Name = "textBox8";
-            textBox8.Size = new Size(100, 23);
-            textBox8.TabIndex = 82;
+            txtUserID.Location = new Point(125, 126);
+            txtUserID.Name = "txtUserID";
+            txtUserID.Size = new Size(100, 23);
+            txtUserID.TabIndex = 82;
             // 
             // label7
             // 
             label7.AutoSize = true;
             label7.Location = new Point(17, 274);
             label7.Name = "label7";
-            label7.Size = new Size(33, 15);
+            label7.Size = new Size(38, 15);
             label7.TabIndex = 81;
-            label7.Text = "Note";
+            label7.Text = "Notes";
             // 
-            // textBox7
+            // txtNotes
             // 
-            textBox7.Location = new Point(125, 271);
-            textBox7.Name = "textBox7";
-            textBox7.Size = new Size(100, 23);
-            textBox7.TabIndex = 80;
+            txtNotes.Location = new Point(125, 271);
+            txtNotes.Name = "txtNotes";
+            txtNotes.Size = new Size(100, 23);
+            txtNotes.TabIndex = 80;
             // 
             // label6
             // 
             label6.AutoSize = true;
             label6.Location = new Point(17, 245);
             label6.Name = "label6";
-            label6.Size = new Size(59, 15);
+            label6.Size = new Size(79, 15);
             label6.TabIndex = 79;
-            label6.Text = "Final Cost";
+            label6.Text = "Final Amount";
             // 
             // label5
             // 
             label5.AutoSize = true;
             label5.Location = new Point(19, 187);
             label5.Name = "label5";
-            label5.Size = new Size(59, 15);
+            label5.Size = new Size(79, 15);
             label5.TabIndex = 78;
-            label5.Text = "Total Cost";
+            label5.Text = "Total Amount";
             // 
             // label4
             // 
@@ -135,9 +137,9 @@
             label3.AutoSize = true;
             label3.Location = new Point(19, 158);
             label3.Name = "label3";
-            label3.Size = new Size(57, 15);
+            label3.Size = new Size(66, 15);
             label3.TabIndex = 76;
-            label3.Text = "DateTime";
+            label3.Text = "Order Time";
             // 
             // label2
             // 
@@ -148,40 +150,40 @@
             label2.TabIndex = 75;
             label2.Text = "Customer ID";
             // 
-            // textBox6
+            // txtFinalAmount
             // 
-            textBox6.Location = new Point(125, 242);
-            textBox6.Name = "textBox6";
-            textBox6.Size = new Size(100, 23);
-            textBox6.TabIndex = 74;
+            txtFinalAmount.Location = new Point(125, 242);
+            txtFinalAmount.Name = "txtFinalAmount";
+            txtFinalAmount.Size = new Size(100, 23);
+            txtFinalAmount.TabIndex = 74;
             // 
-            // textBox5
+            // txtCustomerID
             // 
-            textBox5.Location = new Point(125, 97);
-            textBox5.Name = "textBox5";
-            textBox5.Size = new Size(100, 23);
-            textBox5.TabIndex = 73;
+            txtCustomerID.Location = new Point(125, 97);
+            txtCustomerID.Name = "txtCustomerID";
+            txtCustomerID.Size = new Size(100, 23);
+            txtCustomerID.TabIndex = 73;
             // 
-            // textBox4
+            // txtTotalAmount
             // 
-            textBox4.Location = new Point(125, 184);
-            textBox4.Name = "textBox4";
-            textBox4.Size = new Size(100, 23);
-            textBox4.TabIndex = 72;
+            txtTotalAmount.Location = new Point(125, 184);
+            txtTotalAmount.Name = "txtTotalAmount";
+            txtTotalAmount.Size = new Size(100, 23);
+            txtTotalAmount.TabIndex = 72;
             // 
-            // textBox3
+            // txtOrderTime
             // 
-            textBox3.Location = new Point(125, 155);
-            textBox3.Name = "textBox3";
-            textBox3.Size = new Size(100, 23);
-            textBox3.TabIndex = 71;
+            txtOrderTime.Location = new Point(125, 155);
+            txtOrderTime.Name = "txtOrderTime";
+            txtOrderTime.Size = new Size(100, 23);
+            txtOrderTime.TabIndex = 71;
             // 
-            // textBox2
+            // txtID
             // 
-            textBox2.Location = new Point(125, 68);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(100, 23);
-            textBox2.TabIndex = 70;
+            txtID.Location = new Point(125, 68);
+            txtID.Name = "txtID";
+            txtID.Size = new Size(100, 23);
+            txtID.TabIndex = 70;
             // 
             // label1
             // 
@@ -192,98 +194,116 @@
             label1.TabIndex = 69;
             label1.Text = "search";
             // 
-            // textBox1
+            // txtSearch
             // 
-            textBox1.Location = new Point(125, 12);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(100, 23);
-            textBox1.TabIndex = 68;
+            txtSearch.Location = new Point(125, 12);
+            txtSearch.Name = "txtSearch";
+            txtSearch.Size = new Size(100, 23);
+            txtSearch.TabIndex = 68;
             // 
-            // button5
+            // btnClear
             // 
-            button5.Location = new Point(392, 184);
-            button5.Name = "button5";
-            button5.Size = new Size(75, 23);
-            button5.TabIndex = 67;
-            button5.Text = "Clear";
-            button5.UseVisualStyleBackColor = true;
+            btnClear.Location = new Point(392, 184);
+            btnClear.Name = "btnClear";
+            btnClear.Size = new Size(75, 23);
+            btnClear.TabIndex = 67;
+            btnClear.Text = "Clear";
+            btnClear.UseVisualStyleBackColor = true;
             // 
-            // button4
+            // btnNew
             // 
-            button4.Location = new Point(392, 158);
-            button4.Name = "button4";
-            button4.Size = new Size(75, 23);
-            button4.TabIndex = 66;
-            button4.Text = "New";
-            button4.UseVisualStyleBackColor = true;
+            btnNew.Location = new Point(392, 158);
+            btnNew.Name = "btnNew";
+            btnNew.Size = new Size(75, 23);
+            btnNew.TabIndex = 66;
+            btnNew.Text = "New";
+            btnNew.UseVisualStyleBackColor = true;
             // 
-            // button3
+            // btnDelete
             // 
-            button3.Location = new Point(392, 129);
-            button3.Name = "button3";
-            button3.Size = new Size(75, 23);
-            button3.TabIndex = 65;
-            button3.Text = "Delete";
-            button3.UseVisualStyleBackColor = true;
+            btnDelete.Location = new Point(392, 129);
+            btnDelete.Name = "btnDelete";
+            btnDelete.Size = new Size(75, 23);
+            btnDelete.TabIndex = 65;
+            btnDelete.Text = "Delete";
+            btnDelete.UseVisualStyleBackColor = true;
             // 
-            // button2
+            // btnUpdate
             // 
-            button2.Location = new Point(392, 100);
-            button2.Name = "button2";
-            button2.Size = new Size(75, 23);
-            button2.TabIndex = 64;
-            button2.Text = "Update";
-            button2.UseVisualStyleBackColor = true;
+            btnUpdate.Location = new Point(392, 100);
+            btnUpdate.Name = "btnUpdate";
+            btnUpdate.Size = new Size(75, 23);
+            btnUpdate.TabIndex = 64;
+            btnUpdate.Text = "Update";
+            btnUpdate.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // btnInsert
             // 
-            button1.Location = new Point(392, 71);
-            button1.Name = "button1";
-            button1.Size = new Size(75, 23);
-            button1.TabIndex = 63;
-            button1.Text = "Insert";
-            button1.UseVisualStyleBackColor = true;
+            btnInsert.Location = new Point(392, 71);
+            btnInsert.Name = "btnInsert";
+            btnInsert.Size = new Size(75, 23);
+            btnInsert.TabIndex = 63;
+            btnInsert.Text = "Insert";
+            btnInsert.UseVisualStyleBackColor = true;
             // 
-            // dataGridView1
+            // dgvOrder
             // 
-            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(17, 300);
-            dataGridView1.Name = "dataGridView1";
-            dataGridView1.Size = new Size(450, 49);
-            dataGridView1.TabIndex = 62;
+            dgvOrder.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvOrder.Location = new Point(17, 356);
+            dgvOrder.Name = "dgvOrder";
+            dgvOrder.Size = new Size(450, 100);
+            dgvOrder.TabIndex = 62;
+            // 
+            // label10
+            // 
+            label10.AutoSize = true;
+            label10.Location = new Point(17, 303);
+            label10.Name = "label10";
+            label10.Size = new Size(39, 15);
+            label10.TabIndex = 87;
+            label10.Text = "Status";
+            // 
+            // txtStatus
+            // 
+            txtStatus.Location = new Point(125, 300);
+            txtStatus.Name = "txtStatus";
+            txtStatus.Size = new Size(100, 23);
+            txtStatus.TabIndex = 86;
             // 
             // Order
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(484, 361);
+            ClientSize = new Size(484, 468);
+            Controls.Add(label10);
+            Controls.Add(txtStatus);
             Controls.Add(label9);
-            Controls.Add(textBox9);
+            Controls.Add(txtDiscount);
             Controls.Add(label8);
-            Controls.Add(textBox8);
+            Controls.Add(txtUserID);
             Controls.Add(label7);
-            Controls.Add(textBox7);
+            Controls.Add(txtNotes);
             Controls.Add(label6);
             Controls.Add(label5);
             Controls.Add(label4);
             Controls.Add(label3);
             Controls.Add(label2);
-            Controls.Add(textBox6);
-            Controls.Add(textBox5);
-            Controls.Add(textBox4);
-            Controls.Add(textBox3);
-            Controls.Add(textBox2);
+            Controls.Add(txtFinalAmount);
+            Controls.Add(txtCustomerID);
+            Controls.Add(txtTotalAmount);
+            Controls.Add(txtOrderTime);
+            Controls.Add(txtID);
             Controls.Add(label1);
-            Controls.Add(textBox1);
-            Controls.Add(button5);
-            Controls.Add(button4);
-            Controls.Add(button3);
-            Controls.Add(button2);
-            Controls.Add(button1);
-            Controls.Add(dataGridView1);
+            Controls.Add(txtSearch);
+            Controls.Add(btnClear);
+            Controls.Add(btnNew);
+            Controls.Add(btnDelete);
+            Controls.Add(btnUpdate);
+            Controls.Add(btnInsert);
+            Controls.Add(dgvOrder);
             Name = "Order";
             Text = "Order";
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvOrder).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -291,28 +311,30 @@
         #endregion
 
         private Label label9;
-        private TextBox textBox9;
+        private TextBox txtDiscount;
         private Label label8;
-        private TextBox textBox8;
+        private TextBox txtUserID;
         private Label label7;
-        private TextBox textBox7;
+        private TextBox txtNotes;
         private Label label6;
         private Label label5;
         private Label label4;
         private Label label3;
         private Label label2;
-        private TextBox textBox6;
-        private TextBox textBox5;
-        private TextBox textBox4;
-        private TextBox textBox3;
-        private TextBox textBox2;
+        private TextBox txtFinalAmount;
+        private TextBox txtCustomerID;
+        private TextBox txtTotalAmount;
+        private TextBox txtOrderTime;
+        private TextBox txtID;
         private Label label1;
-        private TextBox textBox1;
-        private Button button5;
-        private Button button4;
-        private Button button3;
-        private Button button2;
-        private Button button1;
-        private DataGridView dataGridView1;
+        private TextBox txtSearch;
+        private Button btnClear;
+        private Button btnNew;
+        private Button btnDelete;
+        private Button btnUpdate;
+        private Button btnInsert;
+        private DataGridView dgvOrder;
+        private Label label10;
+        private TextBox txtStatus;
     }
 }
