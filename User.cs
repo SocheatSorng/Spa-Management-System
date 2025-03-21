@@ -11,191 +11,172 @@ using System.Windows.Forms;
 
 namespace Spa_Management_System
 {
-    // Repository Pattern: Interface for the User data access
-    public interface IUserRepository
-    {
-        List<UserModel> GetAll();
-        DataTable Search(string searchText);
-        UserModel GetById(int userId);
-        int Insert(string username, string password);
-        bool Update(int userId, string username, string password);
-        bool Delete(int userId);
-    }
-
-    // Repository Pattern: Implementation for User data access
-    public class UserRepository : IUserRepository
-    {
-        // Singleton Pattern: Uses the SqlConnectionManager singleton
-        private readonly SqlConnectionManager _connectionManager;
-
-        public UserRepository()
-        {
-            _connectionManager = SqlConnectionManager.Instance;
-        }
-
-        public List<UserModel> GetAll()
-        {
-            List<UserModel> users = new List<UserModel>();
-            try
-            {
-                string query = "SELECT UserId, Username, Password, CreatedDate, ModifiedDate FROM tbUser";
-                DataTable dataTable = _connectionManager.ExecuteQuery(query);
-
-                foreach (DataRow row in dataTable.Rows)
-                {
-                    UserModel user = new UserModel
-                    {
-                        UserId = Convert.ToInt32(row["UserId"]),
-                        Username = row["Username"].ToString(),
-                        Password = row["Password"].ToString(),
-                        CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
-                        ModifiedDate = Convert.ToDateTime(row["ModifiedDate"])
-                    };
-                    users.Add(user);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error retrieving users: " + ex.Message);
-            }
-            return users;
-        }
-
-        public DataTable Search(string searchText)
-        {
-            try
-            {
-                string query = "SELECT UserId, Username FROM tbUser WHERE Username LIKE @SearchText";
-                SqlParameter parameter = new SqlParameter("@SearchText", "%" + searchText + "%");
-                return _connectionManager.ExecuteQuery(query, parameter);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error searching users: " + ex.Message);
-                return new DataTable();
-            }
-        }
-
-        public UserModel GetById(int userId)
-        {
-            UserModel user = null;
-            try
-            {
-                string query = "SELECT UserId, Username, Password, CreatedDate, ModifiedDate FROM tbUser WHERE UserId = @UserId";
-                SqlParameter parameter = new SqlParameter("@UserId", userId);
-                DataTable dataTable = _connectionManager.ExecuteQuery(query, parameter);
-
-                if (dataTable.Rows.Count > 0)
-                {
-                    DataRow row = dataTable.Rows[0];
-                    user = new UserModel
-                    {
-                        UserId = Convert.ToInt32(row["UserId"]),
-                        Username = row["Username"].ToString(),
-                        Password = row["Password"].ToString(),
-                        CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
-                        ModifiedDate = Convert.ToDateTime(row["ModifiedDate"])
-                    };
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error retrieving user: " + ex.Message);
-            }
-            return user;
-        }
-
-        public int Insert(string username, string password)
-        {
-            try
-            {
-                // Security Enhancement: Consider hashing passwords before storage
-                // password = HashPassword(password);
-
-                string query = "EXEC sp_CreateUser @Username, @Password";
-                SqlParameter[] parameters = new SqlParameter[]
-                {
-                    new SqlParameter("@Username", username),
-                    new SqlParameter("@Password", password)
-                };
-
-                // Execute the query and get the result
-                object result = _connectionManager.ExecuteScalar(query, parameters);
-                if (result != null && result != DBNull.Value)
-                {
-                    return Convert.ToInt32(result);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error inserting user: " + ex.Message);
-            }
-            return -1;
-        }
-
-        public bool Update(int userId, string username, string password)
-        {
-            try
-            {
-                // Security Enhancement: Consider hashing passwords before storage
-                // password = HashPassword(password);
-
-                string query = "UPDATE tbUser SET Username = @Username, Password = @Password, ModifiedDate = GETDATE() WHERE UserId = @UserId";
-                SqlParameter[] parameters = new SqlParameter[]
-                {
-                    new SqlParameter("@UserId", userId),
-                    new SqlParameter("@Username", username),
-                    new SqlParameter("@Password", password)
-                };
-
-                int rowsAffected = _connectionManager.ExecuteNonQuery(query, parameters);
-                return rowsAffected > 0;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error updating user: " + ex.Message);
-                return false;
-            }
-        }
-
-        public bool Delete(int userId)
-        {
-            try
-            {
-                string query = "DELETE FROM tbUser WHERE UserId = @UserId";
-                SqlParameter parameter = new SqlParameter("@UserId", userId);
-
-                int rowsAffected = _connectionManager.ExecuteNonQuery(query, parameter);
-                return rowsAffected > 0;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error deleting user: " + ex.Message);
-                return false;
-            }
-        }
-
-        // Optional: Password hashing method
-        /*
-        private string HashPassword(string password)
-        {
-            // Implementation of secure password hashing
-            // For example, using BCrypt or other secure hashing algorithms
-            return password; // Replace with actual hashing
-        }
-        */
-    }
-
-    // View component in MVC pattern
     public partial class User : Form
     {
-        // Dependency Injection: Using the repository through an interface for better testability
-        private readonly IUserRepository _repository;
+        // User model class
+        private class UserModel
+        {
+            public int UserId { get; set; }
+            public string Username { get; set; }
+            public string Password { get; set; }
+            public DateTime CreatedDate { get; set; }
+            public DateTime ModifiedDate { get; set; }
+        }
+
+        // Repository Pattern for User data access
+        private class UserRepository
+        {
+            private readonly SqlConnectionManager _connectionManager;
+
+            public UserRepository()
+            {
+                // Get singleton instance of connection manager
+                _connectionManager = SqlConnectionManager.Instance;
+            }
+
+            public List<UserModel> GetAll()
+            {
+                List<UserModel> users = new List<UserModel>();
+                try
+                {
+                    string query = "SELECT UserId, Username, Password, CreatedDate, ModifiedDate FROM tbUser";
+                    DataTable dataTable = _connectionManager.ExecuteQuery(query);
+
+                    foreach (DataRow row in dataTable.Rows)
+                    {
+                        UserModel user = new UserModel
+                        {
+                            UserId = Convert.ToInt32(row["UserId"]),
+                            Username = row["Username"].ToString(),
+                            Password = row["Password"].ToString(),
+                            CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
+                            ModifiedDate = Convert.ToDateTime(row["ModifiedDate"])
+                        };
+                        users.Add(user);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error retrieving users: " + ex.Message);
+                }
+                return users;
+            }
+
+            public DataTable Search(string searchText)
+            {
+                try
+                {
+                    string query = "SELECT UserId, Username FROM tbUser WHERE Username LIKE @SearchText";
+                    SqlParameter parameter = new SqlParameter("@SearchText", "%" + searchText + "%");
+                    return _connectionManager.ExecuteQuery(query, parameter);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error searching users: " + ex.Message);
+                    return new DataTable();
+                }
+            }
+
+            public UserModel GetById(int userId)
+            {
+                UserModel user = null;
+                try
+                {
+                    string query = "SELECT UserId, Username, Password, CreatedDate, ModifiedDate FROM tbUser WHERE UserId = @UserId";
+                    SqlParameter parameter = new SqlParameter("@UserId", userId);
+                    DataTable dataTable = _connectionManager.ExecuteQuery(query, parameter);
+
+                    if (dataTable.Rows.Count > 0)
+                    {
+                        DataRow row = dataTable.Rows[0];
+                        user = new UserModel
+                        {
+                            UserId = Convert.ToInt32(row["UserId"]),
+                            Username = row["Username"].ToString(),
+                            Password = row["Password"].ToString(),
+                            CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
+                            ModifiedDate = Convert.ToDateTime(row["ModifiedDate"])
+                        };
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error retrieving user: " + ex.Message);
+                }
+                return user;
+            }
+
+            public int Insert(string username, string password)
+            {
+                try
+                {
+                    string query = "EXEC sp_CreateUser @Username, @Password";
+                    SqlParameter[] parameters = new SqlParameter[]
+                    {
+                        new SqlParameter("@Username", username),
+                        new SqlParameter("@Password", password)
+                    };
+
+                    // Execute the query and get the result
+                    object result = _connectionManager.ExecuteScalar(query, parameters);
+                    if (result != null && result != DBNull.Value)
+                    {
+                        return Convert.ToInt32(result);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error inserting user: " + ex.Message);
+                }
+                return -1;
+            }
+
+            public bool Update(int userId, string username, string password)
+            {
+                try
+                {
+                    string query = "UPDATE tbUser SET Username = @Username, Password = @Password, ModifiedDate = GETDATE() WHERE UserId = @UserId";
+                    SqlParameter[] parameters = new SqlParameter[]
+                    {
+                        new SqlParameter("@UserId", userId),
+                        new SqlParameter("@Username", username),
+                        new SqlParameter("@Password", password)
+                    };
+
+                    int rowsAffected = _connectionManager.ExecuteNonQuery(query, parameters);
+                    return rowsAffected > 0;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error updating user: " + ex.Message);
+                    return false;
+                }
+            }
+
+            public bool Delete(int userId)
+            {
+                try
+                {
+                    string query = "DELETE FROM tbUser WHERE UserId = @UserId";
+                    SqlParameter parameter = new SqlParameter("@UserId", userId);
+
+                    int rowsAffected = _connectionManager.ExecuteNonQuery(query, parameter);
+                    return rowsAffected > 0;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error deleting user: " + ex.Message);
+                    return false;
+                }
+            }
+        }
+
+        private UserRepository _repository;
 
         public User()
         {
             InitializeComponent();
-            _repository = new UserRepository(); // Could be injected for testing
+            _repository = new UserRepository();
             LoadData();
             SetupEventHandlers();
         }

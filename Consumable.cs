@@ -5,147 +5,50 @@ using Microsoft.Data.SqlClient;
 
 namespace Spa_Management_System
 {
-    // Factory Pattern: Creates ConsumableModel objects
-    public static class ConsumableFactory
-    {
-        // Factory Method: Creates a new ConsumableModel for insertion
-        public static ConsumableModel CreateConsumable(string name, string description, decimal price, string category, int stockQuantity)
-        {
-            return new ConsumableModel
-            {
-                Name = name,
-                Description = description,
-                Price = price,
-                Category = category,
-                StockQuantity = stockQuantity,
-                CreatedDate = DateTime.Now,
-                ModifiedDate = DateTime.Now
-            };
-        }
-
-        // Factory Method: Creates a ConsumableModel with existing ID for update
-        public static ConsumableModel CreateConsumable(int consumableId, string name, string description, decimal price,
-                                                    string category, int stockQuantity, DateTime createdDate)
-        {
-            return new ConsumableModel
-            {
-                ConsumableId = consumableId,
-                Name = name,
-                Description = description,
-                Price = price,
-                Category = category,
-                StockQuantity = stockQuantity,
-                CreatedDate = createdDate,
-                ModifiedDate = DateTime.Now
-            };
-        }
-    }
-
-    // Repository Pattern: Data Access for Consumable
-    public class ConsumableRepository
-    {
-        // Singleton Pattern: Using SqlConnectionManager singleton
-        private readonly SqlConnectionManager _connectionManager;
-
-        public ConsumableRepository()
-        {
-            _connectionManager = SqlConnectionManager.Instance;
-        }
-
-        // Fetch all consumables from the database
-        public DataTable GetAllConsumables()
-        {
-            string query = "SELECT * FROM tbConsumable";
-            return _connectionManager.ExecuteQuery(query);
-        }
-
-        // Insert a new consumable
-        public void InsertConsumable(string name, string description, decimal price, string category, int stockQuantity)
-        {
-            // Factory Pattern: Use factory to create the consumable
-            ConsumableModel consumable = ConsumableFactory.CreateConsumable(name, description, price, category, stockQuantity);
-
-            string query = "INSERT INTO tbConsumable (Name, Description, Price, Category, StockQuantity, CreatedDate, ModifiedDate) " +
-                          "VALUES (@Name, @Description, @Price, @Category, @StockQuantity, @CreatedDate, @ModifiedDate)";
-            SqlParameter[] parameters = {
-                new SqlParameter("@Name", consumable.Name),
-                new SqlParameter("@Description", consumable.Description),
-                new SqlParameter("@Price", consumable.Price),
-                new SqlParameter("@Category", consumable.Category),
-                new SqlParameter("@StockQuantity", consumable.StockQuantity),
-                new SqlParameter("@CreatedDate", consumable.CreatedDate),
-                new SqlParameter("@ModifiedDate", consumable.ModifiedDate)
-            };
-            _connectionManager.ExecuteNonQuery(query, parameters);
-        }
-
-        // Update an existing consumable
-        public void UpdateConsumable(int consumableId, string name, string description, decimal price, string category, int stockQuantity)
-        {
-            // Get the original creation date
-            DateTime createdDate = DateTime.Now; // Default value
-            string getCreatedDateQuery = "SELECT CreatedDate FROM tbConsumable WHERE ConsumableId = @ConsumableId";
-            SqlParameter param = new SqlParameter("@ConsumableId", consumableId);
-            DataTable result = _connectionManager.ExecuteQuery(getCreatedDateQuery, param);
-            if (result.Rows.Count > 0)
-            {
-                createdDate = Convert.ToDateTime(result.Rows[0]["CreatedDate"]);
-            }
-
-            // Factory Pattern: Use factory to create the updated consumable
-            ConsumableModel consumable = ConsumableFactory.CreateConsumable(
-                consumableId, name, description, price, category, stockQuantity, createdDate);
-
-            string query = "UPDATE tbConsumable SET Name = @Name, Description = @Description, Price = @Price, Category = @Category, " +
-                          "StockQuantity = @StockQuantity, ModifiedDate = @ModifiedDate WHERE ConsumableId = @ConsumableId";
-            SqlParameter[] parameters = {
-                new SqlParameter("@Name", consumable.Name),
-                new SqlParameter("@Description", consumable.Description),
-                new SqlParameter("@Price", consumable.Price),
-                new SqlParameter("@Category", consumable.Category),
-                new SqlParameter("@StockQuantity", consumable.StockQuantity),
-                new SqlParameter("@ModifiedDate", consumable.ModifiedDate),
-                new SqlParameter("@ConsumableId", consumable.ConsumableId)
-            };
-            _connectionManager.ExecuteNonQuery(query, parameters);
-        }
-
-        // Delete a consumable by ID
-        public void DeleteConsumable(int consumableId)
-        {
-            string query = "DELETE FROM tbConsumable WHERE ConsumableId = @ConsumableId";
-            SqlParameter[] parameters = {
-                new SqlParameter("@ConsumableId", consumableId)
-            };
-            _connectionManager.ExecuteNonQuery(query, parameters);
-        }
-    }
-
     // MVC Pattern: View component
     public partial class Consumable : Form
     {
-        private ConsumableRepository _repository;
+        private readonly ConsumableContext _consumableContext;
         private DataTable _consumablesTable;
+
+        // Check if the form is in design mode
+        private bool IsDesignMode => System.ComponentModel.LicenseManager.UsageMode == System.ComponentModel.LicenseUsageMode.Designtime;
 
         public Consumable()
         {
             InitializeComponent();
-            // Repository Pattern: Create repository instance
-            _repository = new ConsumableRepository();
-            LoadConsumables();
-            WireUpEvents(); // Attach event handlers
+
+            // Skip database operations during design time
+            if (!IsDesignMode)
+            {
+                try
+                {
+                    // Strategy Pattern: Create context with database strategy
+                    _consumableContext = new ConsumableContext(new DatabaseConsumableStrategy());
+                    LoadConsumables();
+                    WireUpEvents(); // Attach event handlers
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Initialization error: " + ex.Message);
+                }
+            }
         }
 
         // Load all consumables into the DataGridView
         private void LoadConsumables()
         {
-            _consumablesTable = _repository.GetAllConsumables();
+            if (IsDesignMode) return;
+
+            _consumablesTable = _consumableContext.GetAllConsumables();
             dgvConsumable.DataSource = _consumablesTable;
         }
 
         // Wire up events (since not all may be set in designer)
         private void WireUpEvents()
         {
+            if (IsDesignMode) return;
+
             btnNew.Click += btnNew_Click;
             btnInsert.Click += btnInsert_Click;
             btnUpdate.Click += btnUpdate_Click;
@@ -193,7 +96,7 @@ namespace Spa_Management_System
                     return;
                 }
 
-                _repository.InsertConsumable(name, description, price, category, stockQuantity);
+                _consumableContext.InsertConsumable(name, description, price, category, stockQuantity);
                 LoadConsumables();
                 btnNew_Click(sender, e); // Clear fields
                 MessageBox.Show("Consumable inserted successfully.");
@@ -236,7 +139,7 @@ namespace Spa_Management_System
                     return;
                 }
 
-                _repository.UpdateConsumable(consumableId, name, description, price, category, stockQuantity);
+                _consumableContext.UpdateConsumable(consumableId, name, description, price, category, stockQuantity);
                 LoadConsumables();
                 btnNew_Click(sender, e); // Clear fields
                 MessageBox.Show("Consumable updated successfully.");
@@ -270,7 +173,7 @@ namespace Spa_Management_System
 
                 if (result == DialogResult.Yes)
                 {
-                    _repository.DeleteConsumable(consumableId);
+                    _consumableContext.DeleteConsumable(consumableId);
                     LoadConsumables();
                     btnNew_Click(sender, e); // Clear fields
                     MessageBox.Show("Consumable deleted successfully.");
@@ -315,6 +218,165 @@ namespace Spa_Management_System
                 txtCreatedAt.Text = row.Cells["CreatedDate"].Value.ToString();
                 txtModifiedAt.Text = row.Cells["ModifiedDate"].Value.ToString();
             }
+        }
+    }
+
+    // Strategy Pattern: Context class that uses a strategy
+    public class ConsumableContext
+    {
+        private IConsumableDataStrategy _strategy;
+
+        public ConsumableContext(IConsumableDataStrategy strategy)
+        {
+            _strategy = strategy;
+        }
+
+        // Strategy Pattern: Allows changing strategies at runtime
+        public void SetStrategy(IConsumableDataStrategy strategy)
+        {
+            _strategy = strategy;
+        }
+
+        // Delegate method calls to the current strategy
+        public DataTable GetAllConsumables()
+        {
+            return _strategy.GetAllConsumables();
+        }
+
+        public void InsertConsumable(string name, string description, decimal price, string category, int stockQuantity)
+        {
+            _strategy.InsertConsumable(name, description, price, category, stockQuantity);
+        }
+
+        public void UpdateConsumable(int consumableId, string name, string description, decimal price, string category, int stockQuantity)
+        {
+            _strategy.UpdateConsumable(consumableId, name, description, price, category, stockQuantity);
+        }
+
+        public void DeleteConsumable(int consumableId)
+        {
+            _strategy.DeleteConsumable(consumableId);
+        }
+    }
+
+    // Strategy Pattern: Interface defining operations for all consumable data strategies
+    public interface IConsumableDataStrategy
+    {
+        DataTable GetAllConsumables();
+        void InsertConsumable(string name, string description, decimal price, string category, int stockQuantity);
+        void UpdateConsumable(int consumableId, string name, string description, decimal price, string category, int stockQuantity);
+        void DeleteConsumable(int consumableId);
+    }
+
+    // Strategy Pattern: Concrete strategy for database operations
+    public class DatabaseConsumableStrategy : IConsumableDataStrategy
+    {
+        // Singleton Pattern: Using SqlConnectionManager singleton
+        private readonly SqlConnectionManager _connectionManager;
+
+        public DatabaseConsumableStrategy()
+        {
+            _connectionManager = SqlConnectionManager.Instance;
+        }
+
+        public DataTable GetAllConsumables()
+        {
+            string query = "SELECT * FROM tbConsumable";
+            return _connectionManager.ExecuteQuery(query);
+        }
+
+        public void InsertConsumable(string name, string description, decimal price, string category, int stockQuantity)
+        {
+            // Factory Pattern: Use factory to create the consumable
+            ConsumableModel consumable = ConsumableFactory.CreateConsumable(name, description, price, category, stockQuantity);
+
+            string query = "INSERT INTO tbConsumable (Name, Description, Price, Category, StockQuantity, CreatedDate, ModifiedDate) " +
+                          "VALUES (@Name, @Description, @Price, @Category, @StockQuantity, @CreatedDate, @ModifiedDate)";
+            SqlParameter[] parameters = {
+                new SqlParameter("@Name", consumable.Name),
+                new SqlParameter("@Description", consumable.Description),
+                new SqlParameter("@Price", consumable.Price),
+                new SqlParameter("@Category", consumable.Category),
+                new SqlParameter("@StockQuantity", consumable.StockQuantity),
+                new SqlParameter("@CreatedDate", consumable.CreatedDate),
+                new SqlParameter("@ModifiedDate", consumable.ModifiedDate)
+            };
+            _connectionManager.ExecuteNonQuery(query, parameters);
+        }
+
+        public void UpdateConsumable(int consumableId, string name, string description, decimal price, string category, int stockQuantity)
+        {
+            // Get the original creation date
+            DateTime createdDate = DateTime.Now; // Default value
+            string getCreatedDateQuery = "SELECT CreatedDate FROM tbConsumable WHERE ConsumableId = @ConsumableId";
+            SqlParameter param = new SqlParameter("@ConsumableId", consumableId);
+            DataTable result = _connectionManager.ExecuteQuery(getCreatedDateQuery, param);
+            if (result.Rows.Count > 0)
+            {
+                createdDate = Convert.ToDateTime(result.Rows[0]["CreatedDate"]);
+            }
+
+            // Factory Pattern: Use factory to create the updated consumable
+            ConsumableModel consumable = ConsumableFactory.CreateConsumable(
+                consumableId, name, description, price, category, stockQuantity, createdDate);
+
+            string query = "UPDATE tbConsumable SET Name = @Name, Description = @Description, Price = @Price, Category = @Category, " +
+                          "StockQuantity = @StockQuantity, ModifiedDate = @ModifiedDate WHERE ConsumableId = @ConsumableId";
+            SqlParameter[] parameters = {
+                new SqlParameter("@Name", consumable.Name),
+                new SqlParameter("@Description", consumable.Description),
+                new SqlParameter("@Price", consumable.Price),
+                new SqlParameter("@Category", consumable.Category),
+                new SqlParameter("@StockQuantity", consumable.StockQuantity),
+                new SqlParameter("@ModifiedDate", consumable.ModifiedDate),
+                new SqlParameter("@ConsumableId", consumable.ConsumableId)
+            };
+            _connectionManager.ExecuteNonQuery(query, parameters);
+        }
+
+        public void DeleteConsumable(int consumableId)
+        {
+            string query = "DELETE FROM tbConsumable WHERE ConsumableId = @ConsumableId";
+            SqlParameter[] parameters = {
+                new SqlParameter("@ConsumableId", consumableId)
+            };
+            _connectionManager.ExecuteNonQuery(query, parameters);
+        }
+    }
+
+    // Factory Pattern: Creates ConsumableModel objects
+    public static class ConsumableFactory
+    {
+        // Factory Method: Creates a new ConsumableModel for insertion
+        public static ConsumableModel CreateConsumable(string name, string description, decimal price, string category, int stockQuantity)
+        {
+            return new ConsumableModel
+            {
+                Name = name,
+                Description = description,
+                Price = price,
+                Category = category,
+                StockQuantity = stockQuantity,
+                CreatedDate = DateTime.Now,
+                ModifiedDate = DateTime.Now
+            };
+        }
+
+        // Factory Method: Creates a ConsumableModel with existing ID for update
+        public static ConsumableModel CreateConsumable(int consumableId, string name, string description, decimal price,
+                                                    string category, int stockQuantity, DateTime createdDate)
+        {
+            return new ConsumableModel
+            {
+                ConsumableId = consumableId,
+                Name = name,
+                Description = description,
+                Price = price,
+                Category = category,
+                StockQuantity = stockQuantity,
+                CreatedDate = createdDate,
+                ModifiedDate = DateTime.Now
+            };
         }
     }
 }

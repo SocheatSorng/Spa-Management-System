@@ -1,6 +1,6 @@
 ﻿namespace Spa_Management_System
 {
-    partial class User
+    partial class User : Form
     {
         /// <summary>
         /// Required designer variable.
@@ -162,7 +162,7 @@
             dgvUser.Size = new Size(450, 136);
             dgvUser.TabIndex = 53;
             // 
-            // Cashier
+            // User
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -181,8 +181,8 @@
             Controls.Add(btnUpdate);
             Controls.Add(btnInsert);
             Controls.Add(dgvUser);
-            Name = "Cashier";
-            Text = "Cashier";
+            Name = "User";
+            Text = "User Management";
             ((System.ComponentModel.ISupportInitialize)dgvUser).EndInit();
             ResumeLayout(false);
             PerformLayout();

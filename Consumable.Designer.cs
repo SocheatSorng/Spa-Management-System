@@ -1,6 +1,6 @@
 ﻿namespace Spa_Management_System
 {
-    partial class Consumable
+    partial class Consumable : Form
     {
         /// <summary>
         ///  Required designer variable.
