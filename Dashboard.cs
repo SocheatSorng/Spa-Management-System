@@ -4,6 +4,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using Bunifu.UI.WinForms;
 using Microsoft.Data.SqlClient;
 
 namespace Spa_Management_System
@@ -427,17 +428,9 @@ namespace Spa_Management_System
 
         private void UpdateOrderDisplay()
         {
-            // Clear current order items display
-            bunifuPanel9.Controls.Clear();
-
-            // Add back the fixed elements
-            bunifuPanel9.Controls.Add(bunifuLabel34);
-            bunifuPanel9.Controls.Add(bunifuLabel35);
-            bunifuPanel9.Controls.Add(bunifuLabel36);
-            bunifuPanel9.Controls.Add(bunifuLabel37);
-            bunifuPanel9.Controls.Add(bunifuLabel38);
-            bunifuPanel9.Controls.Add(bunifuLabel40);
-            bunifuPanel9.Controls.Add(bunifuSeparator1);
+            // Clear the order items container
+            panOrderDetailOuter.Controls.Clear();
+            panOrderDetailOuter.Controls.Add(scrollOrderDetail);
 
             if (_currentOrder == null || _currentOrderItems.Count == 0)
             {
@@ -447,73 +440,280 @@ namespace Spa_Management_System
                 bunifuLabel36.Text = "$0.00"; // Discount
                 bunifuLabel38.Text = "$0.00"; // Final Amount
                 btnCheckout.Enabled = false;
+                scrollOrderDetail.Visible = false;
                 return;
             }
 
-            // Update order header
+            // Update order header with order ID
             bunifuLabel27.Text = "Current Order #" + _currentOrder.OrderId;
 
-            // Update order items - this would need custom implementation since we need to create controls dynamically
-            // Here we update the sample items already in the right panel
-            if (_currentOrderItems.Count > 0 && _currentOrderItems.Count <= 3)
+            // Group identical items by combining ItemType, ItemId
+            var groupedItems = _currentOrderItems
+                .GroupBy(item => new { item.ItemType, item.ItemId })
+                .Select(group => new
+                {
+                    ItemType = group.First().ItemType,
+                    ItemId = group.First().ItemId,
+                    ItemName = group.First().ItemName,
+                    UnitPrice = group.First().UnitPrice,
+                    Quantity = group.Sum(i => i.Quantity),
+                    TotalPrice = group.Sum(i => i.TotalPrice),
+                    OrderItemIds = group.Select(i => i.OrderItemId).ToList()
+                })
+                .ToList();
+
+            // Dynamically create order item panels
+            int yPos = 0;
+            int itemHeight = 93; // Height from your panOrderDetailInner
+            int panelWidth = panOrderDetailInner.Width;
+
+            foreach (var item in groupedItems)
             {
-                // We have predefined item displays in the UI for up to 3 items
-                if (_currentOrderItems.Count >= 1)
-                {
-                    bunifuLabel28.Text = _currentOrderItems[0].ItemName;
-                    bunifuLabel29.Text = "$" + _currentOrderItems[0].TotalPrice.ToString("0.00");
-                    bunifuPictureBox3.Visible = true;
-                    bunifuLabel28.Visible = true;
-                    bunifuLabel29.Visible = true;
-                }
+                // Clone the panOrderDetailInner panel for this item
+                Bunifu.UI.WinForms.BunifuPanel itemPanel = new Bunifu.UI.WinForms.BunifuPanel();
+                itemPanel.Size = new System.Drawing.Size(panelWidth, itemHeight);
+                itemPanel.Location = new System.Drawing.Point(3, yPos);
+                itemPanel.BackgroundColor = Color.Transparent;
+                itemPanel.BorderColor = Color.Transparent;
+                itemPanel.BorderRadius = 3;
+                itemPanel.BorderThickness = 1;
+                itemPanel.ShowBorders = true;
 
-                if (_currentOrderItems.Count >= 2)
-                {
-                    bunifuLabel31.Text = _currentOrderItems[1].ItemName;
-                    txtItemAmount.Text = "$" + _currentOrderItems[1].TotalPrice.ToString("0.00");
-                    bunifuPictureBox4.Visible = true;
-                    bunifuLabel31.Visible = true;
-                    txtItemAmount.Visible = true;
-                }
+                // Create image
+                Bunifu.UI.WinForms.BunifuPictureBox itemImage = new Bunifu.UI.WinForms.BunifuPictureBox();
+                itemImage.Size = new Size(60, 60);
+                itemImage.Location = new Point(10, 15);
+                itemImage.BorderRadius = 10;
+                itemImage.BackColor = Color.LightBlue;
 
-                if (_currentOrderItems.Count >= 3)
+                // Create name label
+                Bunifu.UI.WinForms.BunifuLabel nameLabel = new Bunifu.UI.WinForms.BunifuLabel();
+                nameLabel.Text = "Service / Consumable's Name";
+                nameLabel.AutoSize = false;
+                nameLabel.Size = bunifuLabel28.Size;
+                nameLabel.Location = bunifuLabel28.Location;
+                nameLabel.Font = bunifuLabel28.Font;
+                nameLabel.Text = item.ItemName;
+
+                // Create price label
+                Bunifu.UI.WinForms.BunifuLabel priceLabel = new Bunifu.UI.WinForms.BunifuLabel();
+                priceLabel.Size = bunifuLabel29.Size;
+                priceLabel.Location = bunifuLabel29.Location;
+                priceLabel.Font = bunifuLabel29.Font;
+                priceLabel.ForeColor = Color.DarkGoldenrod;
+                priceLabel.Text = "$" + item.UnitPrice.ToString("0.00");
+
+                // Clone the quantity label
+                Bunifu.UI.WinForms.BunifuLabel qtyLabel = new Bunifu.UI.WinForms.BunifuLabel();
+                qtyLabel.Size = txtItemAmount.Size;
+                qtyLabel.Location = txtItemAmount.Location;
+                qtyLabel.Font = txtItemAmount.Font;
+                qtyLabel.TextFormat = txtItemAmount.TextFormat;
+                qtyLabel.Text = item.Quantity.ToString();
+
+                // Clone the plus button
+                Bunifu.UI.WinForms.BunifuButton.BunifuIconButton plusBtn = new Bunifu.UI.WinForms.BunifuButton.BunifuIconButton();
+                plusBtn.Size = btnPlusItem.Size;
+                plusBtn.Location = btnPlusItem.Location;
+                plusBtn.BackgroundColor = btnPlusItem.BackgroundColor;
+                plusBtn.BorderColor = btnPlusItem.BorderColor;
+                plusBtn.BorderRadius = btnPlusItem.BorderRadius;
+                plusBtn.BorderThickness = btnPlusItem.BorderThickness;
+                plusBtn.RoundBorders = true;
+                plusBtn.Image = btnPlusItem.Image;
+                plusBtn.Tag = item; // Store the item information
+                plusBtn.Click += (sender, e) => IncreaseItemQuantity((dynamic)((Control)sender).Tag);
+
+                // Clone the minus button
+                Bunifu.UI.WinForms.BunifuButton.BunifuIconButton minusBtn = new Bunifu.UI.WinForms.BunifuButton.BunifuIconButton();
+                minusBtn.Size = btnMinusItem.Size;
+                minusBtn.Location = btnMinusItem.Location;
+                minusBtn.BackgroundColor = btnMinusItem.BackgroundColor;
+                minusBtn.BorderColor = btnMinusItem.BorderColor;
+                minusBtn.BorderRadius = btnMinusItem.BorderRadius;
+                minusBtn.BorderThickness = btnMinusItem.BorderThickness;
+                minusBtn.RoundBorders = true;
+                minusBtn.Image = btnMinusItem.Image;
+                minusBtn.Tag = item; // Store the item information
+                minusBtn.Click += (sender, e) => DecreaseItemQuantity((dynamic)((Control)sender).Tag);
+
+                // Add all controls to the panel
+                itemPanel.Controls.Add(itemImage);
+                itemPanel.Controls.Add(nameLabel);
+                itemPanel.Controls.Add(priceLabel);
+                itemPanel.Controls.Add(qtyLabel);
+                itemPanel.Controls.Add(plusBtn);
+                itemPanel.Controls.Add(minusBtn);
+
+                // Add the panel to the container
+                panOrderDetailOuter.Controls.Add(itemPanel);
+
+                // Update Y position for next item
+                yPos += itemHeight + 5;
+            }
+
+            // Configure scrollbar if needed
+            if (groupedItems.Count > 0)
+            {
+                int contentHeight = yPos;
+                int visibleHeight = panOrderDetailOuter.Height;
+
+                scrollOrderDetail.Minimum = 0;
+
+                if (contentHeight > visibleHeight)
                 {
-                    bunifuLabel33.Text = _currentOrderItems[2].ItemName;
-                    bunifuLabel32.Text = "$" + _currentOrderItems[2].TotalPrice.ToString("0.00");
-                    bunifuPictureBox5.Visible = true;
-                    bunifuLabel33.Visible = true;
-                    bunifuLabel32.Visible = true;
+                    scrollOrderDetail.Maximum = contentHeight;
+                    scrollOrderDetail.Value = 0;
+                    scrollOrderDetail.Visible = true;
+
+                    // Make sure scroll control is on top
+                    scrollOrderDetail.BringToFront();
+                }
+                else
+                {
+                    scrollOrderDetail.Visible = false;
                 }
             }
-            else if (_currentOrderItems.Count > 3)
+            else
             {
-                // If more than 3 items, show the first 2 and a summary of the rest
-                bunifuLabel28.Text = _currentOrderItems[0].ItemName;
-                bunifuLabel29.Text = "$" + _currentOrderItems[0].TotalPrice.ToString("0.00");
-                bunifuPictureBox3.Visible = true;
-                bunifuLabel28.Visible = true;
-                bunifuLabel29.Visible = true;
-
-                bunifuLabel31.Text = _currentOrderItems[1].ItemName;
-                txtItemAmount.Text = "$" + _currentOrderItems[1].TotalPrice.ToString("0.00");
-                bunifuPictureBox4.Visible = true;
-                bunifuLabel31.Visible = true;
-                txtItemAmount.Visible = true;
-
-                bunifuLabel33.Text = $"+ {_currentOrderItems.Count - 2} more items";
-                bunifuLabel32.Text = "";
-                bunifuPictureBox5.Visible = true;
-                bunifuLabel33.Visible = true;
-                bunifuLabel32.Visible = false;
+                scrollOrderDetail.Visible = false;
             }
 
             // Update order totals
             bunifuLabel35.Text = "$" + _currentOrder.TotalAmount.ToString("0.00"); // Subtotal
-            bunifuLabel36.Text = "$" + _currentOrder.Discount.ToString("0.00"); // Discount
-            bunifuLabel38.Text = "$" + _currentOrder.FinalAmount.ToString("0.00"); // Final amount
+            bunifuLabel36.Text = "$" + _currentOrder.Discount.ToString("0.00");     // Discount
+            bunifuLabel38.Text = "$" + _currentOrder.FinalAmount.ToString("0.00");  // Final amount
 
             // Enable checkout button
             btnCheckout.Enabled = true;
+        }
+        
+        // Modified to handle the grouped items
+        private void IncreaseItemQuantity(dynamic itemInfo)
+        {
+            try
+            {
+                // Get the first order item ID from the group
+                int orderItemId = itemInfo.OrderItemIds[0];
+
+                // Execute stored procedure to add 1 to quantity
+                string query = @"
+            UPDATE tbOrderItem
+            SET Quantity = Quantity + 1,
+                TotalPrice = UnitPrice * (Quantity + 1)
+            WHERE OrderItemId = @OrderItemId;
+            
+            -- Update order totals
+            DECLARE @OrderId INT;
+            SELECT @OrderId = OrderId FROM tbOrderItem WHERE OrderItemId = @OrderItemId;
+            
+            UPDATE tbOrder
+            SET TotalAmount = (SELECT SUM(TotalPrice) FROM tbOrderItem WHERE OrderId = @OrderId),
+                FinalAmount = (SELECT SUM(TotalPrice) FROM tbOrderItem WHERE OrderId = @OrderId) - Discount
+            WHERE OrderId = @OrderId;";
+
+                SqlParameter param = new SqlParameter("@OrderItemId", orderItemId);
+                _connectionManager.ExecuteNonQuery(query, param);
+
+                // Refresh order data
+                if (_currentOrder != null)
+                {
+                    _currentOrderItems = GetOrderItems(_currentOrder.OrderId);
+                    _currentOrder = GetActiveOrderForCustomer(_currentOrder.CustomerId);
+                    UpdateOrderDisplay();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error updating item quantity: " + ex.Message);
+            }
+        }
+        // Modified to handle the grouped items
+        private void DecreaseItemQuantity(dynamic itemInfo)
+        {
+            try
+            {
+                // Get the first order item ID from the group
+                int orderItemId = itemInfo.OrderItemIds[0];
+                int currentQuantity = itemInfo.Quantity;
+
+                if (currentQuantity <= 1)
+                {
+                    // Ask for confirmation before removing item
+                    DialogResult result = MessageBox.Show(
+                        "Remove this item from the order?",
+                        "Confirm Removal",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        // Remove the order item
+                        string deleteQuery = @"
+                    DECLARE @OrderId INT;
+                    SELECT @OrderId = OrderId FROM tbOrderItem WHERE OrderItemId = @OrderItemId;
+                    
+                    DELETE FROM tbOrderItem WHERE OrderItemId = @OrderItemId;
+                    
+                    UPDATE tbOrder
+                    SET TotalAmount = (SELECT SUM(TotalPrice) FROM tbOrderItem WHERE OrderId = @OrderId),
+                        FinalAmount = (SELECT SUM(TotalPrice) FROM tbOrderItem WHERE OrderId = @OrderId) - Discount
+                    WHERE OrderId = @OrderId;";
+
+                        SqlParameter param = new SqlParameter("@OrderItemId", orderItemId);
+                        _connectionManager.ExecuteNonQuery(deleteQuery, param);
+                    }
+                    else
+                    {
+                        return; // Cancel if user says no
+                    }
+                }
+                else
+                {
+                    // Decrease quantity by 1
+                    string updateQuery = @"
+                UPDATE tbOrderItem
+                SET Quantity = Quantity - 1,
+                    TotalPrice = UnitPrice * (Quantity - 1)
+                WHERE OrderItemId = @OrderItemId;
+                
+                -- Update order totals
+                DECLARE @OrderId INT;
+                SELECT @OrderId = OrderId FROM tbOrderItem WHERE OrderItemId = @OrderItemId;
+                
+                UPDATE tbOrder
+                SET TotalAmount = (SELECT SUM(TotalPrice) FROM tbOrderItem WHERE OrderId = @OrderId),
+                    FinalAmount = (SELECT SUM(TotalPrice) FROM tbOrderItem WHERE OrderId = @OrderId) - Discount
+                WHERE OrderId = @OrderId;";
+
+                    SqlParameter param = new SqlParameter("@OrderItemId", orderItemId);
+                    _connectionManager.ExecuteNonQuery(updateQuery, param);
+                }
+
+                // Refresh order data
+                if (_currentOrder != null)
+                {
+                    _currentOrderItems = GetOrderItems(_currentOrder.OrderId);
+                    _currentOrder = GetActiveOrderForCustomer(_currentOrder.CustomerId);
+                    UpdateOrderDisplay();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error updating item quantity: " + ex.Message);
+            }
+        }
+        private void ClearCurrentOrder()
+        {
+            _currentCustomer = null;
+            _currentOrder = null;
+            _currentOrderItems = new List<OrderItemModel>();
+
+            // Clear and hide the order panel items
+            panOrderDetailOuter.Controls.Clear();
+            scrollOrderDetail.Visible = false;
+
+            UpdateOrderDisplay();
         }
 
         private void FilterItems(string searchText)
@@ -637,28 +837,6 @@ namespace Spa_Management_System
                 panel.Click += ConsumablePanel_Click;
                 panelIndex++;
             }
-        }
-
-        private void ClearCurrentOrder()
-        {
-            _currentCustomer = null;
-            _currentOrder = null;
-            _currentOrderItems = new List<OrderItemModel>();
-
-            // Hide all order item displays
-            bunifuPictureBox3.Visible = false;
-            bunifuLabel28.Visible = false;
-            bunifuLabel29.Visible = false;
-
-            bunifuPictureBox4.Visible = false;
-            bunifuLabel31.Visible = false;
-            txtItemAmount.Visible = false;
-
-            bunifuPictureBox5.Visible = false;
-            bunifuLabel33.Visible = false;
-            bunifuLabel32.Visible = false;
-
-            UpdateOrderDisplay();
         }
 
         #endregion
@@ -786,6 +964,7 @@ namespace Spa_Management_System
             }
         }
 
+        // Modify your AddServiceToOrder method to check for existing items
         private void AddServiceToOrder(ServiceModel service)
         {
             if (_currentOrder == null)
@@ -796,46 +975,36 @@ namespace Spa_Management_System
 
             try
             {
-                // Add service to order
+                // Check if this service already exists in the order
+                var existingItem = _currentOrderItems.FirstOrDefault(
+                    item => item.ItemType == "Service" && item.ItemId == service.ServiceId);
+
+                if (existingItem != null)
+                {
+                    // Service already in order, increase quantity by 1
+                    IncreaseItemQuantity(new
+                    {
+                        OrderItemIds = new List<int> { existingItem.OrderItemId },
+                        Quantity = existingItem.Quantity
+                    });
+                    return;
+                }
+
+                // Add new service to order
                 string query = "EXEC sp_AddOrderItem @OrderId, @ItemType, @ItemId, @Quantity";
                 SqlParameter[] parameters = {
-                    new SqlParameter("@OrderId", _currentOrder.OrderId),
-                    new SqlParameter("@ItemType", "Service"),
-                    new SqlParameter("@ItemId", service.ServiceId),
-                    new SqlParameter("@Quantity", 1)
-                };
+            new SqlParameter("@OrderId", _currentOrder.OrderId),
+            new SqlParameter("@ItemType", "Service"),
+            new SqlParameter("@ItemId", service.ServiceId),
+            new SqlParameter("@Quantity", 1)
+        };
 
-                DataTable result = _connectionManager.ExecuteQuery(query, parameters);
-                if (result.Rows.Count > 0)
-                {
-                    // Get updated order details
-                    string orderQuery = "SELECT * FROM tbOrder WHERE OrderId = @OrderId";
-                    SqlParameter orderParam = new SqlParameter("@OrderId", _currentOrder.OrderId);
-                    DataTable orderResult = _connectionManager.ExecuteQuery(orderQuery, orderParam);
+                _connectionManager.ExecuteNonQuery(query, parameters);
 
-                    if (orderResult.Rows.Count > 0)
-                    {
-                        DataRow row = orderResult.Rows[0];
-                        _currentOrder.TotalAmount = Convert.ToDecimal(row["TotalAmount"]);
-                        _currentOrder.Discount = Convert.ToDecimal(row["Discount"]);
-                        _currentOrder.FinalAmount = Convert.ToDecimal(row["FinalAmount"]);
-                    }
-
-                    // Add to current order items
-                    OrderItemModel newItem = new OrderItemModel
-                    {
-                        OrderId = _currentOrder.OrderId,
-                        ItemType = "Service",
-                        ItemId = service.ServiceId,
-                        ItemName = service.ServiceName,
-                        Quantity = 1,
-                        UnitPrice = service.Price,
-                        TotalPrice = service.Price
-                    };
-
-                    _currentOrderItems.Add(newItem);
-                    UpdateOrderDisplay();
-                }
+                // Refresh order data
+                _currentOrderItems = GetOrderItems(_currentOrder.OrderId);
+                _currentOrder = GetActiveOrderForCustomer(_currentOrder.CustomerId);
+                UpdateOrderDisplay();
             }
             catch (Exception ex)
             {
@@ -843,6 +1012,7 @@ namespace Spa_Management_System
             }
         }
 
+        // Similarly modify AddConsumableToOrder to check for existing items
         private void AddConsumableToOrder(ConsumableModel consumable)
         {
             if (_currentOrder == null)
@@ -853,53 +1023,36 @@ namespace Spa_Management_System
 
             try
             {
-                // Add consumable to order
+                // Check if this consumable already exists in the order
+                var existingItem = _currentOrderItems.FirstOrDefault(
+                    item => item.ItemType == "Consumable" && item.ItemId == consumable.ConsumableId);
+
+                if (existingItem != null)
+                {
+                    // Consumable already in order, increase quantity by 1
+                    IncreaseItemQuantity(new
+                    {
+                        OrderItemIds = new List<int> { existingItem.OrderItemId },
+                        Quantity = existingItem.Quantity
+                    });
+                    return;
+                }
+
+                // Add new consumable to order
                 string query = "EXEC sp_AddOrderItem @OrderId, @ItemType, @ItemId, @Quantity";
                 SqlParameter[] parameters = {
-                    new SqlParameter("@OrderId", _currentOrder.OrderId),
-                    new SqlParameter("@ItemType", "Consumable"),
-                    new SqlParameter("@ItemId", consumable.ConsumableId),
-                    new SqlParameter("@Quantity", 1)
-                };
+            new SqlParameter("@OrderId", _currentOrder.OrderId),
+            new SqlParameter("@ItemType", "Consumable"),
+            new SqlParameter("@ItemId", consumable.ConsumableId),
+            new SqlParameter("@Quantity", 1)
+        };
 
-                DataTable result = _connectionManager.ExecuteQuery(query, parameters);
-                if (result.Rows.Count > 0)
-                {
-                    // Get updated order details
-                    string orderQuery = "SELECT * FROM tbOrder WHERE OrderId = @OrderId";
-                    SqlParameter orderParam = new SqlParameter("@OrderId", _currentOrder.OrderId);
-                    DataTable orderResult = _connectionManager.ExecuteQuery(orderQuery, orderParam);
+                _connectionManager.ExecuteNonQuery(query, parameters);
 
-                    if (orderResult.Rows.Count > 0)
-                    {
-                        DataRow row = orderResult.Rows[0];
-                        _currentOrder.TotalAmount = Convert.ToDecimal(row["TotalAmount"]);
-                        _currentOrder.Discount = Convert.ToDecimal(row["Discount"]);
-                        _currentOrder.FinalAmount = Convert.ToDecimal(row["FinalAmount"]);
-                    }
-
-                    // Add to current order items
-                    OrderItemModel newItem = new OrderItemModel
-                    {
-                        OrderId = _currentOrder.OrderId,
-                        ItemType = "Consumable",
-                        ItemId = consumable.ConsumableId,
-                        ItemName = consumable.Name,
-                        Quantity = 1,
-                        UnitPrice = consumable.Price,
-                        TotalPrice = consumable.Price
-                    };
-
-                    _currentOrderItems.Add(newItem);
-                    UpdateOrderDisplay();
-
-                    // Refresh consumables if current category
-                    if (_currentCategory != "Services")
-                    {
-                        LoadConsumables();
-                        ShowConsumables(_currentCategory);
-                    }
-                }
+                // Refresh order data
+                _currentOrderItems = GetOrderItems(_currentOrder.OrderId);
+                _currentOrder = GetActiveOrderForCustomer(_currentOrder.CustomerId);
+                UpdateOrderDisplay();
             }
             catch (Exception ex)
             {
@@ -987,6 +1140,12 @@ namespace Spa_Management_System
 
                 UpdateOrderDisplay();
             }
+        }
+
+        private void scrollOrderDetail_Scroll(object sender, Bunifu.UI.WinForms.BunifuVScrollBar.ScrollEventArgs e)
+        {
+            // Bunifu scrollbars provide the Value directly in the event args
+            panOrderDetailOuter.AutoScrollPosition = new Point(0, e.Value);
         }
     }
 
