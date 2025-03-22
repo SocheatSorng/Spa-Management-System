@@ -247,7 +247,7 @@ namespace Spa_Management_System
             btnFilter.Click += (s, e) => { /* Open filter options */ };
 
             // Exit button
-            bunifuIconButton1.Click += bunifuIconButton1_Click;
+            //bunifuIconButton1.Click += bunifuIconButton1_Click;
         }
 
         private void TxtCustomerID_KeyDown(object sender, KeyEventArgs e)
@@ -906,14 +906,35 @@ namespace Spa_Management_System
         {
             try
             {
-                // Open payment form or process payment directly
+                // First, display the invoice details to the user
+                string query = "SELECT i.InvoiceId, i.TotalAmount, c.CardId, o.CustomerId " +
+                              "FROM tbInvoice i " +
+                              "JOIN tbOrder o ON i.OrderId = o.OrderId " +
+                              "JOIN tbCustomer c ON o.CustomerId = c.CustomerId " +
+                              "WHERE i.InvoiceId = @InvoiceId";
 
-                // For now, use direct processing with default values
-                int userId = 1; // Default user ID
-                string paymentMethod = "Cash";
+                SqlParameter param = new SqlParameter("@InvoiceId", invoiceId);
+                DataTable invoiceResult = _connectionManager.ExecuteQuery(query, param);
 
-                string query = "EXEC sp_ProcessPayment @InvoiceId, @PaymentMethod, @TransactionReference, @UserId, @Notes";
-                SqlParameter[] parameters = {
+                if (invoiceResult.Rows.Count > 0)
+                {
+                    decimal totalAmount = Convert.ToDecimal(invoiceResult.Rows[0]["TotalAmount"]);
+
+                    // Show payment confirmation dialog
+                    DialogResult result = MessageBox.Show(
+                        $"Total amount to pay: ${totalAmount}\nConfirm payment?",
+                        "Payment Confirmation",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        // Only process payment after confirmation
+                        int userId = 1; // Default user ID
+                        string paymentMethod = "Cash";
+
+                        string paymentQuery = "EXEC sp_ProcessPayment @InvoiceId, @PaymentMethod, @TransactionReference, @UserId, @Notes";
+                        SqlParameter[] parameters = {
                     new SqlParameter("@InvoiceId", invoiceId),
                     new SqlParameter("@PaymentMethod", paymentMethod),
                     new SqlParameter("@TransactionReference", DBNull.Value),
@@ -921,11 +942,18 @@ namespace Spa_Management_System
                     new SqlParameter("@Notes", "Payment processed from Dashboard")
                 };
 
-                DataTable result = _connectionManager.ExecuteQuery(query, parameters);
-                if (result.Rows.Count > 0)
-                {
-                    MessageBox.Show("Payment processed successfully. Card has been released.");
-                    ClearCurrentOrder();
+                        DataTable paymentResult = _connectionManager.ExecuteQuery(paymentQuery, parameters);
+                        if (paymentResult.Rows.Count > 0)
+                        {
+                            MessageBox.Show("Payment processed successfully. Card has been released.");
+                            ClearCurrentOrder();
+                        }
+                    }
+                    else
+                    {
+                        // Cancel payment process - the order remains active
+                        MessageBox.Show("Payment cancelled. The order remains active.");
+                    }
                 }
             }
             catch (Exception ex)

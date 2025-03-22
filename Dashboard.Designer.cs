@@ -1180,7 +1180,7 @@
             bunifuLabel28.Text = "Service / Consumable's Name";
             bunifuLabel28.TextAlignment = ContentAlignment.TopLeft;
             bunifuLabel28.TextFormat = Bunifu.UI.WinForms.BunifuLabel.TextFormattingOptions.Default;
-            bunifuLabel28.Click += bunifuLabel28_Click;
+            //bunifuLabel28.Click += bunifuLabel28_Click;
             // 
             // bunifuPictureBox3
             // 
@@ -1330,7 +1330,7 @@
             bunifuIconButton1.Size = new Size(26, 26);
             bunifuIconButton1.Style = Bunifu.UI.WinForms.BunifuButton.BunifuIconButton.ButtonStyles.Round;
             bunifuIconButton1.TabIndex = 0;
-            bunifuIconButton1.Click += bunifuIconButton1_Click;
+            //bunifuIconButton1.Click += bunifuIconButton1_Click;
             // 
             // bunifuLabel1
             // 
