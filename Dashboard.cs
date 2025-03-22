@@ -247,7 +247,12 @@ namespace Spa_Management_System
             btnFilter.Click += (s, e) => { /* Open filter options */ };
 
             // Exit button
-            //bunifuIconButton1.Click += bunifuIconButton1_Click;
+            btnExitProgram.Click += btnExitProgram_Clicked;
+        }
+
+        private void btnExitProgram_Clicked(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
 
         private void TxtCustomerID_KeyDown(object sender, KeyEventArgs e)
@@ -465,10 +470,10 @@ namespace Spa_Management_System
                 if (_currentOrderItems.Count >= 2)
                 {
                     bunifuLabel31.Text = _currentOrderItems[1].ItemName;
-                    bunifuLabel30.Text = "$" + _currentOrderItems[1].TotalPrice.ToString("0.00");
+                    txtItemAmount.Text = "$" + _currentOrderItems[1].TotalPrice.ToString("0.00");
                     bunifuPictureBox4.Visible = true;
                     bunifuLabel31.Visible = true;
-                    bunifuLabel30.Visible = true;
+                    txtItemAmount.Visible = true;
                 }
 
                 if (_currentOrderItems.Count >= 3)
@@ -490,10 +495,10 @@ namespace Spa_Management_System
                 bunifuLabel29.Visible = true;
 
                 bunifuLabel31.Text = _currentOrderItems[1].ItemName;
-                bunifuLabel30.Text = "$" + _currentOrderItems[1].TotalPrice.ToString("0.00");
+                txtItemAmount.Text = "$" + _currentOrderItems[1].TotalPrice.ToString("0.00");
                 bunifuPictureBox4.Visible = true;
                 bunifuLabel31.Visible = true;
-                bunifuLabel30.Visible = true;
+                txtItemAmount.Visible = true;
 
                 bunifuLabel33.Text = $"+ {_currentOrderItems.Count - 2} more items";
                 bunifuLabel32.Text = "";
@@ -647,7 +652,7 @@ namespace Spa_Management_System
 
             bunifuPictureBox4.Visible = false;
             bunifuLabel31.Visible = false;
-            bunifuLabel30.Visible = false;
+            txtItemAmount.Visible = false;
 
             bunifuPictureBox5.Visible = false;
             bunifuLabel33.Visible = false;
