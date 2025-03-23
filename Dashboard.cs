@@ -29,6 +29,9 @@ namespace Spa_Management_System
         public Dashboard()
         {
             InitializeComponent();
+            // Enable the built-in vertical scrollbar of panOrderDetailOuter
+            panOrderDetailOuter.AutoScroll = true;
+
 
             // Initialize connection and data
             _connectionManager = SqlConnectionManager.Instance;
@@ -430,7 +433,6 @@ namespace Spa_Management_System
         {
             // Clear the order items container
             panOrderDetailOuter.Controls.Clear();
-            panOrderDetailOuter.Controls.Add(scrollOrderDetail);
 
             if (_currentOrder == null || _currentOrderItems.Count == 0)
             {
@@ -440,7 +442,6 @@ namespace Spa_Management_System
                 bunifuLabel36.Text = "$0.00"; // Discount
                 bunifuLabel38.Text = "$0.00"; // Final Amount
                 btnCheckout.Enabled = false;
-                scrollOrderDetail.Visible = false;
                 return;
             }
 
@@ -558,25 +559,15 @@ namespace Spa_Management_System
                 int contentHeight = yPos;
                 int visibleHeight = panOrderDetailOuter.Height;
 
-                scrollOrderDetail.Minimum = 0;
-
                 if (contentHeight > visibleHeight)
                 {
-                    scrollOrderDetail.Maximum = contentHeight;
-                    scrollOrderDetail.Value = 0;
-                    scrollOrderDetail.Visible = true;
-
-                    // Make sure scroll control is on top
-                    scrollOrderDetail.BringToFront();
                 }
                 else
                 {
-                    scrollOrderDetail.Visible = false;
                 }
             }
             else
             {
-                scrollOrderDetail.Visible = false;
             }
 
             // Update order totals
@@ -711,7 +702,6 @@ namespace Spa_Management_System
 
             // Clear and hide the order panel items
             panOrderDetailOuter.Controls.Clear();
-            scrollOrderDetail.Visible = false;
 
             UpdateOrderDisplay();
         }
@@ -843,6 +833,36 @@ namespace Spa_Management_System
 
         #region Business Logic Methods
 
+        private void UpdateCardStatus()
+        {
+            if (_currentCustomer != null)
+            {
+                bool hasUnpaidOrders = CheckForUnpaidOrders(_currentCustomer.CustomerId);
+                txtCardStatus.Text = hasUnpaidOrders ? "Active" : "Available";
+            }
+            else
+            {
+                txtCardStatus.Text = "Available";
+            }
+        }
+
+        private bool CheckForUnpaidOrders(int customerId)
+        {
+            try
+            {
+                string query = "SELECT COUNT(*) FROM tbOrder WHERE CustomerId = @CustomerId AND Status = 'Active'";
+                SqlParameter param = new SqlParameter("@CustomerId", customerId);
+                int activeOrderCount = (int)_connectionManager.ExecuteScalar(query, param);
+
+                return activeOrderCount > 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error checking for unpaid orders: " + ex.Message);
+                return false;
+            }
+        }
+
         private void ProcessCardId(string cardId)
         {
             // Check if card is valid and in use
@@ -880,6 +900,9 @@ namespace Spa_Management_System
                     IssueCardToCustomer(cardId);
                 }
             }
+
+            // Update card status after processing card ID
+            UpdateCardStatus();
         }
 
         private void IssueCardToCustomer(string cardId)
@@ -1119,7 +1142,7 @@ namespace Spa_Management_System
                 MessageBox.Show("Error processing payment: " + ex.Message);
             }
         }
-
+        
         #endregion
 
         // Implement IOrderObserver interface
@@ -1140,12 +1163,6 @@ namespace Spa_Management_System
 
                 UpdateOrderDisplay();
             }
-        }
-
-        private void scrollOrderDetail_Scroll(object sender, Bunifu.UI.WinForms.BunifuVScrollBar.ScrollEventArgs e)
-        {
-            // Bunifu scrollbars provide the Value directly in the event args
-            panOrderDetailOuter.AutoScrollPosition = new Point(0, e.Value);
         }
     }
 

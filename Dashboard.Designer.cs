@@ -71,7 +71,6 @@
             txtItemAmount = new Bunifu.UI.WinForms.BunifuLabel();
             btnPlusItem = new Bunifu.UI.WinForms.BunifuButton.BunifuIconButton();
             bunifuLabel29 = new Bunifu.UI.WinForms.BunifuLabel();
-            scrollOrderDetail = new Bunifu.UI.WinForms.BunifuVScrollBar();
             txtCardStatus = new Bunifu.UI.WinForms.BunifuLabel();
             txtCustomerID = new Bunifu.UI.WinForms.BunifuTextBox();
             btnCheckout = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
@@ -819,10 +818,10 @@
             bunifuPanel2.Controls.Add(bunifuLabel27);
             bunifuPanel2.Controls.Add(btnExitProgram);
             bunifuPanel2.Dock = DockStyle.Right;
-            bunifuPanel2.Location = new Point(1120, 0);
+            bunifuPanel2.Location = new Point(1105, 0);
             bunifuPanel2.Name = "bunifuPanel2";
             bunifuPanel2.ShowBorders = true;
-            bunifuPanel2.Size = new Size(266, 788);
+            bunifuPanel2.Size = new Size(281, 788);
             bunifuPanel2.TabIndex = 1;
             // 
             // panOrderDetailOuter
@@ -834,7 +833,6 @@
             panOrderDetailOuter.BorderRadius = 3;
             panOrderDetailOuter.BorderThickness = 1;
             panOrderDetailOuter.Controls.Add(panOrderDetailInner);
-            panOrderDetailOuter.Controls.Add(scrollOrderDetail);
             panOrderDetailOuter.Location = new Point(16, 164);
             panOrderDetailOuter.Name = "panOrderDetailOuter";
             panOrderDetailOuter.ShowBorders = true;
@@ -986,46 +984,6 @@
             bunifuLabel29.Text = "$Price";
             bunifuLabel29.TextAlignment = ContentAlignment.TopLeft;
             bunifuLabel29.TextFormat = Bunifu.UI.WinForms.BunifuLabel.TextFormattingOptions.Default;
-            // 
-            // scrollOrderDetail
-            // 
-            scrollOrderDetail.AllowCursorChanges = true;
-            scrollOrderDetail.AllowHomeEndKeysDetection = false;
-            scrollOrderDetail.AllowIncrementalClickMoves = true;
-            scrollOrderDetail.AllowMouseDownEffects = true;
-            scrollOrderDetail.AllowMouseHoverEffects = true;
-            scrollOrderDetail.AllowScrollingAnimations = true;
-            scrollOrderDetail.AllowScrollKeysDetection = true;
-            scrollOrderDetail.AllowScrollOptionsMenu = true;
-            scrollOrderDetail.AllowShrinkingOnFocusLost = false;
-            scrollOrderDetail.BackgroundColor = Color.Silver;
-            scrollOrderDetail.BackgroundImage = (Image)resources.GetObject("scrollOrderDetail.BackgroundImage");
-            scrollOrderDetail.BindingContainer = null;
-            scrollOrderDetail.BorderColor = Color.Silver;
-            scrollOrderDetail.BorderRadius = 14;
-            scrollOrderDetail.BorderThickness = 1;
-            scrollOrderDetail.DurationBeforeShrink = 2000;
-            scrollOrderDetail.LargeChange = 10;
-            scrollOrderDetail.Location = new Point(221, 3);
-            scrollOrderDetail.Maximum = 100;
-            scrollOrderDetail.Minimum = 0;
-            scrollOrderDetail.MinimumThumbLength = 18;
-            scrollOrderDetail.Name = "scrollOrderDetail";
-            scrollOrderDetail.OnDisable.ScrollBarBorderColor = Color.Silver;
-            scrollOrderDetail.OnDisable.ScrollBarColor = Color.Transparent;
-            scrollOrderDetail.OnDisable.ThumbColor = Color.Silver;
-            scrollOrderDetail.ScrollBarBorderColor = Color.Silver;
-            scrollOrderDetail.ScrollBarColor = Color.Silver;
-            scrollOrderDetail.ShrinkSizeLimit = 3;
-            scrollOrderDetail.Size = new Size(14, 299);
-            scrollOrderDetail.SmallChange = 1;
-            scrollOrderDetail.TabIndex = 25;
-            scrollOrderDetail.ThumbColor = Color.Gray;
-            scrollOrderDetail.ThumbLength = 29;
-            scrollOrderDetail.ThumbMargin = 1;
-            scrollOrderDetail.ThumbStyle = Bunifu.UI.WinForms.BunifuVScrollBar.ThumbStyles.Inset;
-            scrollOrderDetail.Value = 0;
-            scrollOrderDetail.Scroll += scrollOrderDetail_Scroll;
             // 
             // txtCardStatus
             // 
@@ -2541,7 +2499,6 @@
         private Bunifu.UI.WinForms.BunifuButton.BunifuIconButton btnMinusItem;
         private Bunifu.UI.WinForms.BunifuButton.BunifuIconButton btnPlusItem;
         private Bunifu.UI.WinForms.BunifuLabel txtItemAmount;
-        private Bunifu.UI.WinForms.BunifuVScrollBar scrollOrderDetail;
         private Bunifu.UI.WinForms.BunifuPanel panOrderDetailOuter;
         private Bunifu.UI.WinForms.BunifuPanel panOrderDetailInner;
     }
