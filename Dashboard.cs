@@ -29,9 +29,12 @@ namespace Spa_Management_System
         public Dashboard()
         {
             InitializeComponent();
+
+            // Hide fixed panels
+            bunifuPanel3.Visible = false;
+           
             // Enable the built-in vertical scrollbar of panOrderDetailOuter
             panOrderDetailOuter.AutoScroll = true;
-
 
             // Initialize connection and data
             _connectionManager = SqlConnectionManager.Instance;
@@ -44,8 +47,12 @@ namespace Spa_Management_System
             // Set up event handlers
             SetupEventHandlers();
 
+            // Set default category
+            _currentCategory = "Services";
+            SetCategoryButtonStyles("Services");
+
             // Initial UI state
-            ShowServices(); // Default view is services
+            ShowServicesResponsive(); // Default view is services
             ClearCurrentOrder();
         }
 
@@ -66,7 +73,8 @@ namespace Spa_Management_System
                         ServiceId = Convert.ToInt32(row["ServiceId"]),
                         ServiceName = row["ServiceName"].ToString(),
                         Description = row["Description"]?.ToString(),
-                        Price = Convert.ToDecimal(row["Price"])
+                        Price = Convert.ToDecimal(row["Price"]),
+                        ImagePath = row["ImagePath"]?.ToString() // Add this line
                     });
                 }
             }
@@ -93,7 +101,8 @@ namespace Spa_Management_System
                         Description = row["Description"]?.ToString(),
                         Price = Convert.ToDecimal(row["Price"]),
                         Category = row["Category"]?.ToString(),
-                        StockQuantity = Convert.ToInt32(row["StockQuantity"])
+                        StockQuantity = Convert.ToInt32(row["StockQuantity"]),
+                        ImagePath = row["ImagePath"]?.ToString() // Add this line
                     });
                 }
             }
@@ -160,10 +169,10 @@ namespace Spa_Management_System
                         CustomerId = customerId,
                         UserId = Convert.ToInt32(row["UserId"]),
                         OrderTime = Convert.ToDateTime(row["OrderTime"]),
-                        TotalAmount = Convert.ToDecimal(row["TotalAmount"]),
-                        Discount = Convert.ToDecimal(row["Discount"]),
-                        FinalAmount = Convert.ToDecimal(row["FinalAmount"]),
-                        Notes = row["Notes"]?.ToString(),
+                        TotalAmount = row["TotalAmount"] != DBNull.Value ? Convert.ToDecimal(row["TotalAmount"]) : 0m,
+                        Discount = row["Discount"] != DBNull.Value ? Convert.ToDecimal(row["Discount"]) : 0m,
+                        FinalAmount = row["FinalAmount"] != DBNull.Value ? Convert.ToDecimal(row["FinalAmount"]) : 0m,
+                        Notes = row["Notes"] != DBNull.Value ? row["Notes"].ToString() : null,
                         Status = row["Status"].ToString()
                     };
                 }
@@ -220,6 +229,36 @@ namespace Spa_Management_System
             }
         }
 
+        private void SetCategoryButtonStyles(string activeCategory)
+        {
+            // Reset all buttons to default style
+            btnServices.BackColor = Color.White;
+            btnServices.ForeColor = Color.Black;
+
+            btnFoods.BackColor = Color.White;
+            btnFoods.ForeColor = Color.Black;
+
+            btnDrinks.BackColor = Color.White;
+            btnDrinks.ForeColor = Color.Black;
+
+            // Highlight the active button
+            switch (activeCategory)
+            {
+                case "Services":
+                    btnServices.BackColor = Color.DarkGoldenrod;
+                    btnServices.ForeColor = Color.White;
+                    break;
+                case "Foods":
+                    btnFoods.BackColor = Color.DarkGoldenrod;
+                    btnFoods.ForeColor = Color.White;
+                    break;
+                case "Drinks":
+                    btnDrinks.BackColor = Color.DarkGoldenrod;
+                    btnDrinks.ForeColor = Color.White;
+                    break;
+            }
+        }
+
         #endregion
 
         #region Event Handlers
@@ -233,11 +272,7 @@ namespace Spa_Management_System
             btnSetting.Click += (s, e) => { /* Open settings view */ };
             btnLogout.Click += (s, e) => { /* Logout */ };
 
-            // Category buttons
-            btnServices.Click += (s, e) => { _currentCategory = "Services"; ShowServices(); };
-            btnFoods.Click += (s, e) => { _currentCategory = "Foods"; ShowConsumables("Foods"); };
-            btnDrinks.Click += (s, e) => { _currentCategory = "Drinks"; ShowConsumables("Drinks"); };
-
+            SetupCategoryButtons();
             // Search box
             txtSearch.TextChanged += (s, e) => FilterItems(txtSearch.Text);
 
@@ -253,6 +288,30 @@ namespace Spa_Management_System
             // Exit button
             btnExitProgram.Click += btnExitProgram_Clicked;
         }
+        private void SetupCategoryButtons()
+        {
+            // Services button
+            btnServices.Click += (s, e) => {
+                _currentCategory = "Services";
+                SetCategoryButtonStyles("Services");
+                 ShowServicesResponsive(); // Use responsive method
+            };
+
+
+            // Foods button
+            btnFoods.Click += (s, e) => {
+                _currentCategory = "Foods";
+                SetCategoryButtonStyles("Foods");
+                 ShowConsumablesResponsive("Foods"); // Use responsive method
+            };
+
+            // Drinks button
+            btnDrinks.Click += (s, e) => {
+                _currentCategory = "Drinks";
+                SetCategoryButtonStyles("Drinks");
+                 ShowConsumablesResponsive("Drinks"); // Use responsive method
+            };
+        }
 
         private void btnExitProgram_Clicked(object sender, EventArgs e)
         {
@@ -265,7 +324,20 @@ namespace Spa_Management_System
             {
                 // Process customer ID input
                 string cardId = txtCustomerID.Text.Trim();
-                ProcessCardId(cardId);
+
+                // Check if the field is empty - this is the new feature
+                if (string.IsNullOrWhiteSpace(cardId))
+                {
+                    // Clear the current order and customer
+                    ClearCurrentOrder();
+                    MessageBox.Show("Customer cleared. Ready for new scan.");
+                }
+                else
+                {
+                    // Process card ID as normal
+                    ProcessCardId(cardId);
+                }
+
                 e.Handled = true;
                 e.SuppressKeyPress = true;
             }
@@ -320,112 +392,232 @@ namespace Spa_Management_System
         #endregion
 
         #region UI Methods
-
-        private void ShowServices()
+        private void ShowServicesResponsive()
         {
-            ClearItemPanels();
+            // Clear the container panel
+            panDisplayItem.Controls.Clear();
 
-            // Get panels to populate
-            Bunifu.UI.WinForms.BunifuPanel[] panels = new Bunifu.UI.WinForms.BunifuPanel[] {
-                bunifuPanel3, bunifuPanel4, bunifuPanel5,
-                bunifuPanel6, bunifuPanel7, bunifuPanel8
-            };
+            int itemWidth = 280;
+            int itemHeight = 280;
+            int padding = 28;
+            int containerWidth = panDisplayItem.Width;
 
-            // Store panel label mappings for easier updating
-            var panelLabels = new Dictionary<Bunifu.UI.WinForms.BunifuPanel, (Bunifu.UI.WinForms.BunifuLabel Name, Bunifu.UI.WinForms.BunifuLabel Desc, Bunifu.UI.WinForms.BunifuLabel Price)>
-            {
-                { bunifuPanel3, (bunifuLabel4, bunifuLabel5, bunifuLabel6) },
-                { bunifuPanel4, (bunifuLabel10, bunifuLabel8, bunifuLabel7) },
-                { bunifuPanel5, (bunifuLabel14, bunifuLabel12, bunifuLabel11) },
-                { bunifuPanel6, (bunifuLabel18, bunifuLabel16, bunifuLabel15) },
-                { bunifuPanel7, (bunifuLabel22, bunifuLabel20, bunifuLabel19) },
-                { bunifuPanel8, (bunifuLabel26, bunifuLabel24, bunifuLabel23) }
-            };
+            // Calculate how many items can fit per row
+            int itemsPerRow = (containerWidth - padding) / (itemWidth + padding);
+            if (itemsPerRow < 1) itemsPerRow = 1;
 
-            int panelIndex = 0;
+            int xPos = padding;
+            int yPos = padding;
+            int itemCount = 0;
+
             foreach (var service in _services)
             {
-                if (panelIndex >= panels.Length) break;
+                // Create a new panel for this service
+                Bunifu.UI.WinForms.BunifuPanel itemPanel = new Bunifu.UI.WinForms.BunifuPanel();
+                itemPanel.Size = new Size(itemWidth, itemHeight);
+                itemPanel.BackgroundColor = Color.White;
+                itemPanel.BorderColor = Color.White;
+                itemPanel.BorderRadius = 15;
+                itemPanel.BorderThickness = 1;
+                itemPanel.ShowBorders = true;
+                itemPanel.Tag = service; // Store service object in Tag
 
-                Bunifu.UI.WinForms.BunifuPanel panel = panels[panelIndex];
-                panel.Tag = service; // Store service object in Tag
+                // Calculate position
+                itemPanel.Location = new Point(xPos, yPos);
 
-                // Get labels for this panel
-                var labels = panelLabels[panel];
+                // Use standard PictureBox instead of BunifuPictureBox
+                PictureBox imageBox = CloneItemDisplay();
 
-                // Update labels
-                labels.Name.Text = service.ServiceName;
-                labels.Desc.Text = service.Description ?? "";
-                labels.Price.Text = "$" + service.Price.ToString("0.00");
+                // Load and set the image
+                Image serviceImage = LoadImageSafely(service.ImagePath);
+                if (serviceImage != null)
+                {
+                    imageBox.Image = serviceImage;
+                }
 
-                // Add click event handler
-                panel.Click += ServicePanel_Click;
-                panelIndex++;
+                // Create name label
+                Bunifu.UI.WinForms.BunifuLabel nameLabel = new Bunifu.UI.WinForms.BunifuLabel();
+                nameLabel.Text = service.ServiceName;
+                nameLabel.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+                nameLabel.Size = new Size(itemWidth - 20, 20);
+                nameLabel.Location = new Point(10, 170);
+
+                // Create description label
+                Bunifu.UI.WinForms.BunifuLabel descLabel = new Bunifu.UI.WinForms.BunifuLabel();
+                descLabel.Text = service.Description ?? "";
+                descLabel.Font = new Font("Century Gothic", 10, FontStyle.Regular);
+                descLabel.ForeColor = SystemColors.ActiveBorder;
+                descLabel.Size = new Size(itemWidth - 20, 40);
+                descLabel.Location = new Point(10, 205);
+
+                // Create price label
+                Bunifu.UI.WinForms.BunifuLabel priceLabel = new Bunifu.UI.WinForms.BunifuLabel();
+                priceLabel.Text = "$" + service.Price.ToString("0.00");
+                priceLabel.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+                priceLabel.ForeColor = Color.DarkGoldenrod;
+                priceLabel.Size = new Size(itemWidth - 20, 20);
+                priceLabel.Location = new Point(10, 250);
+
+                // Add controls to panel
+                itemPanel.Controls.Add(imageBox);
+                itemPanel.Controls.Add(nameLabel);
+                itemPanel.Controls.Add(descLabel);
+                itemPanel.Controls.Add(priceLabel);
+
+                // Add click event
+                itemPanel.Click += ServicePanel_Click;
+                imageBox.Click += (s, e) => ServicePanel_Click(itemPanel, e);
+
+                // Add panel to container
+                panDisplayItem.Controls.Add(itemPanel);
+
+                // Update position for next item
+                itemCount++;
+                if (itemCount % itemsPerRow == 0)
+                {
+                    // New row
+                    xPos = padding;
+                    yPos += itemHeight + padding;
+                }
+                else
+                {
+                    // Next column
+                    xPos += itemWidth + padding;
+                }
             }
         }
 
-        private void ShowConsumables(string category)
+        private void ShowConsumablesResponsive(string category)
         {
-            ClearItemPanels();
+            // Clear the container panel
+            panDisplayItem.Controls.Clear();
 
-            // Get panels to populate
-            Bunifu.UI.WinForms.BunifuPanel[] panels = new Bunifu.UI.WinForms.BunifuPanel[] {
-                bunifuPanel3, bunifuPanel4, bunifuPanel5,
-                bunifuPanel6, bunifuPanel7, bunifuPanel8
-            };
+            int itemWidth = 280;
+            int itemHeight = 280;
+            int padding = 28;
+            int containerWidth = panDisplayItem.Width;
 
-            // Store panel label mappings
-            var panelLabels = new Dictionary<Bunifu.UI.WinForms.BunifuPanel, (Bunifu.UI.WinForms.BunifuLabel Name, Bunifu.UI.WinForms.BunifuLabel Desc, Bunifu.UI.WinForms.BunifuLabel Price)>
-            {
-                { bunifuPanel3, (bunifuLabel4, bunifuLabel5, bunifuLabel6) },
-                { bunifuPanel4, (bunifuLabel10, bunifuLabel8, bunifuLabel7) },
-                { bunifuPanel5, (bunifuLabel14, bunifuLabel12, bunifuLabel11) },
-                { bunifuPanel6, (bunifuLabel18, bunifuLabel16, bunifuLabel15) },
-                { bunifuPanel7, (bunifuLabel22, bunifuLabel20, bunifuLabel19) },
-                { bunifuPanel8, (bunifuLabel26, bunifuLabel24, bunifuLabel23) }
-            };
+            // Calculate how many items can fit per row
+            int itemsPerRow = (containerWidth - padding) / (itemWidth + padding);
+            if (itemsPerRow < 1) itemsPerRow = 1;
+
+            int xPos = padding;
+            int yPos = padding;
+            int itemCount = 0;
 
             // Filter consumables by category
             var filteredConsumables = _consumables
-                .Where(c => c.Category == category && c.StockQuantity > 0)
+                .Where(c => {
+                    if (c.Category == null) return false;
+                    return c.Category == category && c.StockQuantity > 0;
+                })
                 .ToList();
 
-            int panelIndex = 0;
+            // Debug output
+            Console.WriteLine($"Found {filteredConsumables.Count} consumables in category {category}");
+
             foreach (var consumable in filteredConsumables)
             {
-                if (panelIndex >= panels.Length) break;
+                // Debug image path
+                Console.WriteLine($"Consumable: {consumable.Name}, Path: {consumable.ImagePath}");
 
-                Bunifu.UI.WinForms.BunifuPanel panel = panels[panelIndex];
-                panel.Tag = consumable; // Store consumable object in Tag
+                // Create a new panel for this consumable
+                Bunifu.UI.WinForms.BunifuPanel itemPanel = new Bunifu.UI.WinForms.BunifuPanel();
+                itemPanel.Size = new Size(itemWidth, itemHeight);
+                itemPanel.BackgroundColor = Color.White;
+                itemPanel.BorderColor = Color.White;
+                itemPanel.BorderRadius = 15;
+                itemPanel.BorderThickness = 1;
+                itemPanel.ShowBorders = true;
+                itemPanel.Tag = consumable; // Store consumable object in Tag
 
-                // Get labels for this panel
-                var labels = panelLabels[panel];
+                // Calculate position
+                itemPanel.Location = new Point(xPos, yPos);
 
-                // Update labels
-                labels.Name.Text = consumable.Name;
-                labels.Desc.Text = consumable.Description ?? "";
-                labels.Price.Text = "$" + consumable.Price.ToString("0.00");
+                // Use standard PictureBox instead of BunifuPictureBox
+                PictureBox imageBox = CloneItemDisplay();
 
-                // Add click event handler
-                panel.Click += ConsumablePanel_Click;
-                panelIndex++;
+                // Load and set the image
+                Image consumableImage = LoadImageSafely(consumable.ImagePath);
+                if (consumableImage != null)
+                {
+                    imageBox.Image = consumableImage;
+                    Console.WriteLine($"Successfully loaded image for {consumable.Name}");
+                }
+                else
+                {
+                    Console.WriteLine($"Failed to load image for {consumable.Name}");
+                }
+
+                // Create name label
+                Bunifu.UI.WinForms.BunifuLabel nameLabel = new Bunifu.UI.WinForms.BunifuLabel();
+                nameLabel.Text = consumable.Name;
+                nameLabel.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+                nameLabel.Size = new Size(itemWidth - 20, 20);
+                nameLabel.Location = new Point(10, 170);
+
+                // Create description label
+                Bunifu.UI.WinForms.BunifuLabel descLabel = new Bunifu.UI.WinForms.BunifuLabel();
+                descLabel.Text = consumable.Description ?? "";
+                descLabel.Font = new Font("Century Gothic", 10, FontStyle.Regular);
+                descLabel.ForeColor = SystemColors.ActiveBorder;
+                descLabel.Size = new Size(itemWidth - 20, 40);
+                descLabel.Location = new Point(10, 205);
+
+                // Create price label
+                Bunifu.UI.WinForms.BunifuLabel priceLabel = new Bunifu.UI.WinForms.BunifuLabel();
+                priceLabel.Text = "$" + consumable.Price.ToString("0.00");
+                priceLabel.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+                priceLabel.ForeColor = Color.DarkGoldenrod;
+                priceLabel.Size = new Size(itemWidth - 20, 20);
+                priceLabel.Location = new Point(10, 250);
+
+                // Add controls to panel - only add each control once!
+                itemPanel.Controls.Add(imageBox);
+                itemPanel.Controls.Add(nameLabel);
+                itemPanel.Controls.Add(descLabel);
+                itemPanel.Controls.Add(priceLabel);
+
+                // Add click event
+                itemPanel.Click += ConsumablePanel_Click;
+                imageBox.Click += (s, e) => ConsumablePanel_Click(itemPanel, e);
+
+                // Add panel to container
+                panDisplayItem.Controls.Add(itemPanel);
+
+                // Update position for next item
+                itemCount++;
+                if (itemCount % itemsPerRow == 0)
+                {
+                    // New row
+                    xPos = padding;
+                    yPos += itemHeight + padding;
+                }
+                else
+                {
+                    // Next column
+                    xPos += itemWidth + padding;
+                }
             }
         }
-
         private void ClearItemPanels()
         {
-            // Get all panels
-            Bunifu.UI.WinForms.BunifuPanel[] panels = new Bunifu.UI.WinForms.BunifuPanel[] {
-                bunifuPanel3, bunifuPanel4, bunifuPanel5,
-                bunifuPanel6, bunifuPanel7, bunifuPanel8
-            };
-
-            // Remove event handlers and clear any stored data
-            foreach (Bunifu.UI.WinForms.BunifuPanel panel in panels)
+            // Clear all dynamically created panels from the container
+            if (panDisplayItem != null && panDisplayItem.Controls.Count > 0)
             {
-                panel.Click -= ServicePanel_Click;
-                panel.Click -= ConsumablePanel_Click;
-                panel.Tag = null;
+                // Remove event handlers from each panel before clearing
+                foreach (Control control in panDisplayItem.Controls)
+                {
+                    if (control is Bunifu.UI.WinForms.BunifuPanel panel)
+                    {
+                        panel.Click -= ServicePanel_Click;
+                        panel.Click -= ConsumablePanel_Click;
+                        panel.Tag = null;
+                    }
+                }
+
+                // Clear all controls
+                panDisplayItem.Controls.Clear();
             }
         }
 
@@ -482,6 +674,26 @@ namespace Spa_Management_System
 
                 // Create image
                 Bunifu.UI.WinForms.BunifuPictureBox itemImage = new Bunifu.UI.WinForms.BunifuPictureBox();
+                if (item.ItemType == "Service")
+                {
+                    var service = _services.FirstOrDefault(s => s.ServiceId == item.ItemId);  // Changed from s.ItemId
+                    if (service != null && !string.IsNullOrEmpty(service.ImagePath))
+                    {
+                        Image img = LoadImageSafely(service.ImagePath);
+                        if (img != null)
+                            itemImage.Image = img;
+                    }
+                }
+                else if (item.ItemType == "Consumable")
+                {
+                    var consumable = _consumables.FirstOrDefault(c => c.ConsumableId == item.ItemId);
+                    if (consumable != null && !string.IsNullOrEmpty(consumable.ImagePath))
+                    {
+                        Image img = LoadImageSafely(consumable.ImagePath);
+                        if (img != null)
+                            itemImage.Image = img;
+                    }
+                }
                 itemImage.Size = new Size(60, 60);
                 itemImage.Location = new Point(10, 15);
                 itemImage.BorderRadius = 10;
@@ -578,7 +790,7 @@ namespace Spa_Management_System
             // Enable checkout button
             btnCheckout.Enabled = true;
         }
-        
+
         // Modified to handle the grouped items
         private void IncreaseItemQuantity(dynamic itemInfo)
         {
@@ -646,10 +858,23 @@ namespace Spa_Management_System
                     
                     DELETE FROM tbOrderItem WHERE OrderItemId = @OrderItemId;
                     
-                    UPDATE tbOrder
-                    SET TotalAmount = (SELECT SUM(TotalPrice) FROM tbOrderItem WHERE OrderId = @OrderId),
-                        FinalAmount = (SELECT SUM(TotalPrice) FROM tbOrderItem WHERE OrderId = @OrderId) - Discount
-                    WHERE OrderId = @OrderId;";
+                    -- Check if there are any items left
+                    IF EXISTS (SELECT 1 FROM tbOrderItem WHERE OrderId = @OrderId)
+                    BEGIN
+                        -- Items still exist, update totals
+                        UPDATE tbOrder
+                        SET TotalAmount = (SELECT SUM(TotalPrice) FROM tbOrderItem WHERE OrderId = @OrderId),
+                            FinalAmount = (SELECT SUM(TotalPrice) FROM tbOrderItem WHERE OrderId = @OrderId) - Discount
+                        WHERE OrderId = @OrderId;
+                    END
+                    ELSE
+                    BEGIN
+                        -- No items left, set totals to zero
+                        UPDATE tbOrder
+                        SET TotalAmount = 0,
+                            FinalAmount = 0
+                        WHERE OrderId = @OrderId;
+                    END";
 
                         SqlParameter param = new SqlParameter("@OrderItemId", orderItemId);
                         _connectionManager.ExecuteNonQuery(deleteQuery, param);
@@ -703,6 +928,17 @@ namespace Spa_Management_System
             // Clear and hide the order panel items
             panOrderDetailOuter.Controls.Clear();
 
+            // Reset all UI elements
+            bunifuLabel27.Text = "No Active Order";
+            bunifuLabel35.Text = "$0.00"; // Subtotal
+            bunifuLabel36.Text = "$0.00"; // Discount
+            bunifuLabel38.Text = "$0.00"; // Final Amount
+            btnCheckout.Enabled = false;
+            txtCardStatus.Text = "Available"; // Also reset the card status
+
+            // Clear customer ID (optional, depends on your UX preference)
+            // txtCustomerID.Clear();
+
             UpdateOrderDisplay();
         }
 
@@ -712,9 +948,9 @@ namespace Spa_Management_System
             {
                 // Show all items based on current category
                 if (_currentCategory == "Services")
-                    ShowServices();
+                    ShowServicesResponsive();
                 else
-                    ShowConsumables(_currentCategory);
+                    ShowConsumablesResponsive(_currentCategory);
 
                 return;
             }
@@ -727,8 +963,8 @@ namespace Spa_Management_System
                                (s.Description?.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false))
                     .ToList();
 
-                // Use a modified ShowServices method that takes a filtered list
-                ShowFilteredServices(filteredServices);
+                // Use the responsive filtering method
+                ShowFilteredServicesResponsive(filteredServices);
             }
             else
             {
@@ -738,97 +974,175 @@ namespace Spa_Management_System
                                (c.Description?.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false)))
                     .ToList();
 
-                // Use a modified ShowConsumables method that takes a filtered list
-                ShowFilteredConsumables(filteredConsumables);
+                // Use the responsive filtering method
+                ShowFilteredConsumablesResponsive(filteredConsumables);
             }
         }
-
-        private void ShowFilteredServices(List<ServiceModel> filteredServices)
+        private void ShowFilteredServicesResponsive(List<ServiceModel> filteredServices)
         {
-            ClearItemPanels();
+            // Clear the container panel
+            panDisplayItem.Controls.Clear();
 
-            // Get panels to populate
-            Bunifu.UI.WinForms.BunifuPanel[] panels = new Bunifu.UI.WinForms.BunifuPanel[] {
-                bunifuPanel3, bunifuPanel4, bunifuPanel5,
-                bunifuPanel6, bunifuPanel7, bunifuPanel8
-            };
+            int itemWidth = 280;
+            int itemHeight = 280;
+            int padding = 10;
+            int containerWidth = panDisplayItem.Width;
 
-            // Store panel label mappings
-            var panelLabels = new Dictionary<Bunifu.UI.WinForms.BunifuPanel, (Bunifu.UI.WinForms.BunifuLabel Name, Bunifu.UI.WinForms.BunifuLabel Desc, Bunifu.UI.WinForms.BunifuLabel Price)>
-            {
-                { bunifuPanel3, (bunifuLabel4, bunifuLabel5, bunifuLabel6) },
-                { bunifuPanel4, (bunifuLabel10, bunifuLabel8, bunifuLabel7) },
-                { bunifuPanel5, (bunifuLabel14, bunifuLabel12, bunifuLabel11) },
-                { bunifuPanel6, (bunifuLabel18, bunifuLabel16, bunifuLabel15) },
-                { bunifuPanel7, (bunifuLabel22, bunifuLabel20, bunifuLabel19) },
-                { bunifuPanel8, (bunifuLabel26, bunifuLabel24, bunifuLabel23) }
-            };
+            // Calculate how many items can fit per row
+            int itemsPerRow = (containerWidth - padding) / (itemWidth + padding);
+            if (itemsPerRow < 1) itemsPerRow = 1;
 
-            int panelIndex = 0;
+            int xPos = padding;
+            int yPos = padding;
+            int itemCount = 0;
+
             foreach (var service in filteredServices)
             {
-                if (panelIndex >= panels.Length) break;
+                // Create a new panel for this service
+                Bunifu.UI.WinForms.BunifuPanel itemPanel = new Bunifu.UI.WinForms.BunifuPanel();
+                itemPanel.Size = new Size(itemWidth, itemHeight);
+                itemPanel.BackgroundColor = Color.White;
+                itemPanel.BorderColor = Color.White;
+                itemPanel.BorderRadius = 15;
+                itemPanel.BorderThickness = 1;
+                itemPanel.ShowBorders = true;
+                itemPanel.Tag = service; // Store service object in Tag
 
-                Bunifu.UI.WinForms.BunifuPanel panel = panels[panelIndex];
-                panel.Tag = service; // Store service object in Tag
+                // Calculate position
+                itemPanel.Location = new Point(xPos, yPos);
 
-                // Get labels for this panel
-                var labels = panelLabels[panel];
+                // Create name label
+                Bunifu.UI.WinForms.BunifuLabel nameLabel = new Bunifu.UI.WinForms.BunifuLabel();
+                nameLabel.Text = service.ServiceName;
+                nameLabel.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+                nameLabel.Size = new Size(itemWidth - 20, 20);
+                nameLabel.Location = new Point(10, 170);
 
-                // Update labels
-                labels.Name.Text = service.ServiceName;
-                labels.Desc.Text = service.Description ?? "";
-                labels.Price.Text = "$" + service.Price.ToString("0.00");
+                // Create description label
+                Bunifu.UI.WinForms.BunifuLabel descLabel = new Bunifu.UI.WinForms.BunifuLabel();
+                descLabel.Text = service.Description ?? "";
+                descLabel.Font = new Font("Century Gothic", 10, FontStyle.Regular);
+                descLabel.ForeColor = SystemColors.ActiveBorder;
+                descLabel.Size = new Size(itemWidth - 20, 40);
+                descLabel.Location = new Point(10, 205);
 
-                // Add click event handler
-                panel.Click += ServicePanel_Click;
-                panelIndex++;
+                // Create price label
+                Bunifu.UI.WinForms.BunifuLabel priceLabel = new Bunifu.UI.WinForms.BunifuLabel();
+                priceLabel.Text = "$" + service.Price.ToString("0.00");
+                priceLabel.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+                priceLabel.ForeColor = Color.DarkGoldenrod;
+                priceLabel.Size = new Size(itemWidth - 20, 20);
+                priceLabel.Location = new Point(10, 250);
+
+                // Add labels to panel
+                itemPanel.Controls.Add(nameLabel);
+                itemPanel.Controls.Add(descLabel);
+                itemPanel.Controls.Add(priceLabel);
+
+                // Add click event
+                itemPanel.Click += ServicePanel_Click;
+
+                // Add panel to container
+                panDisplayItem.Controls.Add(itemPanel);
+
+                // Update position for next item
+                itemCount++;
+                if (itemCount % itemsPerRow == 0)
+                {
+                    // New row
+                    xPos = padding;
+                    yPos += itemHeight + padding;
+                }
+                else
+                {
+                    // Next column
+                    xPos += itemWidth + padding;
+                }
             }
         }
 
-        private void ShowFilteredConsumables(List<ConsumableModel> filteredConsumables)
+        private void ShowFilteredConsumablesResponsive(List<ConsumableModel> filteredConsumables)
         {
-            ClearItemPanels();
+            // Clear the container panel
+            panDisplayItem.Controls.Clear();
 
-            // Get panels to populate
-            Bunifu.UI.WinForms.BunifuPanel[] panels = new Bunifu.UI.WinForms.BunifuPanel[] {
-                bunifuPanel3, bunifuPanel4, bunifuPanel5,
-                bunifuPanel6, bunifuPanel7, bunifuPanel8
-            };
+            int itemWidth = 280;
+            int itemHeight = 280;
+            int padding = 10;
+            int containerWidth = panDisplayItem.Width;
 
-            // Store panel label mappings
-            var panelLabels = new Dictionary<Bunifu.UI.WinForms.BunifuPanel, (Bunifu.UI.WinForms.BunifuLabel Name, Bunifu.UI.WinForms.BunifuLabel Desc, Bunifu.UI.WinForms.BunifuLabel Price)>
-            {
-                { bunifuPanel3, (bunifuLabel4, bunifuLabel5, bunifuLabel6) },
-                { bunifuPanel4, (bunifuLabel10, bunifuLabel8, bunifuLabel7) },
-                { bunifuPanel5, (bunifuLabel14, bunifuLabel12, bunifuLabel11) },
-                { bunifuPanel6, (bunifuLabel18, bunifuLabel16, bunifuLabel15) },
-                { bunifuPanel7, (bunifuLabel22, bunifuLabel20, bunifuLabel19) },
-                { bunifuPanel8, (bunifuLabel26, bunifuLabel24, bunifuLabel23) }
-            };
+            // Calculate how many items can fit per row
+            int itemsPerRow = (containerWidth - padding) / (itemWidth + padding);
+            if (itemsPerRow < 1) itemsPerRow = 1;
 
-            int panelIndex = 0;
+            int xPos = padding;
+            int yPos = padding;
+            int itemCount = 0;
+
             foreach (var consumable in filteredConsumables)
             {
-                if (panelIndex >= panels.Length) break;
+                // Create a new panel for this consumable
+                Bunifu.UI.WinForms.BunifuPanel itemPanel = new Bunifu.UI.WinForms.BunifuPanel();
+                itemPanel.Size = new Size(itemWidth, itemHeight);
+                itemPanel.BackgroundColor = Color.White;
+                itemPanel.BorderColor = Color.White;
+                itemPanel.BorderRadius = 15;
+                itemPanel.BorderThickness = 1;
+                itemPanel.ShowBorders = true;
+                itemPanel.Tag = consumable; // Store consumable object in Tag
 
-                Bunifu.UI.WinForms.BunifuPanel panel = panels[panelIndex];
-                panel.Tag = consumable; // Store consumable object in Tag
+                // Calculate position
+                itemPanel.Location = new Point(xPos, yPos);
 
-                // Get labels for this panel
-                var labels = panelLabels[panel];
+                // Create name label
+                Bunifu.UI.WinForms.BunifuLabel nameLabel = new Bunifu.UI.WinForms.BunifuLabel();
+                nameLabel.Text = consumable.Name;
+                nameLabel.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+                nameLabel.Size = new Size(itemWidth - 20, 20);
+                nameLabel.Location = new Point(10, 170);
 
-                // Update labels
-                labels.Name.Text = consumable.Name;
-                labels.Desc.Text = consumable.Description ?? "";
-                labels.Price.Text = "$" + consumable.Price.ToString("0.00");
+                // Create description label
+                Bunifu.UI.WinForms.BunifuLabel descLabel = new Bunifu.UI.WinForms.BunifuLabel();
+                descLabel.Text = consumable.Description ?? "";
+                descLabel.Font = new Font("Century Gothic", 10, FontStyle.Regular);
+                descLabel.ForeColor = SystemColors.ActiveBorder;
+                descLabel.Size = new Size(itemWidth - 20, 40);
+                descLabel.Location = new Point(10, 205);
 
-                // Add click event handler
-                panel.Click += ConsumablePanel_Click;
-                panelIndex++;
+                // Create price label
+                Bunifu.UI.WinForms.BunifuLabel priceLabel = new Bunifu.UI.WinForms.BunifuLabel();
+                priceLabel.Text = "$" + consumable.Price.ToString("0.00");
+                priceLabel.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+                priceLabel.ForeColor = Color.DarkGoldenrod;
+                priceLabel.Size = new Size(itemWidth - 20, 20);
+                priceLabel.Location = new Point(10, 250);
+
+                // Add labels to panel
+                itemPanel.Controls.Add(nameLabel);
+                itemPanel.Controls.Add(descLabel);
+                itemPanel.Controls.Add(priceLabel);
+
+                // Add click event
+                itemPanel.Click += ConsumablePanel_Click;
+
+                // Add panel to container
+                panDisplayItem.Controls.Add(itemPanel);
+
+                // Update position for next item
+                itemCount++;
+                if (itemCount % itemsPerRow == 0)
+                {
+                    // New row
+                    xPos = padding;
+                    yPos += itemHeight + padding;
+                }
+                else
+                {
+                    // Next column
+                    xPos += itemWidth + padding;
+                }
             }
         }
-
         #endregion
 
         #region Business Logic Methods
@@ -1142,7 +1456,86 @@ namespace Spa_Management_System
                 MessageBox.Show("Error processing payment: " + ex.Message);
             }
         }
-        
+
+        private Image LoadImageSafely(string imagePath)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(imagePath))
+                    return null;
+
+                // Log the original path for debugging
+                Console.WriteLine($"Original image path: {imagePath}");
+
+                // Clean the path (remove backslashes, forward slashes at beginning)
+                imagePath = imagePath.TrimStart('\\', '/').Replace('\\', '/');
+
+                // Try multiple path variations
+                string[] pathVariations = new string[]
+                {
+            // Direct application path join
+            Path.Combine(Application.StartupPath, imagePath),
+            
+            // Without "Images" folder prefix if it exists in the path
+            Path.Combine(Application.StartupPath,
+                imagePath.StartsWith("Images/") ? imagePath : "Images/" + imagePath),
+                
+            // Just the filename in the Images/Consumables folder
+            Path.Combine(Application.StartupPath, "Images", "Consumables",
+                Path.GetFileName(imagePath)),
+                
+            // Just the filename in the Images/Services folder
+            Path.Combine(Application.StartupPath, "Images", "Services",
+                Path.GetFileName(imagePath))
+                };
+
+                // Try each path variation
+                foreach (string path in pathVariations)
+                {
+                    Console.WriteLine($"Trying path: {path}");
+
+                    if (File.Exists(path))
+                    {
+                        Console.WriteLine($"Image found at: {path}");
+                        using (var stream = new MemoryStream(File.ReadAllBytes(path)))
+                        {
+                            return Image.FromStream(stream);
+                        }
+                    }
+                }
+
+                Console.WriteLine("Image not found in any of the tried locations");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading image: {ex.Message}");
+                return null;
+            }
+        }
+        private void EnsureImageDirectoriesExist()
+        {
+            string baseDir = Application.StartupPath;
+            Directory.CreateDirectory(Path.Combine(baseDir, "Images", "Services"));
+            Directory.CreateDirectory(Path.Combine(baseDir, "Images", "Consumables"));
+        }
+        private PictureBox CloneItemDisplay()
+        {
+            // Create a new standard PictureBox with the properties you specified
+            PictureBox clone = new PictureBox();
+
+            // Set the properties to match your template
+            clone.Location = new Point(4, 3);
+            clone.Size = new Size(274, 161);
+            clone.TabIndex = 12;
+            clone.TabStop = false;
+            clone.SizeMode = PictureBoxSizeMode.StretchImage; // Set this to maintain stretch appearance
+
+            return clone;
+        }
+
+
+
         #endregion
 
         // Implement IOrderObserver interface
@@ -1164,7 +1557,8 @@ namespace Spa_Management_System
                 UpdateOrderDisplay();
             }
         }
-    }
+
+            }
 
     // Model classes if not already defined elsewhere
     public class CustomerModel

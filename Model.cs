@@ -14,6 +14,7 @@ namespace Spa_Management_System
         public decimal Price { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
+        public string ImagePath { get; set; }
     }
 
     public class PaymentModel
@@ -68,5 +69,6 @@ namespace Spa_Management_System
         public int StockQuantity { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
+        public string ImagePath { get; set; }
     }
 }
