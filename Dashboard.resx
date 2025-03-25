@@ -33442,17 +33442,6 @@
         oB0O6fBAxZudgC2mGQ7/SQizfKqPixeIALCs0fgFBy+SJnUA3QgAAAAASUVORK5CYII=
 </value>
   </data>
-  <data name="btnFilter.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAAC8AAAAmCAYAAABUKMJkAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAE3SURBVFhH7Zi/SgNBEIevvNLS0tJHyCPkJYQ0AUtL7fIA
-        FmKRPnXqtClt8waChQhqjBD/Qbg9v7mdU/zTzw7MBz9uZnZDvju22uo3bdvWZJRSmpIVtRny/2RGjmn3
-        VPF/2DQgN2Sbf14G+LySezJU1Z+wcEY2ur9IxI9cqHKGgXzxosV78HwiR504fU1zl5d8gO8jj3356ifk
-        I4/9gPNU5OfauwLvlchfa+8KvN/kzLsl5K0IeStC3oqQtyLkrQh5K0LeipC3IuStCHkrfMunlB60dgXe
-        O5Ffau8KuW+SY3Mqb5FHfsB5JvIHFC5uiHvElwy6m2KKMbPnvFQ2uG7JeSfew2DZNM2L7ikS/N7xvKKs
-        VfsbhhMW193OwsBLjsol5V/xHhYP2TQnRdwe43FLFiSf8S+q6hOFQh70wXovKwAAAABJRU5ErkJggg==
-</value>
-  </data>
   <data name="bunifuPanel3.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAARkAAAEgCAYAAACAZQdyAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
@@ -33627,5 +33616,16 @@
         DQAAAEv5fBzneb63AwAAAH65mvmzfP7+gX66Fh8/JwAAAODhEc/Xey6fAQAAgO04vgB/k1ejPYWsPwAA
         AABJRU5ErkJggg==
 </value>
+  </data>
+  <data name="sliderPriceFilter.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAAQQAAAAfCAYAAAABbrPmAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABcSURBVHhe7dOxDcAgEATB7787SGngc+ePhURmF4DsGWnD
+        Cy8AAAAAAAAAAAAAAAAAAM7Rs0bPOSX9pRr7/k8t63ofSfpi6/P7/gAAAAAAAAAAAAAAAAAAAOeIuAHr
+        02EkNkHXqQAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="lblPriceRange.BaseStylesheet" xml:space="preserve">
+    <value>#bunifu-label { padding: 0px; font-family: 'Microsoft Sans Serif'; font-size: 9.75pt; width: 100%; height: 100%; font-style: normal; font-weight: bold; text-decoration: none; color: rgb(0, 0, 0); text-align: left; }</value>
   </data>
 </root>

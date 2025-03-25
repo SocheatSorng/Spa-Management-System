@@ -23,6 +23,9 @@ namespace Spa_Management_System
         private List<ServiceModel> _services;
         private List<ConsumableModel> _consumables;
 
+        private bool isSliderDragging = false;
+        private System.Threading.Timer filterDelayTimer;
+
         // Track which category is currently selected
         private string _currentCategory = "Services";
 
@@ -32,7 +35,7 @@ namespace Spa_Management_System
 
             // Hide fixed panels
             bunifuPanel3.Visible = false;
-           
+
             // Enable the built-in vertical scrollbar of panOrderDetailOuter
             panOrderDetailOuter.AutoScroll = true;
 
@@ -54,6 +57,11 @@ namespace Spa_Management_System
             // Initial UI state
             ShowServicesResponsive(); // Default view is services
             ClearCurrentOrder();
+
+            this.Controls.Add(sliderPriceFilter);
+
+            // Add the price range label
+            this.Controls.Add(lblPriceRange);
         }
 
         #region Data Loading Methods
@@ -282,34 +290,36 @@ namespace Spa_Management_System
             // Checkout button
             btnCheckout.Click += BtnCheckout_Click;
 
-            // Filter button
-            btnFilter.Click += (s, e) => { /* Open filter options */ };
 
             // Exit button
             btnExitProgram.Click += btnExitProgram_Clicked;
+
+            sliderPriceFilter.ValueChanged += SliderPriceFilter_ValueChanged;
         }
         private void SetupCategoryButtons()
         {
             // Services button
-            btnServices.Click += (s, e) => {
+            btnServices.Click += (s, e) =>
+            {
                 _currentCategory = "Services";
                 SetCategoryButtonStyles("Services");
-                 ShowServicesResponsive(); // Use responsive method
+                FilterItems(txtSearch.Text); // Apply current filter
             };
 
-
             // Foods button
-            btnFoods.Click += (s, e) => {
+            btnFoods.Click += (s, e) =>
+            {
                 _currentCategory = "Foods";
                 SetCategoryButtonStyles("Foods");
-                 ShowConsumablesResponsive("Foods"); // Use responsive method
+                FilterItems(txtSearch.Text); // Apply current filter
             };
 
             // Drinks button
-            btnDrinks.Click += (s, e) => {
+            btnDrinks.Click += (s, e) =>
+            {
                 _currentCategory = "Drinks";
                 SetCategoryButtonStyles("Drinks");
-                 ShowConsumablesResponsive("Drinks"); // Use responsive method
+                FilterItems(txtSearch.Text); // Apply current filter
             };
         }
 
@@ -507,7 +517,8 @@ namespace Spa_Management_System
 
             // Filter consumables by category
             var filteredConsumables = _consumables
-                .Where(c => {
+                .Where(c =>
+                {
                     if (c.Category == null) return false;
                     return c.Category == category && c.StockQuantity > 0;
                 })
@@ -944,37 +955,75 @@ namespace Spa_Management_System
 
         private void FilterItems(string searchText)
         {
-            if (string.IsNullOrWhiteSpace(searchText))
+            // Get the price range based on slider position value
+            decimal minPrice = 0;
+            decimal maxPrice = decimal.MaxValue;
+
+            switch (sliderPriceFilter.Value)
             {
-                // Show all items based on current category
+                case 0: // All Prices
+                    minPrice = 0;
+                    maxPrice = decimal.MaxValue;
+                    break;
+                case 1: // Under $5
+                    minPrice = 0;
+                    maxPrice = 5;
+                    break;
+                case 2: // Under $10 (changed from $5-$10)
+                    minPrice = 0;
+                    maxPrice = 10;
+                    break;
+                case 3: // Under $20 (changed from $10-$20)
+                    minPrice = 0;
+                    maxPrice = 20;
+                    break;
+                case 4: // Under $50 (changed from $20-$50)
+                    minPrice = 0;
+                    maxPrice = 50;
+                    break;
+                case 5: // $50+
+                    minPrice = 50;
+                    maxPrice = decimal.MaxValue;
+                    break;
+            }
+
+            // Update the price range label to match these new ranges
+            UpdatePriceRangeLabel();
+
+            // Rest of your existing filtering logic with these new price boundaries...
+            if (string.IsNullOrWhiteSpace(searchText) && sliderPriceFilter.Value == 0)
+            {
                 if (_currentCategory == "Services")
                     ShowServicesResponsive();
                 else
                     ShowConsumablesResponsive(_currentCategory);
-
                 return;
             }
 
-            // Filter based on current category and search text
+            // Filter based on current category, search text, and price range
             if (_currentCategory == "Services")
             {
                 var filteredServices = _services
-                    .Where(s => s.ServiceName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
-                               (s.Description?.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false))
+                    .Where(s => (string.IsNullOrWhiteSpace(searchText) ||
+                                s.ServiceName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                                (s.Description?.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false)) &&
+                                s.Price >= minPrice && (maxPrice == decimal.MaxValue || s.Price <= maxPrice))
                     .ToList();
 
-                // Use the responsive filtering method
                 ShowFilteredServicesResponsive(filteredServices);
             }
             else
             {
                 var filteredConsumables = _consumables
-                    .Where(c => c.Category == _currentCategory &&
-                               (c.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
-                               (c.Description?.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false)))
-                    .ToList();
+            .Where(c =>
+                c.Category == _currentCategory &&
+                (string.IsNullOrWhiteSpace(searchText) ||
+                 c.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                 (c.Description?.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false)) &&
+                c.Price >= minPrice && (maxPrice == decimal.MaxValue || c.Price <= maxPrice) &&
+                c.StockQuantity > 0)
+            .ToList();
 
-                // Use the responsive filtering method
                 ShowFilteredConsumablesResponsive(filteredConsumables);
             }
         }
@@ -1533,8 +1582,67 @@ namespace Spa_Management_System
 
             return clone;
         }
+        // Add event handler for slider value changes
 
 
+        private void SliderPriceFilter_ValueChanged(object sender, EventArgs e)
+        {
+            // Update the price range label immediately for responsive feedback
+            UpdatePriceRangeLabel();
+
+            // Cancel any pending timer
+            filterDelayTimer?.Dispose();
+
+            // Set a timer to apply the filter after a short delay (250ms)
+            filterDelayTimer = new System.Threading.Timer(_ =>
+            {
+                // Need to invoke back to UI thread
+                this.Invoke((MethodInvoker)delegate
+                {
+                    FilterItems(txtSearch.Text);
+                });
+            }, null, 250, Timeout.Infinite);
+        }
+        private void UpdatePriceRangeLabel()
+        {
+            switch (sliderPriceFilter.Value)
+            {
+                case 0: lblPriceRange.Text = "All Prices"; break;
+                case 1: lblPriceRange.Text = "Under $5"; break;
+                case 2: lblPriceRange.Text = "Under $10"; break;
+                case 3: lblPriceRange.Text = "Under $20"; break;
+                case 4: lblPriceRange.Text = "Under $50"; break;
+                case 5: lblPriceRange.Text = "$50+"; break;
+            }
+        }
+
+        private void SetupPriceSliderLabels()
+        {
+            // Create labels for each price range position
+            string[] priceLabels = { "All", "< $5", "< $10", "< $20", "< $50", "$50+" };
+
+            // Calculate spacing
+            float segmentWidth = (float)sliderPriceFilter.Width / 5;
+
+            // Create and position labels
+            for (int i = 0; i < priceLabels.Length; i++)
+            {
+                Bunifu.UI.WinForms.BunifuLabel tickLabel = new Bunifu.UI.WinForms.BunifuLabel();
+                tickLabel.Text = priceLabels[i];
+                tickLabel.AutoSize = true;
+                tickLabel.Font = new Font("Century Gothic", 8F, FontStyle.Regular);
+                tickLabel.ForeColor = Color.Gray;
+
+                // Position below the slider
+                float xPos = sliderPriceFilter.Location.X + (i * segmentWidth);
+                if (i == priceLabels.Length - 1) // Last label
+                    xPos = sliderPriceFilter.Location.X + sliderPriceFilter.Width - 20;
+
+                tickLabel.Location = new Point((int)xPos, sliderPriceFilter.Location.Y + sliderPriceFilter.Height + 2);
+
+                this.Controls.Add(tickLabel);
+            }
+        }
 
         #endregion
 
@@ -1558,7 +1666,7 @@ namespace Spa_Management_System
             }
         }
 
-            }
+    }
 
     // Model classes if not already defined elsewhere
     public class CustomerModel
