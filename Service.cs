@@ -181,5 +181,10 @@ namespace Spa_Management_System
                 txtModifiedAt.Text = row.Cells["ModifiedDate"].Value.ToString(); // ModifiedDate
             }
         }
+
+        private void btnExitProgram_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
     }
 }
