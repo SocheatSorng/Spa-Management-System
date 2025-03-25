@@ -73,6 +73,7 @@
             Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties26 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
             Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties27 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
             Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties28 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
+            Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderEdges borderEdges14 = new Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderEdges();
             bunifuPanel1 = new Bunifu.UI.WinForms.BunifuPanel();
             btnLogout = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
             btnSetting = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
@@ -104,10 +105,13 @@
             txtDescription = new Bunifu.UI.WinForms.BunifuTextBox();
             txtCreatedAt = new Bunifu.UI.WinForms.BunifuTextBox();
             txtModifiedAt = new Bunifu.UI.WinForms.BunifuTextBox();
+            picService = new PictureBox();
+            btnSelectPicture = new Bunifu.UI.WinForms.BunifuButton.BunifuButton();
             bunifuPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)LogoImage).BeginInit();
             bunifuPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvService).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)picService).BeginInit();
             SuspendLayout();
             // 
             // bunifuPanel1
@@ -795,10 +799,10 @@
             // 
             label8.AutoSize = true;
             label8.BackColor = Color.Transparent;
-            label8.Font = new Font("Khmer OS Siemreap", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label8.Font = new Font("Microsoft Sans Serif", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label8.Location = new Point(474, 15);
             label8.Name = "label8";
-            label8.Size = new Size(207, 34);
+            label8.Size = new Size(207, 24);
             label8.TabIndex = 74;
             label8.Text = "Service Management";
             // 
@@ -861,7 +865,7 @@
             btnClear.DisabledFillColor = Color.FromArgb(204, 204, 204);
             btnClear.DisabledForecolor = Color.FromArgb(168, 160, 168);
             btnClear.FocusState = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.ButtonStates.Pressed;
-            btnClear.Font = new Font("Khmer OS Siemreap", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnClear.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnClear.ForeColor = Color.Black;
             btnClear.IconLeftAlign = ContentAlignment.MiddleLeft;
             btnClear.IconLeftCursor = Cursors.Default;
@@ -949,7 +953,7 @@
             btnDelete.DisabledFillColor = Color.FromArgb(204, 204, 204);
             btnDelete.DisabledForecolor = Color.FromArgb(168, 160, 168);
             btnDelete.FocusState = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.ButtonStates.Pressed;
-            btnDelete.Font = new Font("Khmer OS Siemreap", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnDelete.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnDelete.ForeColor = Color.Black;
             btnDelete.IconLeftAlign = ContentAlignment.MiddleLeft;
             btnDelete.IconLeftCursor = Cursors.Default;
@@ -1037,7 +1041,7 @@
             btnUpdate.DisabledFillColor = Color.FromArgb(204, 204, 204);
             btnUpdate.DisabledForecolor = Color.FromArgb(168, 160, 168);
             btnUpdate.FocusState = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.ButtonStates.Pressed;
-            btnUpdate.Font = new Font("Khmer OS Siemreap", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnUpdate.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnUpdate.ForeColor = Color.Black;
             btnUpdate.IconLeftAlign = ContentAlignment.MiddleLeft;
             btnUpdate.IconLeftCursor = Cursors.Default;
@@ -1125,7 +1129,7 @@
             btnInsert.DisabledFillColor = Color.FromArgb(204, 204, 204);
             btnInsert.DisabledForecolor = Color.FromArgb(168, 160, 168);
             btnInsert.FocusState = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.ButtonStates.Pressed;
-            btnInsert.Font = new Font("Khmer OS Siemreap", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnInsert.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnInsert.ForeColor = Color.Black;
             btnInsert.IconLeftAlign = ContentAlignment.MiddleLeft;
             btnInsert.IconLeftCursor = Cursors.Default;
@@ -1213,7 +1217,7 @@
             btnNew.DisabledFillColor = Color.FromArgb(204, 204, 204);
             btnNew.DisabledForecolor = Color.FromArgb(168, 160, 168);
             btnNew.FocusState = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.ButtonStates.Pressed;
-            btnNew.Font = new Font("Khmer OS Siemreap", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnNew.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnNew.ForeColor = Color.Black;
             btnNew.IconLeftAlign = ContentAlignment.MiddleLeft;
             btnNew.IconLeftCursor = Cursors.Default;
@@ -1291,7 +1295,7 @@
             txtSearch.BorderThickness = 1;
             txtSearch.CharacterCase = Bunifu.UI.WinForms.BunifuTextBox.CharacterCases.Normal;
             txtSearch.CharacterCasing = CharacterCasing.Normal;
-            txtSearch.DefaultFont = new Font("Khmer OS Siemreap", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            txtSearch.DefaultFont = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             txtSearch.DefaultText = "";
             txtSearch.FillColor = Color.White;
             txtSearch.HideSelection = true;
@@ -1365,7 +1369,7 @@
             txtID.BorderThickness = 1;
             txtID.CharacterCase = Bunifu.UI.WinForms.BunifuTextBox.CharacterCases.Normal;
             txtID.CharacterCasing = CharacterCasing.Normal;
-            txtID.DefaultFont = new Font("Khmer OS Siemreap", 9F, FontStyle.Bold);
+            txtID.DefaultFont = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold);
             txtID.DefaultText = "";
             txtID.Enabled = false;
             txtID.FillColor = Color.White;
@@ -1425,10 +1429,10 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Font = new Font("Khmer OS Siemreap", 14.25F, FontStyle.Bold);
+            label4.Font = new Font("Microsoft Sans Serif", 14.25F, FontStyle.Bold);
             label4.Location = new Point(93, 213);
             label4.Name = "label4";
-            label4.Size = new Size(35, 34);
+            label4.Size = new Size(29, 24);
             label4.TabIndex = 93;
             label4.Text = "ID";
             // 
@@ -1436,7 +1440,7 @@
             // 
             dgvService.AllowCustomTheming = false;
             dataGridViewCellStyle1.BackColor = Color.FromArgb(248, 251, 255);
-            dataGridViewCellStyle1.Font = new Font("Khmer OS Siemreap", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            dataGridViewCellStyle1.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
             dataGridViewCellStyle1.ForeColor = Color.Black;
             dgvService.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             dgvService.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -1496,50 +1500,50 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Font = new Font("Khmer OS Siemreap", 14.25F, FontStyle.Bold);
+            label1.Font = new Font("Microsoft Sans Serif", 14.25F, FontStyle.Bold);
             label1.Location = new Point(93, 263);
             label1.Name = "label1";
-            label1.Size = new Size(68, 34);
+            label1.Size = new Size(65, 24);
             label1.TabIndex = 96;
             label1.Text = "Name";
             // 
             // label9
             // 
             label9.AutoSize = true;
-            label9.Font = new Font("Khmer OS Siemreap", 14.25F, FontStyle.Bold);
+            label9.Font = new Font("Microsoft Sans Serif", 14.25F, FontStyle.Bold);
             label9.Location = new Point(93, 313);
             label9.Name = "label9";
-            label9.Size = new Size(62, 34);
+            label9.Size = new Size(58, 24);
             label9.TabIndex = 97;
             label9.Text = "Price";
             // 
             // label10
             // 
             label10.AutoSize = true;
-            label10.Font = new Font("Khmer OS Siemreap", 14.25F, FontStyle.Bold);
+            label10.Font = new Font("Microsoft Sans Serif", 14.25F, FontStyle.Bold);
             label10.Location = new Point(93, 363);
             label10.Name = "label10";
-            label10.Size = new Size(118, 34);
+            label10.Size = new Size(115, 24);
             label10.TabIndex = 98;
             label10.Text = "Description";
             // 
             // label11
             // 
             label11.AutoSize = true;
-            label11.Font = new Font("Khmer OS Siemreap", 14.25F, FontStyle.Bold);
+            label11.Font = new Font("Microsoft Sans Serif", 14.25F, FontStyle.Bold);
             label11.Location = new Point(93, 413);
             label11.Name = "label11";
-            label11.Size = new Size(85, 34);
+            label11.Size = new Size(83, 24);
             label11.TabIndex = 99;
             label11.Text = "Created";
             // 
             // label12
             // 
             label12.AutoSize = true;
-            label12.Font = new Font("Khmer OS Siemreap", 14.25F, FontStyle.Bold);
+            label12.Font = new Font("Microsoft Sans Serif", 14.25F, FontStyle.Bold);
             label12.Location = new Point(93, 463);
             label12.Name = "label12";
-            label12.Size = new Size(91, 34);
+            label12.Size = new Size(90, 24);
             label12.TabIndex = 100;
             label12.Text = "Modified";
             // 
@@ -1561,7 +1565,7 @@
             txtName.BorderThickness = 1;
             txtName.CharacterCase = Bunifu.UI.WinForms.BunifuTextBox.CharacterCases.Normal;
             txtName.CharacterCasing = CharacterCasing.Normal;
-            txtName.DefaultFont = new Font("Khmer OS Siemreap", 9F, FontStyle.Bold);
+            txtName.DefaultFont = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold);
             txtName.DefaultText = "";
             txtName.FillColor = Color.White;
             txtName.HideSelection = true;
@@ -1635,7 +1639,7 @@
             txtPrice.BorderThickness = 1;
             txtPrice.CharacterCase = Bunifu.UI.WinForms.BunifuTextBox.CharacterCases.Normal;
             txtPrice.CharacterCasing = CharacterCasing.Normal;
-            txtPrice.DefaultFont = new Font("Khmer OS Siemreap", 9F, FontStyle.Bold);
+            txtPrice.DefaultFont = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold);
             txtPrice.DefaultText = "";
             txtPrice.FillColor = Color.White;
             txtPrice.HideSelection = true;
@@ -1709,7 +1713,7 @@
             txtDescription.BorderThickness = 1;
             txtDescription.CharacterCase = Bunifu.UI.WinForms.BunifuTextBox.CharacterCases.Normal;
             txtDescription.CharacterCasing = CharacterCasing.Normal;
-            txtDescription.DefaultFont = new Font("Khmer OS Siemreap", 9F, FontStyle.Bold);
+            txtDescription.DefaultFont = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold);
             txtDescription.DefaultText = "";
             txtDescription.FillColor = Color.White;
             txtDescription.HideSelection = true;
@@ -1783,7 +1787,7 @@
             txtCreatedAt.BorderThickness = 1;
             txtCreatedAt.CharacterCase = Bunifu.UI.WinForms.BunifuTextBox.CharacterCases.Normal;
             txtCreatedAt.CharacterCasing = CharacterCasing.Normal;
-            txtCreatedAt.DefaultFont = new Font("Khmer OS Siemreap", 9F, FontStyle.Bold);
+            txtCreatedAt.DefaultFont = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold);
             txtCreatedAt.DefaultText = "";
             txtCreatedAt.Enabled = false;
             txtCreatedAt.FillColor = Color.White;
@@ -1858,7 +1862,7 @@
             txtModifiedAt.BorderThickness = 1;
             txtModifiedAt.CharacterCase = Bunifu.UI.WinForms.BunifuTextBox.CharacterCases.Normal;
             txtModifiedAt.CharacterCasing = CharacterCasing.Normal;
-            txtModifiedAt.DefaultFont = new Font("Khmer OS Siemreap", 9F, FontStyle.Bold);
+            txtModifiedAt.DefaultFont = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold);
             txtModifiedAt.DefaultText = "";
             txtModifiedAt.Enabled = false;
             txtModifiedAt.FillColor = Color.White;
@@ -1915,11 +1919,111 @@
             txtModifiedAt.UseSystemPasswordChar = false;
             txtModifiedAt.WordWrap = true;
             // 
+            // picService
+            // 
+            picService.Location = new Point(248, 600);
+            picService.Name = "picService";
+            picService.Size = new Size(257, 109);
+            picService.TabIndex = 106;
+            picService.TabStop = false;
+            // 
+            // btnSelectPicture
+            // 
+            btnSelectPicture.AllowAnimations = true;
+            btnSelectPicture.AllowMouseEffects = true;
+            btnSelectPicture.AllowToggling = false;
+            btnSelectPicture.AnimationSpeed = 200;
+            btnSelectPicture.AutoGenerateColors = false;
+            btnSelectPicture.AutoRoundBorders = false;
+            btnSelectPicture.AutoSizeLeftIcon = true;
+            btnSelectPicture.AutoSizeRightIcon = true;
+            btnSelectPicture.BackColor = Color.Transparent;
+            btnSelectPicture.BackColor1 = Color.FromArgb(51, 122, 183);
+            btnSelectPicture.BackgroundImage = (Image)resources.GetObject("btnSelectPicture.BackgroundImage");
+            btnSelectPicture.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderStyles.Solid;
+            btnSelectPicture.ButtonText = "bunifuButton1";
+            btnSelectPicture.ButtonTextMarginLeft = 0;
+            btnSelectPicture.ColorContrastOnClick = 45;
+            btnSelectPicture.ColorContrastOnHover = 45;
+            borderEdges14.BottomLeft = true;
+            borderEdges14.BottomRight = true;
+            borderEdges14.TopLeft = true;
+            borderEdges14.TopRight = true;
+            btnSelectPicture.CustomizableEdges = borderEdges14;
+            btnSelectPicture.DialogResult = DialogResult.None;
+            btnSelectPicture.DisabledBorderColor = Color.FromArgb(191, 191, 191);
+            btnSelectPicture.DisabledFillColor = Color.Empty;
+            btnSelectPicture.DisabledForecolor = Color.Empty;
+            btnSelectPicture.FocusState = Bunifu.UI.WinForms.BunifuButton.BunifuButton.ButtonStates.Pressed;
+            btnSelectPicture.Font = new Font("Segoe UI", 9F);
+            btnSelectPicture.ForeColor = Color.White;
+            btnSelectPicture.IconLeft = null;
+            btnSelectPicture.IconLeftAlign = ContentAlignment.MiddleLeft;
+            btnSelectPicture.IconLeftCursor = Cursors.Default;
+            btnSelectPicture.IconLeftPadding = new Padding(11, 3, 3, 3);
+            btnSelectPicture.IconMarginLeft = 11;
+            btnSelectPicture.IconPadding = 10;
+            btnSelectPicture.IconRight = null;
+            btnSelectPicture.IconRightAlign = ContentAlignment.MiddleRight;
+            btnSelectPicture.IconRightCursor = Cursors.Default;
+            btnSelectPicture.IconRightPadding = new Padding(3, 3, 7, 3);
+            btnSelectPicture.IconSize = 25;
+            btnSelectPicture.IdleBorderColor = Color.Empty;
+            btnSelectPicture.IdleBorderRadius = 0;
+            btnSelectPicture.IdleBorderThickness = 0;
+            btnSelectPicture.IdleFillColor = Color.Empty;
+            btnSelectPicture.IdleIconLeftImage = null;
+            btnSelectPicture.IdleIconRightImage = null;
+            btnSelectPicture.IndicateFocus = false;
+            btnSelectPicture.Location = new Point(251, 530);
+            btnSelectPicture.Name = "btnSelectPicture";
+            btnSelectPicture.OnDisabledState.BorderColor = Color.FromArgb(191, 191, 191);
+            btnSelectPicture.OnDisabledState.BorderRadius = 1;
+            btnSelectPicture.OnDisabledState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderStyles.Solid;
+            btnSelectPicture.OnDisabledState.BorderThickness = 1;
+            btnSelectPicture.OnDisabledState.FillColor = Color.FromArgb(204, 204, 204);
+            btnSelectPicture.OnDisabledState.ForeColor = Color.FromArgb(168, 160, 168);
+            btnSelectPicture.OnDisabledState.IconLeftImage = null;
+            btnSelectPicture.OnDisabledState.IconRightImage = null;
+            btnSelectPicture.onHoverState.BorderColor = Color.FromArgb(30, 150, 255);
+            btnSelectPicture.onHoverState.BorderRadius = 1;
+            btnSelectPicture.onHoverState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderStyles.Solid;
+            btnSelectPicture.onHoverState.BorderThickness = 1;
+            btnSelectPicture.onHoverState.FillColor = Color.FromArgb(30, 150, 255);
+            btnSelectPicture.onHoverState.ForeColor = Color.White;
+            btnSelectPicture.onHoverState.IconLeftImage = null;
+            btnSelectPicture.onHoverState.IconRightImage = null;
+            btnSelectPicture.OnIdleState.BorderColor = Color.DodgerBlue;
+            btnSelectPicture.OnIdleState.BorderRadius = 1;
+            btnSelectPicture.OnIdleState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderStyles.Solid;
+            btnSelectPicture.OnIdleState.BorderThickness = 1;
+            btnSelectPicture.OnIdleState.FillColor = Color.DodgerBlue;
+            btnSelectPicture.OnIdleState.ForeColor = Color.White;
+            btnSelectPicture.OnIdleState.IconLeftImage = null;
+            btnSelectPicture.OnIdleState.IconRightImage = null;
+            btnSelectPicture.OnPressedState.BorderColor = Color.FromArgb(40, 96, 144);
+            btnSelectPicture.OnPressedState.BorderRadius = 1;
+            btnSelectPicture.OnPressedState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderStyles.Solid;
+            btnSelectPicture.OnPressedState.BorderThickness = 1;
+            btnSelectPicture.OnPressedState.FillColor = Color.FromArgb(40, 96, 144);
+            btnSelectPicture.OnPressedState.ForeColor = Color.White;
+            btnSelectPicture.OnPressedState.IconLeftImage = null;
+            btnSelectPicture.OnPressedState.IconRightImage = null;
+            btnSelectPicture.Size = new Size(149, 34);
+            btnSelectPicture.TabIndex = 107;
+            btnSelectPicture.TextAlign = ContentAlignment.MiddleCenter;
+            btnSelectPicture.TextAlignment = HorizontalAlignment.Center;
+            btnSelectPicture.TextMarginLeft = 0;
+            btnSelectPicture.TextPadding = new Padding(0);
+            btnSelectPicture.UseDefaultRadiusAndThickness = true;
+            // 
             // Service
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1370, 728);
+            Controls.Add(btnSelectPicture);
+            Controls.Add(picService);
             Controls.Add(txtModifiedAt);
             Controls.Add(txtCreatedAt);
             Controls.Add(txtDescription);
@@ -1950,6 +2054,7 @@
             bunifuPanel2.ResumeLayout(false);
             bunifuPanel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dgvService).EndInit();
+            ((System.ComponentModel.ISupportInitialize)picService).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -1986,5 +2091,7 @@
         private Bunifu.UI.WinForms.BunifuTextBox txtDescription;
         private Bunifu.UI.WinForms.BunifuTextBox txtCreatedAt;
         private Bunifu.UI.WinForms.BunifuTextBox txtModifiedAt;
+        private PictureBox picService;
+        private Bunifu.UI.WinForms.BunifuButton.BunifuButton btnSelectPicture;
     }
 }

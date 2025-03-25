@@ -14,6 +14,7 @@ namespace Spa_Management_System
     {
         private ServiceDAO _dao;
         private DataTable _servicesTable;
+        private string _selectedImagePath;
 
         public Service()
         {
@@ -29,8 +30,19 @@ namespace Spa_Management_System
             _servicesTable = _dao.GetAllServices();
             dgvService.DataSource = _servicesTable;
         }
+        private void ClearFields()
+        {
+            txtID.Clear(); // ID
+            txtName.Clear(); // Name
+            txtDescription.Clear(); // Description
+            txtPrice.Clear(); // Price
+            txtCreatedAt.Clear(); // CreatedDate
+            txtModifiedAt.Clear(); // ModifiedDate
+            picService.Image = null; // Clear image
+            _selectedImagePath = null; // Clear selected image path
+        }
 
-        // Wire up events
+        // Clear all input fields
         private void WireUpEvents()
         {
             btnInsert.Click += BtnInsert_Click; // Insert
@@ -40,19 +52,8 @@ namespace Spa_Management_System
             btnClear.Click += BtnClear_Click; // Clear
             txtSearch.TextChanged += TxtSearch_TextChanged; // Search
             dgvService.CellClick += DgvService_CellClick; // Cell click to populate fields
+            btnSelectPicture.Click += BtnSelectPicture_Click; // Select image
         }
-
-        // Clear all input fields
-        private void ClearFields()
-        {
-            txtID.Clear(); // ID
-            txtName.Clear(); // Name
-            txtDescription.Clear(); // Description
-            txtPrice.Clear(); // Price
-            txtCreatedAt.Clear(); // CreatedDate
-            txtModifiedAt.Clear(); // ModifiedDate
-        }
-
         // Insert button click
         private void BtnInsert_Click(object sender, EventArgs e)
         {
@@ -68,8 +69,8 @@ namespace Spa_Management_System
                     return;
                 }
 
-                // Use Factory to create a new ServiceModel
-                ServiceModel newService = ServiceFactory.CreateService(serviceName, description, price);
+                // Use Factory to create a new ServiceModel with image path
+                ServiceModel newService = ServiceFactory.CreateService(serviceName, description, price, _selectedImagePath);
                 _dao.InsertService(newService);
                 LoadServices();
                 ClearFields();
@@ -104,8 +105,9 @@ namespace Spa_Management_System
                     return;
                 }
 
-                // Use Factory to create an updated ServiceModel
-                ServiceModel updatedService = ServiceFactory.CreateService(serviceId, serviceName, description, price, createdDate, DateTime.Now);
+                // Use Factory to create an updated ServiceModel with image path
+                ServiceModel updatedService = ServiceFactory.CreateService(
+                    serviceId, serviceName, description, price, _selectedImagePath, createdDate, DateTime.Now);
                 _dao.UpdateService(updatedService);
                 LoadServices();
                 ClearFields();
@@ -179,6 +181,28 @@ namespace Spa_Management_System
                 txtPrice.Text = row.Cells["Price"].Value.ToString(); // Price
                 txtCreatedAt.Text = row.Cells["CreatedDate"].Value.ToString(); // CreatedDate
                 txtModifiedAt.Text = row.Cells["ModifiedDate"].Value.ToString(); // ModifiedDate
+
+                // Handle image path
+                _selectedImagePath = row.Cells["ImagePath"].Value == DBNull.Value ?
+                    null : row.Cells["ImagePath"].Value.ToString();
+
+                // Display image if available
+                if (!string.IsNullOrEmpty(_selectedImagePath) && File.Exists(_selectedImagePath))
+                {
+                    try
+                    {
+                        picService.Image = Image.FromFile(_selectedImagePath);
+                        picService.SizeMode = PictureBoxSizeMode.Zoom;
+                    }
+                    catch
+                    {
+                        picService.Image = null;
+                    }
+                }
+                else
+                {
+                    picService.Image = null;
+                }
             }
         }
 
@@ -186,5 +210,32 @@ namespace Spa_Management_System
         {
             Application.Exit();
         }
+        private void BtnSelectPicture_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.gif;*.bmp";
+                openFileDialog.Title = "Select Service Image";
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    _selectedImagePath = openFileDialog.FileName;
+
+                    // Load and display the image
+                    try
+                    {
+                        picService.Image = Image.FromFile(_selectedImagePath);
+                        picService.SizeMode = PictureBoxSizeMode.Zoom;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error loading image: " + ex.Message);
+                        _selectedImagePath = null;
+                    }
+                }
+            }
+        }
+
+
     }
 }

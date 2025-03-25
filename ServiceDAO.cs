@@ -49,6 +49,7 @@ namespace Spa_Management_System
         }
 
         // Insert service
+        // Insert service
         public void InsertService(ServiceModel service)
         {
             try
@@ -57,14 +58,15 @@ namespace Spa_Management_System
                 {
                     connection.Open();
 
-                    string query = "INSERT INTO tbService (ServiceName, Description, Price, CreatedDate, ModifiedDate) " +
-                                   "VALUES (@ServiceName, @Description, @Price, @CreatedDate, @ModifiedDate)";
+                    string query = "INSERT INTO tbService (ServiceName, Description, Price, ImagePath, CreatedDate, ModifiedDate) " +
+                                   "VALUES (@ServiceName, @Description, @Price, @ImagePath, @CreatedDate, @ModifiedDate)";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@ServiceName", service.ServiceName);
                         command.Parameters.AddWithValue("@Description", (object)service.Description ?? DBNull.Value);
                         command.Parameters.AddWithValue("@Price", service.Price);
+                        command.Parameters.AddWithValue("@ImagePath", (object)service.ImagePath ?? DBNull.Value);
                         command.Parameters.AddWithValue("@CreatedDate", service.CreatedDate);
                         command.Parameters.AddWithValue("@ModifiedDate", service.ModifiedDate);
 
@@ -88,7 +90,7 @@ namespace Spa_Management_System
                     connection.Open();
 
                     string query = "UPDATE tbService SET ServiceName = @ServiceName, Description = @Description, " +
-                                   "Price = @Price, ModifiedDate = @ModifiedDate WHERE ServiceId = @ServiceId";
+                                   "Price = @Price, ImagePath = @ImagePath, ModifiedDate = @ModifiedDate WHERE ServiceId = @ServiceId";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
@@ -96,6 +98,7 @@ namespace Spa_Management_System
                         command.Parameters.AddWithValue("@ServiceName", service.ServiceName);
                         command.Parameters.AddWithValue("@Description", (object)service.Description ?? DBNull.Value);
                         command.Parameters.AddWithValue("@Price", service.Price);
+                        command.Parameters.AddWithValue("@ImagePath", (object)service.ImagePath ?? DBNull.Value);
                         command.Parameters.AddWithValue("@ModifiedDate", DateTime.Now);
 
                         command.ExecuteNonQuery();
