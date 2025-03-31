@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.IO;
 using System.Windows.Forms;
 using Microsoft.Data.SqlClient;
 using Bunifu.UI.WinForms;
@@ -11,6 +12,7 @@ namespace Spa_Management_System
     {
         private readonly ConsumableContext _consumableContext;
         private DataTable _consumablesTable;
+        private string _selectedImagePath;
 
         // Check if the form is in design mode
         private bool IsDesignMode => System.ComponentModel.LicenseManager.UsageMode == System.ComponentModel.LicenseUsageMode.Designtime;
@@ -39,17 +41,6 @@ namespace Spa_Management_System
 
         private void InitializeCategoryDropdown()
         {
-            // Create a new BunifuDropdown if it doesn't exist
-            if (cboCategory == null)
-            {
-                cboCategory = new BunifuDropdown();
-                cboCategory.Size = new Size(340, 32);
-                //cboCategory.Location = txtCategory.Location;
-                cboCategory.Font = new Font("Microsoft Sans Serif", 12F);
-                bunifuPanel2.Controls.Add(cboCategory);
-                //bunifuPanel2.Controls.Remove(txtCategory);
-            }
-
             // Configure the dropdown
             cboCategory.Items.Clear();
             cboCategory.Items.Add("Foods");
@@ -79,6 +70,7 @@ namespace Spa_Management_System
             btnClear.Click += btnClear_Click;
             txtSearch.TextChanged += txtSearch_TextChanged;
             dgvConsumable.CellClick += dgvConsumable_CellClick;
+            btnSelectPicture.Click += btnSelectPicture_Click;
         }
 
         // Clear all input fields
@@ -92,6 +84,8 @@ namespace Spa_Management_System
             txtQuantity.Clear();
             txtCreatedAt.Clear();
             txtModifiedAt.Clear();
+            picConsumable.Image = null;
+            _selectedImagePath = null;
             txtName.Focus();
         }
 
@@ -119,7 +113,7 @@ namespace Spa_Management_System
                     return;
                 }
 
-                _consumableContext.InsertConsumable(name, description, price, category, stockQuantity);
+                _consumableContext.InsertConsumable(name, description, price, category, stockQuantity, _selectedImagePath);
                 LoadConsumables();
                 btnNew_Click(sender, e); // Clear fields
                 MessageBox.Show("Consumable inserted successfully.");
@@ -162,7 +156,7 @@ namespace Spa_Management_System
                     return;
                 }
 
-                _consumableContext.UpdateConsumable(consumableId, name, description, price, category, stockQuantity);
+                _consumableContext.UpdateConsumable(consumableId, name, description, price, category, stockQuantity, _selectedImagePath);
                 LoadConsumables();
                 btnNew_Click(sender, e); // Clear fields
                 MessageBox.Show("Consumable updated successfully.");
@@ -241,6 +235,86 @@ namespace Spa_Management_System
                 txtQuantity.Text = row.Cells["StockQuantity"].Value.ToString();
                 txtCreatedAt.Text = row.Cells["CreatedDate"].Value.ToString();
                 txtModifiedAt.Text = row.Cells["ModifiedDate"].Value.ToString();
+
+                // Handle image path
+                _selectedImagePath = row.Cells["ImagePath"].Value == DBNull.Value ?
+                    null : row.Cells["ImagePath"].Value.ToString();
+
+                // Display image if available
+                if (!string.IsNullOrEmpty(_selectedImagePath))
+                {
+                    try
+                    {
+                        string fullPath = Path.Combine(Application.StartupPath, _selectedImagePath);
+                        if (File.Exists(fullPath))
+                        {
+                            using (var stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read))
+                            {
+                                picConsumable.Image = Image.FromStream(stream);
+                                picConsumable.SizeMode = PictureBoxSizeMode.Zoom;
+                            }
+                        }
+                        else
+                        {
+                            picConsumable.Image = null;
+                        }
+                    }
+                    catch
+                    {
+                        picConsumable.Image = null;
+                    }
+                }
+                else
+                {
+                    picConsumable.Image = null;
+                }
+            }
+        }
+
+        private void btnSelectPicture_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.gif;*.bmp";
+                openFileDialog.Title = "Select Consumable Image";
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        // Get the selected file path
+                        string sourceFilePath = openFileDialog.FileName;
+
+                        // Create directory if it doesn't exist
+                        string destinationFolder = Path.Combine(Application.StartupPath, "Images", "Consumables");
+                        if (!Directory.Exists(destinationFolder))
+                        {
+                            Directory.CreateDirectory(destinationFolder);
+                        }
+
+                        // Generate unique filename based on timestamp
+                        string fileName = "consumable_" + DateTime.Now.ToString("yyyyMMddHHmmss") + Path.GetExtension(sourceFilePath);
+                        string destinationPath = Path.Combine(destinationFolder, fileName);
+
+                        // Copy the file to our application's images folder
+                        File.Copy(sourceFilePath, destinationPath, true);
+
+                        // Store the relative path in the database
+                        _selectedImagePath = Path.Combine("Images", "Consumables", fileName);
+
+                        // Display the image using streams to avoid file locking
+                        using (var stream = new FileStream(destinationPath, FileMode.Open, FileAccess.Read))
+                        {
+                            picConsumable.Image = Image.FromStream(stream);
+                            picConsumable.SizeMode = PictureBoxSizeMode.Zoom;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error processing image: " + ex.Message);
+                        _selectedImagePath = null;
+                    }
+                }
             }
         }
 
@@ -272,14 +346,14 @@ namespace Spa_Management_System
             return _strategy.GetAllConsumables();
         }
 
-        public void InsertConsumable(string name, string description, decimal price, string category, int stockQuantity)
+        public void InsertConsumable(string name, string description, decimal price, string category, int stockQuantity, string imagePath = null)
         {
-            _strategy.InsertConsumable(name, description, price, category, stockQuantity);
+            _strategy.InsertConsumable(name, description, price, category, stockQuantity, imagePath);
         }
 
-        public void UpdateConsumable(int consumableId, string name, string description, decimal price, string category, int stockQuantity)
+        public void UpdateConsumable(int consumableId, string name, string description, decimal price, string category, int stockQuantity, string imagePath = null)
         {
-            _strategy.UpdateConsumable(consumableId, name, description, price, category, stockQuantity);
+            _strategy.UpdateConsumable(consumableId, name, description, price, category, stockQuantity, imagePath);
         }
 
         public void DeleteConsumable(int consumableId)
@@ -292,8 +366,8 @@ namespace Spa_Management_System
     public interface IConsumableDataStrategy
     {
         DataTable GetAllConsumables();
-        void InsertConsumable(string name, string description, decimal price, string category, int stockQuantity);
-        void UpdateConsumable(int consumableId, string name, string description, decimal price, string category, int stockQuantity);
+        void InsertConsumable(string name, string description, decimal price, string category, int stockQuantity, string imagePath = null);
+        void UpdateConsumable(int consumableId, string name, string description, decimal price, string category, int stockQuantity, string imagePath = null);
         void DeleteConsumable(int consumableId);
     }
 
@@ -314,26 +388,27 @@ namespace Spa_Management_System
             return _connectionManager.ExecuteQuery(query);
         }
 
-        public void InsertConsumable(string name, string description, decimal price, string category, int stockQuantity)
+        public void InsertConsumable(string name, string description, decimal price, string category, int stockQuantity, string imagePath = null)
         {
             // Factory Pattern: Use factory to create the consumable
-            ConsumableModel consumable = ConsumableFactory.CreateConsumable(name, description, price, category, stockQuantity);
+            ConsumableModel consumable = ConsumableFactory.CreateConsumable(name, description, price, category, stockQuantity, imagePath);
 
-            string query = "INSERT INTO tbConsumable (Name, Description, Price, Category, StockQuantity, CreatedDate, ModifiedDate) " +
-                          "VALUES (@Name, @Description, @Price, @Category, @StockQuantity, @CreatedDate, @ModifiedDate)";
+            string query = "INSERT INTO tbConsumable (Name, Description, Price, Category, StockQuantity, ImagePath, CreatedDate, ModifiedDate) " +
+                          "VALUES (@Name, @Description, @Price, @Category, @StockQuantity, @ImagePath, @CreatedDate, @ModifiedDate)";
             SqlParameter[] parameters = {
                 new SqlParameter("@Name", consumable.Name),
-                new SqlParameter("@Description", consumable.Description),
+                new SqlParameter("@Description", (object)consumable.Description ?? DBNull.Value),
                 new SqlParameter("@Price", consumable.Price),
                 new SqlParameter("@Category", consumable.Category),
                 new SqlParameter("@StockQuantity", consumable.StockQuantity),
+                new SqlParameter("@ImagePath", (object)consumable.ImagePath ?? DBNull.Value),
                 new SqlParameter("@CreatedDate", consumable.CreatedDate),
                 new SqlParameter("@ModifiedDate", consumable.ModifiedDate)
             };
             _connectionManager.ExecuteNonQuery(query, parameters);
         }
 
-        public void UpdateConsumable(int consumableId, string name, string description, decimal price, string category, int stockQuantity)
+        public void UpdateConsumable(int consumableId, string name, string description, decimal price, string category, int stockQuantity, string imagePath = null)
         {
             // Get the original creation date
             DateTime createdDate = DateTime.Now; // Default value
@@ -347,16 +422,17 @@ namespace Spa_Management_System
 
             // Factory Pattern: Use factory to create the updated consumable
             ConsumableModel consumable = ConsumableFactory.CreateConsumable(
-                consumableId, name, description, price, category, stockQuantity, createdDate);
+                consumableId, name, description, price, category, stockQuantity, createdDate, imagePath);
 
             string query = "UPDATE tbConsumable SET Name = @Name, Description = @Description, Price = @Price, Category = @Category, " +
-                          "StockQuantity = @StockQuantity, ModifiedDate = @ModifiedDate WHERE ConsumableId = @ConsumableId";
+                          "StockQuantity = @StockQuantity, ImagePath = @ImagePath, ModifiedDate = @ModifiedDate WHERE ConsumableId = @ConsumableId";
             SqlParameter[] parameters = {
                 new SqlParameter("@Name", consumable.Name),
-                new SqlParameter("@Description", consumable.Description),
+                new SqlParameter("@Description", (object)consumable.Description ?? DBNull.Value),
                 new SqlParameter("@Price", consumable.Price),
                 new SqlParameter("@Category", consumable.Category),
                 new SqlParameter("@StockQuantity", consumable.StockQuantity),
+                new SqlParameter("@ImagePath", (object)consumable.ImagePath ?? DBNull.Value),
                 new SqlParameter("@ModifiedDate", consumable.ModifiedDate),
                 new SqlParameter("@ConsumableId", consumable.ConsumableId)
             };
@@ -377,7 +453,7 @@ namespace Spa_Management_System
     public static class ConsumableFactory
     {
         // Factory Method: Creates a new ConsumableModel for insertion
-        public static ConsumableModel CreateConsumable(string name, string description, decimal price, string category, int stockQuantity)
+        public static ConsumableModel CreateConsumable(string name, string description, decimal price, string category, int stockQuantity, string imagePath = null)
         {
             return new ConsumableModel
             {
@@ -386,6 +462,7 @@ namespace Spa_Management_System
                 Price = price,
                 Category = category,
                 StockQuantity = stockQuantity,
+                ImagePath = imagePath,
                 CreatedDate = DateTime.Now,
                 ModifiedDate = DateTime.Now
             };
@@ -393,7 +470,7 @@ namespace Spa_Management_System
 
         // Factory Method: Creates a ConsumableModel with existing ID for update
         public static ConsumableModel CreateConsumable(int consumableId, string name, string description, decimal price,
-                                                    string category, int stockQuantity, DateTime createdDate)
+                                                    string category, int stockQuantity, DateTime createdDate, string imagePath = null)
         {
             return new ConsumableModel
             {
@@ -403,6 +480,7 @@ namespace Spa_Management_System
                 Price = price,
                 Category = category,
                 StockQuantity = stockQuantity,
+                ImagePath = imagePath,
                 CreatedDate = createdDate,
                 ModifiedDate = DateTime.Now
             };

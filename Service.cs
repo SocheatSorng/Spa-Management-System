@@ -245,23 +245,40 @@ namespace Spa_Management_System
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    _selectedImagePath = openFileDialog.FileName;
-
-                    // Load and display the image
                     try
                     {
-                        picService.Image = Image.FromFile(_selectedImagePath);
+                        // Get the selected file path
+                        string sourceFilePath = openFileDialog.FileName;
+
+                        // Create directory if it doesn't exist
+                        string destinationFolder = Path.Combine(Application.StartupPath, "Images", "Services");
+                        if (!Directory.Exists(destinationFolder))
+                        {
+                            Directory.CreateDirectory(destinationFolder);
+                        }
+
+                        // Generate unique filename based on timestamp
+                        string fileName = "service_" + DateTime.Now.ToString("yyyyMMddHHmmss") + Path.GetExtension(sourceFilePath);
+                        string destinationPath = Path.Combine(destinationFolder, fileName);
+
+                        // Copy the file to our application's images folder
+                        File.Copy(sourceFilePath, destinationPath, true);
+
+                        // Store the relative path in the database
+                        _selectedImagePath = Path.Combine("Images", "Services", fileName);
+
+                        // Display the image
+                        picService.Image = Image.FromFile(destinationPath);
                         picService.SizeMode = PictureBoxSizeMode.Zoom;
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Error loading image: " + ex.Message);
+                        MessageBox.Show("Error processing image: " + ex.Message);
                         _selectedImagePath = null;
                     }
                 }
             }
         }
-
 
     }
 }

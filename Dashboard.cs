@@ -296,6 +296,8 @@ namespace Spa_Management_System
             btnExitProgram.Click += btnExitProgram_Clicked;
 
             sliderPriceFilter.ValueChanged += SliderPriceFilter_ValueChanged;
+            // Add Refresh button event handler
+            btnRefresh.Click += BtnRefresh_Click;
         }
         private void SetupCategoryButtons()
         {
@@ -467,6 +469,56 @@ namespace Spa_Management_System
 
             // Show the popup form
             popupForm.Show();
+        }
+        private void BtnRefresh_Click(object sender, EventArgs e)
+        {
+            // Show loading cursor
+            Cursor = Cursors.WaitCursor;
+
+            try
+            {
+                // Reload all data from database
+                LoadServices();
+                LoadConsumables();
+
+                // Refresh UI based on current category and filters
+                string currentSearchText = txtSearch.Text;
+
+                // Clear search to ensure we show all items after refresh
+                txtSearch.Clear();
+
+                // Apply category
+                switch (_currentCategory)
+                {
+                    case "Services":
+                        ShowServicesResponsive();
+                        break;
+                    case "Foods":
+                    case "Drinks":
+                        ShowConsumablesResponsive(_currentCategory);
+                        break;
+                }
+
+                // If there was a search filter, reapply it
+                if (!string.IsNullOrEmpty(currentSearchText))
+                {
+                    txtSearch.Text = currentSearchText;
+                    // FilterItems will be called by the TextChanged event
+                }
+
+                MessageBox.Show("Product data refreshed successfully!", "Refresh Complete",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error refreshing data: " + ex.Message, "Refresh Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                // Restore cursor
+                Cursor = Cursors.Default;
+            }
         }
 
         #endregion

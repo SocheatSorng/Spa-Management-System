@@ -1921,9 +1921,9 @@
             // 
             // picService
             // 
-            picService.Location = new Point(248, 600);
+            picService.Location = new Point(246, 533);
             picService.Name = "picService";
-            picService.Size = new Size(257, 109);
+            picService.Size = new Size(271, 144);
             picService.TabIndex = 106;
             picService.TabStop = false;
             // 
@@ -1941,7 +1941,7 @@
             btnSelectPicture.BackColor1 = Color.FromArgb(51, 122, 183);
             btnSelectPicture.BackgroundImage = (Image)resources.GetObject("btnSelectPicture.BackgroundImage");
             btnSelectPicture.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderStyles.Solid;
-            btnSelectPicture.ButtonText = "bunifuButton1";
+            btnSelectPicture.ButtonText = "Input Image";
             btnSelectPicture.ButtonTextMarginLeft = 0;
             btnSelectPicture.ColorContrastOnClick = 45;
             btnSelectPicture.ColorContrastOnHover = 45;
@@ -1975,7 +1975,7 @@
             btnSelectPicture.IdleIconLeftImage = null;
             btnSelectPicture.IdleIconRightImage = null;
             btnSelectPicture.IndicateFocus = false;
-            btnSelectPicture.Location = new Point(251, 530);
+            btnSelectPicture.Location = new Point(93, 540);
             btnSelectPicture.Name = "btnSelectPicture";
             btnSelectPicture.OnDisabledState.BorderColor = Color.FromArgb(191, 191, 191);
             btnSelectPicture.OnDisabledState.BorderRadius = 1;
@@ -2009,7 +2009,7 @@
             btnSelectPicture.OnPressedState.ForeColor = Color.White;
             btnSelectPicture.OnPressedState.IconLeftImage = null;
             btnSelectPicture.OnPressedState.IconRightImage = null;
-            btnSelectPicture.Size = new Size(149, 34);
+            btnSelectPicture.Size = new Size(115, 34);
             btnSelectPicture.TabIndex = 107;
             btnSelectPicture.TextAlign = ContentAlignment.MiddleCenter;
             btnSelectPicture.TextAlignment = HorizontalAlignment.Center;
