@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using Microsoft.Data.SqlClient;
+using Bunifu.UI.WinForms;
 
 namespace Spa_Management_System
 {
@@ -25,6 +26,7 @@ namespace Spa_Management_System
                 {
                     // Strategy Pattern: Create context with database strategy
                     _consumableContext = new ConsumableContext(new DatabaseConsumableStrategy());
+                    InitializeCategoryDropdown();
                     LoadConsumables();
                     WireUpEvents(); // Attach event handlers
                 }
@@ -33,6 +35,27 @@ namespace Spa_Management_System
                     MessageBox.Show("Initialization error: " + ex.Message);
                 }
             }
+        }
+
+        private void InitializeCategoryDropdown()
+        {
+            // Create a new BunifuDropdown if it doesn't exist
+            if (cboCategory == null)
+            {
+                cboCategory = new BunifuDropdown();
+                cboCategory.Size = new Size(340, 32);
+                //cboCategory.Location = txtCategory.Location;
+                cboCategory.Font = new Font("Microsoft Sans Serif", 12F);
+                bunifuPanel2.Controls.Add(cboCategory);
+                //bunifuPanel2.Controls.Remove(txtCategory);
+            }
+
+            // Configure the dropdown
+            cboCategory.Items.Clear();
+            cboCategory.Items.Add("Foods");
+            cboCategory.Items.Add("Drinks");
+            cboCategory.DropDownStyle = ComboBoxStyle.DropDownList;
+            cboCategory.SelectedIndex = 0;
         }
 
         // Load all consumables into the DataGridView
@@ -65,7 +88,7 @@ namespace Spa_Management_System
             txtName.Clear();
             txtDescription.Clear();
             txtPrice.Clear();
-            txtCategory.Clear();
+            cboCategory.SelectedIndex = 0;
             txtQuantity.Clear();
             txtCreatedAt.Clear();
             txtModifiedAt.Clear();
@@ -87,7 +110,7 @@ namespace Spa_Management_System
                 string name = txtName.Text.Trim();
                 string description = txtDescription.Text.Trim();
                 decimal price = decimal.Parse(txtPrice.Text.Trim());
-                string category = txtCategory.Text.Trim();
+                string category = cboCategory.SelectedItem.ToString();
                 int stockQuantity = int.Parse(txtQuantity.Text.Trim());
 
                 if (price < 0 || stockQuantity < 0)
@@ -130,7 +153,7 @@ namespace Spa_Management_System
                 string name = txtName.Text.Trim();
                 string description = txtDescription.Text.Trim();
                 decimal price = decimal.Parse(txtPrice.Text.Trim());
-                string category = txtCategory.Text.Trim();
+                string category = cboCategory.SelectedItem.ToString();
                 int stockQuantity = int.Parse(txtQuantity.Text.Trim());
 
                 if (price < 0 || stockQuantity < 0)
@@ -213,7 +236,8 @@ namespace Spa_Management_System
                 txtName.Text = row.Cells["Name"].Value.ToString();
                 txtDescription.Text = row.Cells["Description"].Value?.ToString() ?? "";
                 txtPrice.Text = row.Cells["Price"].Value.ToString();
-                txtCategory.Text = row.Cells["Category"].Value?.ToString() ?? "";
+                string category = row.Cells["Category"].Value?.ToString() ?? "Foods";
+                cboCategory.SelectedItem = category;
                 txtQuantity.Text = row.Cells["StockQuantity"].Value.ToString();
                 txtCreatedAt.Text = row.Cells["CreatedDate"].Value.ToString();
                 txtModifiedAt.Text = row.Cells["ModifiedDate"].Value.ToString();
