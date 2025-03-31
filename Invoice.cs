@@ -214,7 +214,7 @@ namespace Spa_Management_System
 
         private void btnExitProgram_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            this.Close();
         }
     }
 

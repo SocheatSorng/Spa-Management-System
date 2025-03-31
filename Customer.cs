@@ -256,6 +256,8 @@ namespace Spa_Management_System
             txtCustomerID.KeyDown += TxtCustomerID_KeyDown;
             // Subscribe to our custom event
             CardScanned += Customer_CardScanned;
+            // Add exit button handler to close only this form
+            btnExitProgram.Click += (s, e) => this.Close();
         }
         private void TxtCustomerID_KeyDown(object sender, KeyEventArgs e)
         {

@@ -69,9 +69,19 @@ namespace Spa_Management_System
                     return;
                 }
 
-                // Use Factory to create a new ServiceModel with image path
-                //ServiceModel newService = ServiceFactory.CreateService(serviceName, description, price, _selectedImagePath);
-                //_dao.InsertService(newService);
+                // Create a new ServiceModel
+                ServiceModel newService = new ServiceModel
+                {
+                    ServiceName = serviceName,
+                    Description = description,
+                    Price = price,
+                    ImagePath = _selectedImagePath,
+                    CreatedDate = DateTime.Now,
+                    ModifiedDate = DateTime.Now
+                };
+
+                // Insert the service using the DAO
+                _dao.InsertService(newService);
                 LoadServices();
                 ClearFields();
                 MessageBox.Show("Service inserted successfully.");
@@ -105,10 +115,20 @@ namespace Spa_Management_System
                     return;
                 }
 
-                // Use Factory to create an updated ServiceModel with image path
-                //ServiceModel updatedService = ServiceFactory.CreateService(
-                //    serviceId, serviceName, description, price, _selectedImagePath, createdDate, DateTime.Now);
-                //_dao.UpdateService(updatedService);
+                // Create updated ServiceModel
+                ServiceModel updatedService = new ServiceModel
+                {
+                    ServiceId = serviceId,
+                    ServiceName = serviceName,
+                    Description = description,
+                    Price = price,
+                    ImagePath = _selectedImagePath,
+                    CreatedDate = createdDate,
+                    ModifiedDate = DateTime.Now
+                };
+
+                // Update the service using the DAO
+                _dao.UpdateService(updatedService);
                 LoadServices();
                 ClearFields();
                 MessageBox.Show("Service updated successfully.");
@@ -119,7 +139,7 @@ namespace Spa_Management_System
             }
         }
 
-        // Delete button click (Updated)
+        // Delete button click
         private void BtnDelete_Click(object sender, EventArgs e)
         {
             try
@@ -131,7 +151,13 @@ namespace Spa_Management_System
                 }
 
                 int serviceId = int.Parse(txtID.Text);
-                DialogResult result = MessageBox.Show("Are you sure you want to delete this service?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                DialogResult result = MessageBox.Show(
+                    "Are you sure you want to delete this service?", 
+                    "Confirm Delete", 
+                    MessageBoxButtons.YesNo, 
+                    MessageBoxIcon.Question);
+
                 if (result == DialogResult.Yes)
                 {
                     _dao.DeleteService(serviceId);
@@ -208,7 +234,7 @@ namespace Spa_Management_System
 
         private void btnExitProgram_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            this.Close();
         }
         private void BtnSelectPicture_Click(object sender, EventArgs e)
         {

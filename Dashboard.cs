@@ -275,6 +275,7 @@ namespace Spa_Management_System
         {
             // Navigation buttons
             btnDashboard.Click += (s, e) => { /* Toggle home view */ };
+            btnAllForm.Click += BtnAllForm_Click;
             btnStatistic.Click += (s, e) => { /* Open statistics view */ };
             btnInvoice.Click += (s, e) => { /* Open invoices view */ };
             btnSetting.Click += (s, e) => { /* Open settings view */ };
@@ -397,6 +398,75 @@ namespace Spa_Management_System
             {
                 MessageBox.Show("No items in current order to checkout.");
             }
+        }
+
+        private void BtnAllForm_Click(object sender, EventArgs e)
+        {
+            // Create a custom popup form
+            Form popupForm = new Form();
+            popupForm.Size = new Size(200, 180); // Increased height to accommodate new button
+            popupForm.FormBorderStyle = FormBorderStyle.None;
+            popupForm.BackColor = Color.White;
+            popupForm.ShowInTaskbar = false;
+            popupForm.StartPosition = FormStartPosition.Manual;
+            popupForm.TopMost = true;
+
+            // Calculate position to show next to the btnAllForm
+            Point btnLocation = btnAllForm.PointToScreen(new Point(0, 0));
+            popupForm.Location = new Point(btnLocation.X + btnAllForm.Width, btnLocation.Y);
+
+            // Create Customer button
+            Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnCustomer = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
+            btnCustomer.Text = "Customer";
+            btnCustomer.Size = new Size(180, 40);
+            btnCustomer.Location = new Point(10, 10);
+            btnCustomer.Click += (s, args) => {
+                Customer customerForm = new Customer();
+                customerForm.Show();
+                popupForm.Close();
+            };
+
+            // Create Service button
+            Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnService = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
+            btnService.Text = "Service";
+            btnService.Size = new Size(180, 40);
+            btnService.Location = new Point(10, 50);
+            btnService.Click += (s, args) => {
+                Service serviceForm = new Service();
+                serviceForm.Show();
+                popupForm.Close();
+            };
+
+            // Create Consumable button
+            Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnConsumable = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
+            btnConsumable.Text = "Consumable";
+            btnConsumable.Size = new Size(180, 40);
+            btnConsumable.Location = new Point(10, 90);
+            btnConsumable.Click += (s, args) => {
+                Consumable consumableForm = new Consumable();
+                consumableForm.Show();
+                popupForm.Close();
+            };
+
+            // Create User button
+            Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnUser = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
+            btnUser.Text = "User";
+            btnUser.Size = new Size(180, 40);
+            btnUser.Location = new Point(10, 130);
+            btnUser.Click += (s, args) => {
+                User userForm = new User();
+                userForm.Show();
+                popupForm.Close();
+            };
+
+            // Add buttons to the popup form
+            popupForm.Controls.Add(btnCustomer);
+            popupForm.Controls.Add(btnService);
+            popupForm.Controls.Add(btnConsumable);
+            popupForm.Controls.Add(btnUser);
+
+            // Show the popup form
+            popupForm.Show();
         }
 
         #endregion
