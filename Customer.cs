@@ -249,8 +249,8 @@ namespace Spa_Management_System
             btnUpdate.Click += BtnUpdate_Click;
             btnDelete.Click += BtnDelete_Click;
             btnNew.Click += BtnNew_Click;
-            Clear.Click += BtnClear_Click;
-            btnSearch.TextChanged += TxtSearch_TextChanged;
+            btnClear.Click += BtnClear_Click;
+            txtSearch.TextChanged += TxtSearch_TextChanged;
             dgvCustomer.CellClick += DgvCustomer_CellClick;
             // Add these new event handlers for card scanning
             txtCustomerID.KeyDown += TxtCustomerID_KeyDown;
@@ -375,7 +375,7 @@ namespace Spa_Management_System
 
         private void TxtSearch_TextChanged(object sender, EventArgs e)
         {
-            string searchText = btnSearch.Text.Trim();
+            string searchText = txtSearch.Text.Trim();
             if (!string.IsNullOrEmpty(searchText))
             {
                 dgvCustomer.DataSource = _repository.Search(searchText);

@@ -13,7 +13,7 @@ namespace Spa_Management_System
         public ServiceDAO()
         {
             // You should adjust this to match your actual connection string source
-            _connectionString = "Data Source=localhost;Initial Catalog=SpaManagement;Integrated Security=True;TrustServerCertificate=True";
+            _connectionString = "data source=DESKTOP-LDNGLMQ\\MSSQLEXPRESS2022; initial catalog=SpaManagement; trusted_connection=true; encrypt=false";
         }
 
         // Get all services

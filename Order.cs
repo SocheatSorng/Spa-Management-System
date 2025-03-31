@@ -35,7 +35,7 @@ namespace Spa_Management_System
         private void LoadOrders()
         {
             _ordersTable = _orderManager.GetAllOrders();
-            dgvOrder.DataSource = _ordersTable;
+            dgvPayment.DataSource = _ordersTable;
         }
 
         // Wire up events
@@ -47,7 +47,7 @@ namespace Spa_Management_System
             btnNew.Click += BtnNew_Click;
             btnClear.Click += BtnClear_Click;
             txtSearch.TextChanged += TxtSearch_TextChanged;
-            dgvOrder.CellClick += DgvOrder_CellClick;
+            dgvPayment.CellClick += DgvOrder_CellClick;
         }
 
         // Clear all input fields
@@ -212,7 +212,7 @@ namespace Spa_Management_System
         {
             if (e.RowIndex >= 0) // Ensure a valid row is clicked
             {
-                DataGridViewRow row = dgvOrder.Rows[e.RowIndex];
+                DataGridViewRow row = dgvPayment.Rows[e.RowIndex];
                 txtID.Text = row.Cells["OrderId"].Value.ToString();
                 txtCustomerID.Text = row.Cells["CustomerId"].Value.ToString();
                 txtUserID.Text = row.Cells["UserId"].Value.ToString();
@@ -229,6 +229,11 @@ namespace Spa_Management_System
         public void OnOrderUpdated()
         {
             LoadOrders(); // Refresh the DataGridView when notified
+        }
+
+        private void btnExitProgram_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 

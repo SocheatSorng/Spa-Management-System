@@ -46,7 +46,7 @@ namespace Spa_Management_System
             btnDelete.Click += BtnDelete_Click;
             btnNew.Click += BtnNew_Click;
             btnClear.Click += BtnClear_Click;
-            textBox1.TextChanged += TxtSearch_TextChanged; // Renamed from textBox1 to txtSearch in event handler
+            txtSearch.TextChanged += TxtSearch_TextChanged; // Renamed from textBox1 to txtSearch in event handler
             dgvInvoice.CellClick += DgvInvoice_CellClick;
         }
 
@@ -178,7 +178,7 @@ namespace Spa_Management_System
         // Search functionality
         private void TxtSearch_TextChanged(object sender, EventArgs e)
         {
-            string searchValue = textBox1.Text.Trim().ToLower();
+            string searchValue = txtSearch.Text.Trim().ToLower();
             if (_invoicesTable != null)
             {
                 _invoicesTable.DefaultView.RowFilter = string.Format(
@@ -210,6 +210,11 @@ namespace Spa_Management_System
         private void label2_Click(object sender, EventArgs e)
         {
             // Empty event handler from designer, can be removed if not needed
+        }
+
+        private void btnExitProgram_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 

@@ -219,6 +219,11 @@ namespace Spa_Management_System
                 txtModifiedAt.Text = row.Cells["ModifiedDate"].Value.ToString();
             }
         }
+
+        private void btnExitProgram_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
     }
 
     // Strategy Pattern: Context class that uses a strategy

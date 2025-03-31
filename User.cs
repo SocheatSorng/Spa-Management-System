@@ -189,7 +189,7 @@ namespace Spa_Management_System
             btnDelete.Click += BtnDelete_Click;
             btnNew.Click += BtnNew_Click;
             btnClear.Click += BtnClear_Click;
-            txtSearch.TextChanged += TxtSearch_TextChanged;
+            txtSearch.TextChanged += TxtSearchbun_TextChanged;
             dgvUser.CellClick += DgvUser_CellClick;
         }
 
@@ -211,7 +211,7 @@ namespace Spa_Management_System
 
             // Hide password column for security
             if (dgvUser.Columns.Contains("Password"))
-            {
+            { 
                 dgvUser.Columns["Password"].Visible = false;
             }
         }
@@ -221,10 +221,11 @@ namespace Spa_Management_System
             txtID.Clear();
             txtUsername.Clear();
             txtPassword.Clear();
+            txtSearch.Clear(); // Update to new Bunifu TextBox
             txtID.ReadOnly = true;  // ID is auto-generated
         }
 
-        private void TxtSearch_TextChanged(object sender, EventArgs e)
+        private void TxtSearchbun_TextChanged(object sender, EventArgs e)
         {
             string searchText = txtSearch.Text.Trim();
             if (!string.IsNullOrEmpty(searchText))
@@ -239,7 +240,7 @@ namespace Spa_Management_System
 
         private void DgvUser_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0)
+            if (e.RowIndex >= 0 && e.RowIndex < dgvUser.Rows.Count - 1) // Exclude last empty row
             {
                 DataGridViewRow row = dgvUser.Rows[e.RowIndex];
                 int userId = Convert.ToInt32(row.Cells["UserId"].Value);
@@ -251,6 +252,10 @@ namespace Spa_Management_System
                     txtUsername.Text = user.Username;
                     txtPassword.Text = user.Password;
                 }
+            }
+            else
+            {
+                ClearFields(); // Clear fields if clicking empty row
             }
         }
 
@@ -346,6 +351,11 @@ namespace Spa_Management_System
         private void BtnClear_Click(object sender, EventArgs e)
         {
             ClearFields();
+        }
+
+        private void btnExitProgram_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

@@ -70,8 +70,8 @@ namespace Spa_Management_System
                 }
 
                 // Use Factory to create a new ServiceModel with image path
-                ServiceModel newService = ServiceFactory.CreateService(serviceName, description, price, _selectedImagePath);
-                _dao.InsertService(newService);
+                //ServiceModel newService = ServiceFactory.CreateService(serviceName, description, price, _selectedImagePath);
+                //_dao.InsertService(newService);
                 LoadServices();
                 ClearFields();
                 MessageBox.Show("Service inserted successfully.");
@@ -106,9 +106,9 @@ namespace Spa_Management_System
                 }
 
                 // Use Factory to create an updated ServiceModel with image path
-                ServiceModel updatedService = ServiceFactory.CreateService(
-                    serviceId, serviceName, description, price, _selectedImagePath, createdDate, DateTime.Now);
-                _dao.UpdateService(updatedService);
+                //ServiceModel updatedService = ServiceFactory.CreateService(
+                //    serviceId, serviceName, description, price, _selectedImagePath, createdDate, DateTime.Now);
+                //_dao.UpdateService(updatedService);
                 LoadServices();
                 ClearFields();
                 MessageBox.Show("Service updated successfully.");

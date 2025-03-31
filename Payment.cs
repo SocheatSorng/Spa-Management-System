@@ -216,6 +216,11 @@ namespace Spa_Management_System
                 txtNotes.Text = row.Cells["Notes"].Value?.ToString() ?? "";
             }
         }
+
+        private void btnExitProgram_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
     }
 
     // Strategy Pattern: Context class that uses a strategy
