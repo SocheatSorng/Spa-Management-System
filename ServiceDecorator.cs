@@ -1,19 +1,29 @@
-﻿using System;
+// ServiceDecorator.cs
+using System;
 using System.Data;
 using Microsoft.Data.SqlClient;
-using System.Configuration;
 using System.Windows.Forms;
 
 namespace Spa_Management_System
 {
-    public class ServiceDAO
+    // Component interface
+    public interface IServiceComponent
+    {
+        DataTable GetAllServices();
+        void InsertService(ServiceModel service);
+        void UpdateService(ServiceModel service);
+        void DeleteService(int serviceId);
+    }
+
+    // Concrete Component
+    public class BasicServiceComponent : IServiceComponent
     {
         private readonly string _connectionString;
 
-        public ServiceDAO()
+        public BasicServiceComponent()
         {
             // You should adjust this to match your actual connection string source
-            _connectionString = "data source=DESKTOP-LDNGLMQ\\MSSQLEXPRESS2022; initial catalog=SpaManagement; trusted_connection=true; encrypt=false";
+            _connectionString = "data source=SOCHEAT\\MSSQLEXPRESS2022; initial catalog=SpaManagement; trusted_connection=true; encrypt=false";
         }
 
         // Get all services
@@ -48,7 +58,6 @@ namespace Spa_Management_System
             return services;
         }
 
-        // Insert service
         // Insert service
         public void InsertService(ServiceModel service)
         {
@@ -135,4 +144,155 @@ namespace Spa_Management_System
             }
         }
     }
-}
+
+    // Decorator abstract class
+    public abstract class ServiceDecorator : IServiceComponent
+    {
+        protected IServiceComponent _component;
+
+        public ServiceDecorator(IServiceComponent component)
+        {
+            _component = component;
+        }
+
+        public virtual DataTable GetAllServices()
+        {
+            return _component.GetAllServices();
+        }
+
+        public virtual void InsertService(ServiceModel service)
+        {
+            _component.InsertService(service);
+        }
+
+        public virtual void UpdateService(ServiceModel service)
+        {
+            _component.UpdateService(service);
+        }
+
+        public virtual void DeleteService(int serviceId)
+        {
+            _component.DeleteService(serviceId);
+        }
+    }
+
+    // Concrete Decorator - Adds logging functionality
+    public class LoggingServiceDecorator : ServiceDecorator
+    {
+        public LoggingServiceDecorator(IServiceComponent component) : base(component)
+        {
+        }
+
+        public override DataTable GetAllServices()
+        {
+            LogOperation("GetAllServices");
+            return base.GetAllServices();
+        }
+
+        public override void InsertService(ServiceModel service)
+        {
+            LogOperation($"InsertService: {service.ServiceName}");
+            base.InsertService(service);
+        }
+
+        public override void UpdateService(ServiceModel service)
+        {
+            LogOperation($"UpdateService: ID={service.ServiceId}, Name={service.ServiceName}");
+            base.UpdateService(service);
+        }
+
+        public override void DeleteService(int serviceId)
+        {
+            LogOperation($"DeleteService: ID={serviceId}");
+            base.DeleteService(serviceId);
+        }
+
+        private void LogOperation(string operation)
+        {
+            string logMessage = $"{DateTime.Now}: {operation}";
+            // In a real application, this would log to a file or database
+            System.Diagnostics.Debug.WriteLine(logMessage);
+        }
+    }
+
+    // Concrete Decorator - Adds validation functionality
+    public class ValidationServiceDecorator : ServiceDecorator
+    {
+        public ValidationServiceDecorator(IServiceComponent component) : base(component)
+        {
+        }
+
+        public override void InsertService(ServiceModel service)
+        {
+            ValidateService(service);
+            base.InsertService(service);
+        }
+
+        public override void UpdateService(ServiceModel service)
+        {
+            ValidateService(service);
+            base.UpdateService(service);
+        }
+
+        private void ValidateService(ServiceModel service)
+        {
+            if (string.IsNullOrWhiteSpace(service.ServiceName))
+            {
+                throw new ArgumentException("Service name cannot be empty");
+            }
+
+            if (service.Price < 0)
+            {
+                throw new ArgumentException("Price cannot be negative");
+            }
+        }
+    }
+
+    // Concrete Decorator - Adds caching functionality
+    public class CachingServiceDecorator : ServiceDecorator
+    {
+        private DataTable _cachedServices;
+        private DateTime _cacheTime;
+        private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(5);
+
+        public CachingServiceDecorator(IServiceComponent component) : base(component)
+        {
+        }
+
+        public override DataTable GetAllServices()
+        {
+            if (_cachedServices != null && DateTime.Now - _cacheTime < _cacheDuration)
+            {
+                System.Diagnostics.Debug.WriteLine("Returning cached services");
+                return _cachedServices.Copy();
+            }
+
+            _cachedServices = base.GetAllServices();
+            _cacheTime = DateTime.Now;
+            return _cachedServices.Copy();
+        }
+
+        public override void InsertService(ServiceModel service)
+        {
+            base.InsertService(service);
+            InvalidateCache();
+        }
+
+        public override void UpdateService(ServiceModel service)
+        {
+            base.UpdateService(service);
+            InvalidateCache();
+        }
+
+        public override void DeleteService(int serviceId)
+        {
+            base.DeleteService(serviceId);
+            InvalidateCache();
+        }
+
+        private void InvalidateCache()
+        {
+            _cachedServices = null;
+        }
+    }
+} 

@@ -2,56 +2,58 @@
 using System.Data;
 using Microsoft.Data.SqlClient;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 namespace Spa_Management_System
 {
     public partial class CardRegistration : Form
     {
-        private readonly CardDAO _dao;
-        private DataTable _cardsTable;
+        private ICardDataAccess _cardAccess;
+
+        [DllImport("user32.dll")]
+        public static extern bool ReleaseCapture();
+        [DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
 
         public CardRegistration()
         {
             InitializeComponent();
-            _dao = new CardDAO();
-            LoadData();
-            SetupEventHandlers();
+
+            // Add the same dragging capability to the top panel
+            //bunifuPanel2.MouseDown += (s, e) =>
+            //{
+            //    if (e.Button == MouseButtons.Left)
+            //    {
+            //        ReleaseCapture();
+            //        SendMessage(Handle, 0xA1, 0x2, 0);
+            //    }
+            //};
+
+            // Initialize using the proxy implementation with logging enabled
+            _cardAccess = new CardProtectionProxy(useTransactionLogging: true);
+            LoadCards();
+            WireUpEvents();
         }
 
-        private void LoadData()
+        // Load cards into the DataGridView
+        private void LoadCards()
         {
-            try
-            {
-                _cardsTable = _dao.GetAllCards();
-                dgvCards.DataSource = _cardsTable;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error loading cards: " + ex.Message);
-            }
+            DataTable cardsTable = _cardAccess.GetAllCards();
+            dgvCards.DataSource = cardsTable;
         }
 
-        private void SetupEventHandlers()
+        // Wire up event handlers
+        private void WireUpEvents()
         {
-            btnRegister.Click += BtnRegister_Click;
+            //btnRegisterSingle.Click += BtnRegisterSingle_Click;
             btnRegisterBatch.Click += BtnRegisterBatch_Click;
             btnSetDamaged.Click += BtnSetDamaged_Click;
-            btnClear.Click += BtnClear_Click;
-            txtSearch.TextChanged += TxtSearch_TextChanged;
-            dgvCards.CellClick += DgvCards_CellClick;
             btnExitProgram.Click += BtnExitProgram_Click;
+            dgvCards.CellClick += DgvCards_CellClick;
         }
 
-        private void ClearFields()
-        {
-            txtCardId.Clear();
-            txtPrefix.Clear();
-            txtStartNumber.Clear();
-            txtCount.Clear();
-            txtCardId.Focus();
-        }
-
-        private void BtnRegister_Click(object sender, EventArgs e)
+        // Register a single card
+        private void BtnRegisterSingle_Click(object sender, EventArgs e)
         {
             try
             {
@@ -62,44 +64,55 @@ namespace Spa_Management_System
                     return;
                 }
 
-                _dao.RegisterCard(cardId);
-                LoadData();
-                ClearFields();
+                _cardAccess.RegisterCard(cardId);
+                LoadCards();
                 MessageBox.Show("Card registered successfully.");
+                txtCardId.Clear();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error registering card: " + ex.Message);
+                MessageBox.Show($"Error registering card: {ex.Message}");
             }
         }
 
+        // Register a batch of cards
         private void BtnRegisterBatch_Click(object sender, EventArgs e)
         {
             try
             {
                 string prefix = txtPrefix.Text.Trim();
-                if (!int.TryParse(txtStartNumber.Text, out int startNumber))
+                if (string.IsNullOrEmpty(prefix))
                 {
-                    MessageBox.Show("Please enter a valid start number.");
-                    return;
-                }
-                if (!int.TryParse(txtCount.Text, out int count))
-                {
-                    MessageBox.Show("Please enter a valid count.");
+                    MessageBox.Show("Please enter a prefix.");
                     return;
                 }
 
-                _dao.RegisterCardBatch(prefix, startNumber, count);
-                LoadData();
-                ClearFields();
-                MessageBox.Show($"Successfully registered {count} cards.");
+                if (!int.TryParse(txtStartNumber.Text, out int startNumber) || startNumber < 0)
+                {
+                    MessageBox.Show("Please enter a valid starting number.");
+                    return;
+                }
+
+                if (!int.TryParse(txtCount.Text, out int count) || count <= 0 || count > 1000)
+                {
+                    MessageBox.Show("Please enter a count between 1 and 1000.");
+                    return;
+                }
+
+                _cardAccess.RegisterCardBatch(prefix, startNumber, count);
+                LoadCards();
+                MessageBox.Show($"{count} cards registered successfully.");
+                txtPrefix.Clear();
+                txtStartNumber.Clear();
+                txtCount.Clear();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error registering cards: " + ex.Message);
+                MessageBox.Show($"Error registering cards: {ex.Message}");
             }
         }
 
+        // Set a card as damaged
         private void BtnSetDamaged_Click(object sender, EventArgs e)
         {
             try
@@ -107,44 +120,22 @@ namespace Spa_Management_System
                 string cardId = txtCardId.Text.Trim();
                 if (string.IsNullOrEmpty(cardId))
                 {
-                    MessageBox.Show("Please select a card to mark as damaged.");
+                    MessageBox.Show("Please select a card or enter a card ID.");
                     return;
                 }
 
-                DialogResult result = MessageBox.Show(
-                    "Are you sure you want to mark this card as damaged?",
-                    "Confirm Action",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question);
-
-                if (result == DialogResult.Yes)
-                {
-                    _dao.SetCardAsDamaged(cardId);
-                    LoadData();
-                    ClearFields();
-                    MessageBox.Show("Card marked as damaged successfully.");
-                }
+                _cardAccess.SetCardAsDamaged(cardId);
+                LoadCards();
+                MessageBox.Show("Card marked as damaged.");
+                txtCardId.Clear();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error marking card as damaged: " + ex.Message);
+                MessageBox.Show($"Error marking card as damaged: {ex.Message}");
             }
         }
 
-        private void BtnClear_Click(object sender, EventArgs e)
-        {
-            ClearFields();
-        }
-
-        private void TxtSearch_TextChanged(object sender, EventArgs e)
-        {
-            string searchValue = txtSearch.Text.Trim();
-            if (_cardsTable != null)
-            {
-                _cardsTable.DefaultView.RowFilter = string.Format("CardId LIKE '%{0}%'", searchValue);
-            }
-        }
-
+        // Display the clicked card's ID in the textbox
         private void DgvCards_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -157,47 +148,6 @@ namespace Spa_Management_System
         private void BtnExitProgram_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
-    }
-
-    public class CardDAO
-    {
-        private readonly SqlConnectionManager _connectionManager;
-
-        public CardDAO()
-        {
-            _connectionManager = SqlConnectionManager.Instance;
-        }
-
-        public DataTable GetAllCards()
-        {
-            string query = "SELECT CardId, Status, LastUsed, CreatedDate FROM tbCard ORDER BY CreatedDate DESC";
-            return _connectionManager.ExecuteQuery(query);
-        }
-
-        public void RegisterCard(string cardId)
-        {
-            string query = "EXEC sp_RegisterCard @CardId";
-            SqlParameter param = new SqlParameter("@CardId", cardId);
-            _connectionManager.ExecuteNonQuery(query, param);
-        }
-
-        public void RegisterCardBatch(string prefix, int startNumber, int count)
-        {
-            string query = "EXEC sp_RegisterCardBatch @Prefix, @StartNumber, @Count";
-            SqlParameter[] parameters = {
-                new SqlParameter("@Prefix", prefix),
-                new SqlParameter("@StartNumber", startNumber),
-                new SqlParameter("@Count", count)
-            };
-            _connectionManager.ExecuteNonQuery(query, parameters);
-        }
-
-        public void SetCardAsDamaged(string cardId)
-        {
-            string query = "EXEC sp_SetCardAsDamaged @CardId";
-            SqlParameter param = new SqlParameter("@CardId", cardId);
-            _connectionManager.ExecuteNonQuery(query, param);
         }
     }
 }

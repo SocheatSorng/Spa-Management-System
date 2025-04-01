@@ -233,15 +233,15 @@ namespace Spa_Management_System
         }
     }
 
-    // Manager class implementing Observer Pattern
+    // Manager class implementing Observer Pattern for business logic
     public class InvoiceManager
     {
-        private readonly InvoiceDAO _dao;
+        private readonly IInvoiceStrategy _strategy;
         private readonly List<IInvoiceObserver> _observers;
 
-        public InvoiceManager()
+        public InvoiceManager(IInvoiceStrategy strategy = null)
         {
-            _dao = new InvoiceDAO();
+            _strategy = strategy ?? new SqlServerInvoiceStrategy();
             _observers = new List<IInvoiceObserver>();
         }
 
@@ -264,81 +264,30 @@ namespace Spa_Management_System
             }
         }
 
+        // Change strategy at runtime if needed
+        public IInvoiceStrategy Strategy { get; set; }
+
         public DataTable GetAllInvoices()
         {
-            return _dao.GetAllInvoices();
+            return _strategy.GetAllInvoices();
         }
 
         public void InsertInvoice(InvoiceModel invoice)
         {
-            _dao.InsertInvoice(invoice);
+            _strategy.InsertInvoice(invoice);
             NotifyObservers();
         }
 
         public void UpdateInvoice(InvoiceModel invoice)
         {
-            _dao.UpdateInvoice(invoice);
+            _strategy.UpdateInvoice(invoice);
             NotifyObservers();
         }
 
         public void DeleteInvoice(int invoiceId)
         {
-            _dao.DeleteInvoice(invoiceId);
+            _strategy.DeleteInvoice(invoiceId);
             NotifyObservers();
-        }
-    }
-
-    // DAO Pattern: Data Access Object for Invoice
-    public class InvoiceDAO
-    {
-        // Singleton Pattern: Using the SqlConnectionManager Singleton
-        private readonly SqlConnectionManager _connectionManager;
-
-        public InvoiceDAO()
-        {
-            _connectionManager = SqlConnectionManager.Instance;
-        }
-
-        public DataTable GetAllInvoices()
-        {
-            string query = "SELECT InvoiceId, OrderId, InvoiceDate, TotalAmount, Notes FROM tbInvoice";
-            return _connectionManager.ExecuteQuery(query);
-        }
-
-        public void InsertInvoice(InvoiceModel invoice)
-        {
-            string query = "INSERT INTO tbInvoice (OrderId, InvoiceDate, TotalAmount, Notes) " +
-                           "VALUES (@OrderId, @InvoiceDate, @TotalAmount, @Notes)";
-            SqlParameter[] parameters = {
-                new SqlParameter("@OrderId", invoice.OrderId),
-                new SqlParameter("@InvoiceDate", invoice.InvoiceDate),
-                new SqlParameter("@TotalAmount", invoice.TotalAmount),
-                new SqlParameter("@Notes", invoice.Notes ?? (object)DBNull.Value)
-            };
-            _connectionManager.ExecuteNonQuery(query, parameters);
-        }
-
-        public void UpdateInvoice(InvoiceModel invoice)
-        {
-            string query = "UPDATE tbInvoice SET OrderId = @OrderId, InvoiceDate = @InvoiceDate, " +
-                           "TotalAmount = @TotalAmount, Notes = @Notes WHERE InvoiceId = @InvoiceId";
-            SqlParameter[] parameters = {
-                new SqlParameter("@OrderId", invoice.OrderId),
-                new SqlParameter("@InvoiceDate", invoice.InvoiceDate),
-                new SqlParameter("@TotalAmount", invoice.TotalAmount),
-                new SqlParameter("@Notes", invoice.Notes ?? (object)DBNull.Value),
-                new SqlParameter("@InvoiceId", invoice.InvoiceId)
-            };
-            _connectionManager.ExecuteNonQuery(query, parameters);
-        }
-
-        public void DeleteInvoice(int invoiceId)
-        {
-            string query = "DELETE FROM tbInvoice WHERE InvoiceId = @InvoiceId";
-            SqlParameter[] parameters = {
-                new SqlParameter("@InvoiceId", invoiceId)
-            };
-            _connectionManager.ExecuteNonQuery(query, parameters);
         }
     }
 }

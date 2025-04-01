@@ -406,7 +406,7 @@ namespace Spa_Management_System
         {
             // Create a custom popup form
             Form popupForm = new Form();
-            popupForm.Size = new Size(200, 180); // Increased height to accommodate new button
+            popupForm.Size = new Size(200, 300); // Increased height to accommodate new button
             popupForm.FormBorderStyle = FormBorderStyle.None;
             popupForm.BackColor = Color.White;
             popupForm.ShowInTaskbar = false;
@@ -417,25 +417,15 @@ namespace Spa_Management_System
             Point btnLocation = btnAllForm.PointToScreen(new Point(0, 0));
             popupForm.Location = new Point(btnLocation.X + btnAllForm.Width, btnLocation.Y);
 
-            // Create Customer button
-            Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnCustomer = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
-            btnCustomer.Text = "Customer";
-            btnCustomer.Size = new Size(180, 40);
-            btnCustomer.Location = new Point(10, 10);
-            btnCustomer.Click += (s, args) => {
-                Customer customerForm = new Customer();
-                customerForm.Show();
-                popupForm.Close();
-            };
-
-            // Create Service button
-            Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnService = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
-            btnService.Text = "Service";
-            btnService.Size = new Size(180, 40);
-            btnService.Location = new Point(10, 50);
-            btnService.Click += (s, args) => {
-                Service serviceForm = new Service();
-                serviceForm.Show();
+            // Create CardRegistration button
+            Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnCardRegistration = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
+            btnCardRegistration.Text = "Card Registration";
+            btnCardRegistration.Size = new Size(180, 40);
+            btnCardRegistration.Location = new Point(10, 10);
+            btnCardRegistration.Click += (s, args) =>
+            {
+                CardRegistration cardRegistrationForm = new CardRegistration();
+                cardRegistrationForm.Show();
                 popupForm.Close();
             };
 
@@ -443,10 +433,68 @@ namespace Spa_Management_System
             Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnConsumable = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
             btnConsumable.Text = "Consumable";
             btnConsumable.Size = new Size(180, 40);
-            btnConsumable.Location = new Point(10, 90);
+            btnConsumable.Location = new Point(10, 10);
             btnConsumable.Click += (s, args) => {
                 Consumable consumableForm = new Consumable();
                 consumableForm.Show();
+                popupForm.Close();
+            };
+
+            // Create Customer button
+            Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnCustomer = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
+            btnCustomer.Text = "Customer";
+            btnCustomer.Size = new Size(180, 40);
+            btnCustomer.Location = new Point(10, 50);
+            btnCustomer.Click += (s, args) => {
+                Customer customerForm = new Customer();
+                customerForm.Show();
+                popupForm.Close();
+            };
+
+            // Create Invoice button
+            Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnInvoice = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
+            btnInvoice.Text = "Invoice";
+            btnInvoice.Size = new Size(180, 40);
+            btnInvoice.Location = new Point(10, 90);
+            btnInvoice.Click += (s, args) =>
+            {
+                Invoice invoiceForm = new Invoice();
+                invoiceForm.Show();
+                popupForm.Close();
+            };
+
+            // Create Order button
+            Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnOrder = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
+            btnOrder.Text = "Order";
+            btnOrder.Size = new Size(180, 40);
+            btnOrder.Location = new Point(10, 130);
+            btnOrder.Click += (s, args) =>
+            {
+                Order orderForm = new Order();
+                orderForm.Show();
+                popupForm.Close();
+            };
+
+            // Create Payment button
+            Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnPayment = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
+            btnPayment.Text = "Payment";
+            btnPayment.Size = new Size(180, 40);
+            btnPayment.Location = new Point(10, 170);
+            btnPayment.Click += (s, args) =>
+            {
+                Payment paymentForm = new Payment();
+                paymentForm.Show();
+                popupForm.Close();
+            };
+
+            // Create Service button
+            Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnService = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
+            btnService.Text = "Service";
+            btnService.Size = new Size(180, 40);
+            btnService.Location = new Point(10, 210);
+            btnService.Click += (s, args) => {
+                Service serviceForm = new Service();
+                serviceForm.Show();
                 popupForm.Close();
             };
 
@@ -454,7 +502,7 @@ namespace Spa_Management_System
             Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnUser = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
             btnUser.Text = "User";
             btnUser.Size = new Size(180, 40);
-            btnUser.Location = new Point(10, 130);
+            btnUser.Location = new Point(10, 250);
             btnUser.Click += (s, args) => {
                 User userForm = new User();
                 userForm.Show();
@@ -462,10 +510,15 @@ namespace Spa_Management_System
             };
 
             // Add buttons to the popup form
-            popupForm.Controls.Add(btnCustomer);
-            popupForm.Controls.Add(btnService);
+            popupForm.Controls.Add(btnCardRegistration);
             popupForm.Controls.Add(btnConsumable);
+            popupForm.Controls.Add(btnCustomer);
+            popupForm.Controls.Add(btnInvoice);
+            popupForm.Controls.Add(btnOrder);
+            popupForm.Controls.Add(btnPayment);
+            popupForm.Controls.Add(btnService);
             popupForm.Controls.Add(btnUser);
+
 
             // Show the popup form
             popupForm.Show();

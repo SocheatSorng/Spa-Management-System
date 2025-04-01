@@ -12,7 +12,7 @@ namespace Spa_Management_System
 {
     public partial class Service : Form
     {
-        private ServiceDAO _dao;
+        private IServiceComponent _serviceComponent;
         private DataTable _servicesTable;
         private string _selectedImagePath;
 
@@ -29,7 +29,7 @@ namespace Spa_Management_System
                 }
             };
                        
-            _dao = new ServiceDAO();
+            _serviceComponent = ServiceComponentFactory.CreateServiceComponent();
             LoadServices();
             WireUpEvents(); // Attach event handlers
         }
@@ -42,7 +42,7 @@ namespace Spa_Management_System
         // Load all services into the DataGridView
         private void LoadServices()
         {
-            _servicesTable = _dao.GetAllServices();
+            _servicesTable = _serviceComponent.GetAllServices();
             dgvService.DataSource = _servicesTable;
         }
         private void ClearFields()
@@ -95,8 +95,7 @@ namespace Spa_Management_System
                     ModifiedDate = DateTime.Now
                 };
 
-                // Insert the service using the DAO
-                _dao.InsertService(newService);
+                _serviceComponent.InsertService(newService);
                 LoadServices();
                 ClearFields();
                 MessageBox.Show("Service inserted successfully.");
@@ -142,8 +141,7 @@ namespace Spa_Management_System
                     ModifiedDate = DateTime.Now
                 };
 
-                // Update the service using the DAO
-                _dao.UpdateService(updatedService);
+                _serviceComponent.UpdateService(updatedService);
                 LoadServices();
                 ClearFields();
                 MessageBox.Show("Service updated successfully.");
@@ -175,7 +173,7 @@ namespace Spa_Management_System
 
                 if (result == DialogResult.Yes)
                 {
-                    _dao.DeleteService(serviceId);
+                    _serviceComponent.DeleteService(serviceId);
                     LoadServices();
                     ClearFields();
                     MessageBox.Show("Service deleted successfully.");

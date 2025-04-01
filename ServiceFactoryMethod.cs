@@ -1,4 +1,4 @@
-﻿// ServiceFactory.cs
+// ServiceFactoryMethod.cs
 using System;
 
 namespace Spa_Management_System
@@ -63,4 +63,17 @@ namespace Spa_Management_System
             };
         }
     }
-}
+    
+    // Factory class to create the decorated service component
+    public static class ServiceComponentFactory
+    {
+        public static IServiceComponent CreateServiceComponent()
+        {
+            // Building the decorator chain
+            IServiceComponent baseComponent = new BasicServiceComponent();
+            IServiceComponent validatingComponent = new ValidationServiceDecorator(baseComponent);
+            IServiceComponent loggingComponent = new LoggingServiceDecorator(validatingComponent);
+            return new CachingServiceDecorator(loggingComponent);
+        }
+    }
+} 

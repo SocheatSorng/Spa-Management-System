@@ -13,165 +13,14 @@ namespace Spa_Management_System
 {
     public partial class User : Form
     {
-        // User model class
-        private class UserModel
-        {
-            public int UserId { get; set; }
-            public string Username { get; set; }
-            public string Password { get; set; }
-            public DateTime CreatedDate { get; set; }
-            public DateTime ModifiedDate { get; set; }
-        }
-
-        // Repository Pattern for User data access
-        private class UserRepository
-        {
-            private readonly SqlConnectionManager _connectionManager;
-
-            public UserRepository()
-            {
-                // Get singleton instance of connection manager
-                _connectionManager = SqlConnectionManager.Instance;
-            }
-
-            public List<UserModel> GetAll()
-            {
-                List<UserModel> users = new List<UserModel>();
-                try
-                {
-                    string query = "SELECT UserId, Username, Password, CreatedDate, ModifiedDate FROM tbUser";
-                    DataTable dataTable = _connectionManager.ExecuteQuery(query);
-
-                    foreach (DataRow row in dataTable.Rows)
-                    {
-                        UserModel user = new UserModel
-                        {
-                            UserId = Convert.ToInt32(row["UserId"]),
-                            Username = row["Username"].ToString(),
-                            Password = row["Password"].ToString(),
-                            CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
-                            ModifiedDate = Convert.ToDateTime(row["ModifiedDate"])
-                        };
-                        users.Add(user);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error retrieving users: " + ex.Message);
-                }
-                return users;
-            }
-
-            public DataTable Search(string searchText)
-            {
-                try
-                {
-                    string query = "SELECT UserId, Username FROM tbUser WHERE Username LIKE @SearchText";
-                    SqlParameter parameter = new SqlParameter("@SearchText", "%" + searchText + "%");
-                    return _connectionManager.ExecuteQuery(query, parameter);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error searching users: " + ex.Message);
-                    return new DataTable();
-                }
-            }
-
-            public UserModel GetById(int userId)
-            {
-                UserModel user = null;
-                try
-                {
-                    string query = "SELECT UserId, Username, Password, CreatedDate, ModifiedDate FROM tbUser WHERE UserId = @UserId";
-                    SqlParameter parameter = new SqlParameter("@UserId", userId);
-                    DataTable dataTable = _connectionManager.ExecuteQuery(query, parameter);
-
-                    if (dataTable.Rows.Count > 0)
-                    {
-                        DataRow row = dataTable.Rows[0];
-                        user = new UserModel
-                        {
-                            UserId = Convert.ToInt32(row["UserId"]),
-                            Username = row["Username"].ToString(),
-                            Password = row["Password"].ToString(),
-                            CreatedDate = Convert.ToDateTime(row["CreatedDate"]),
-                            ModifiedDate = Convert.ToDateTime(row["ModifiedDate"])
-                        };
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error retrieving user: " + ex.Message);
-                }
-                return user;
-            }
-
-            public int Insert(string username, string password)
-            {
-                try
-                {
-                    string query = "EXEC sp_CreateUser @Username, @Password";
-                    SqlParameter[] parameters = new SqlParameter[]
-                    {
-                        new SqlParameter("@Username", username),
-                        new SqlParameter("@Password", password)
-                    };
-
-                    // Execute the query and get the result
-                    object result = _connectionManager.ExecuteScalar(query, parameters);
-                    if (result != null && result != DBNull.Value)
-                    {
-                        return Convert.ToInt32(result);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error inserting user: " + ex.Message);
-                }
-                return -1;
-            }
-
-            public bool Update(int userId, string username, string password)
-            {
-                try
-                {
-                    string query = "UPDATE tbUser SET Username = @Username, Password = @Password, ModifiedDate = GETDATE() WHERE UserId = @UserId";
-                    SqlParameter[] parameters = new SqlParameter[]
-                    {
-                        new SqlParameter("@UserId", userId),
-                        new SqlParameter("@Username", username),
-                        new SqlParameter("@Password", password)
-                    };
-
-                    int rowsAffected = _connectionManager.ExecuteNonQuery(query, parameters);
-                    return rowsAffected > 0;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error updating user: " + ex.Message);
-                    return false;
-                }
-            }
-
-            public bool Delete(int userId)
-            {
-                try
-                {
-                    string query = "DELETE FROM tbUser WHERE UserId = @UserId";
-                    SqlParameter parameter = new SqlParameter("@UserId", userId);
-
-                    int rowsAffected = _connectionManager.ExecuteNonQuery(query, parameter);
-                    return rowsAffected > 0;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error deleting user: " + ex.Message);
-                    return false;
-                }
-            }
-        }
-
-        private UserRepository _repository;
+        // Using Template Method Pattern for data access
+        private readonly UserDataAccess _dataAccess;
+        
+        // Using Command Pattern for operations
+        private readonly CommandInvoker _commandInvoker;
+        
+        // Using State Pattern for form states
+        private FormStateContext _stateContext;
 
         public User()
         {
@@ -187,7 +36,16 @@ namespace Spa_Management_System
                 }
             };
 
-            _repository = new UserRepository();
+            // Initialize data access and patterns
+            _dataAccess = new UserDataAccess();
+            _commandInvoker = new CommandInvoker();
+            _stateContext = new FormStateContext(
+                this,
+                EnableControls,
+                DisableControls,
+                ClearFields
+            );
+            
             LoadData();
             SetupEventHandlers();
         }
@@ -197,6 +55,37 @@ namespace Spa_Management_System
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
 
+        #region Form State Management
+        
+        private void EnableControls()
+        {
+            // Enable input controls
+            txtUsername.Enabled = true;
+            txtPassword.Enabled = true;
+            
+            // Set button states
+            btnInsert.Enabled = true;
+            btnUpdate.Enabled = true;
+            btnDelete.Enabled = true;
+            btnNew.Enabled = true;
+            btnClear.Enabled = true;
+        }
+        
+        private void DisableControls()
+        {
+            // Disable input controls
+            txtUsername.Enabled = false;
+            txtPassword.Enabled = false;
+            
+            // Set button states
+            btnInsert.Enabled = false;
+            btnUpdate.Enabled = false;
+            btnDelete.Enabled = false;
+            btnNew.Enabled = true;
+            btnClear.Enabled = true;
+        }
+        
+        #endregion
 
         private void SetupEventHandlers()
         {
@@ -212,24 +101,34 @@ namespace Spa_Management_System
 
         private void LoadData()
         {
-            var users = _repository.GetAll();
-
-            // Create DataTable for display
-            DataTable dt = new DataTable();
-            dt.Columns.Add("UserId", typeof(int));
-            dt.Columns.Add("Username", typeof(string));
-
-            foreach (var user in users)
+            try
             {
-                dt.Rows.Add(user.UserId, user.Username);
+                DataTable usersTable = _dataAccess.GetAll();
+
+                // Create DataTable for display
+                DataTable displayTable = new DataTable();
+                displayTable.Columns.Add("UserId", typeof(int));
+                displayTable.Columns.Add("Username", typeof(string));
+
+                foreach (DataRow row in usersTable.Rows)
+                {
+                    displayTable.Rows.Add(
+                        Convert.ToInt32(row["UserId"]),
+                        row["Username"].ToString()
+                    );
+                }
+
+                dgvUser.DataSource = displayTable;
+
+                // Hide password column for security
+                if (dgvUser.Columns.Contains("Password"))
+                {
+                    dgvUser.Columns["Password"].Visible = false;
+                }
             }
-
-            dgvUser.DataSource = dt;
-
-            // Hide password column for security
-            if (dgvUser.Columns.Contains("Password"))
+            catch (Exception ex)
             {
-                dgvUser.Columns["Password"].Visible = false;
+                MessageBox.Show($"Error loading users: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -238,20 +137,27 @@ namespace Spa_Management_System
             txtID.Clear();
             txtUsername.Clear();
             txtPassword.Clear();
-            txtSearch.Clear(); // Update to new Bunifu TextBox
+            txtSearch.Clear();
             txtID.ReadOnly = true;  // ID is auto-generated
         }
 
         private void TxtSearchbun_TextChanged(object sender, EventArgs e)
         {
             string searchText = txtSearch.Text.Trim();
-            if (!string.IsNullOrEmpty(searchText))
+            try
             {
-                dgvUser.DataSource = _repository.Search(searchText);
+                if (!string.IsNullOrEmpty(searchText))
+                {
+                    dgvUser.DataSource = _dataAccess.Search(searchText);
+                }
+                else
+                {
+                    LoadData();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                LoadData();
+                MessageBox.Show($"Error searching users: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -262,12 +168,22 @@ namespace Spa_Management_System
                 DataGridViewRow row = dgvUser.Rows[e.RowIndex];
                 int userId = Convert.ToInt32(row.Cells["UserId"].Value);
 
-                UserModel user = _repository.GetById(userId);
-                if (user != null)
+                try
                 {
-                    txtID.Text = user.UserId.ToString();
-                    txtUsername.Text = user.Username;
-                    txtPassword.Text = user.Password;
+                    Spa_Management_System.UserModel user = _dataAccess.GetById(userId);
+                    if (user != null)
+                    {
+                        txtID.Text = user.UserId.ToString();
+                        txtUsername.Text = user.Username;
+                        txtPassword.Text = user.Password;
+                        
+                        // Enable controls for editing
+                        _stateContext.Edit();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error retrieving user details: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             else
@@ -278,90 +194,41 @@ namespace Spa_Management_System
 
         private void BtnInsert_Click(object sender, EventArgs e)
         {
-            string username = txtUsername.Text.Trim();
-            string password = txtPassword.Text.Trim();
-
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
-            {
-                MessageBox.Show("Username and password are required.");
-                return;
-            }
-
-            int userId = _repository.Insert(username, password);
-            if (userId > 0)
-            {
-                MessageBox.Show("User created successfully.");
-                ClearFields();
-                LoadData();
-            }
-            else
-            {
-                MessageBox.Show("Failed to create user.");
-            }
+            // Using Command pattern for insert operation
+            _commandInvoker.SetCommand(new InsertUserCommand(this, _dataAccess, GetUserFromForm));
+            _commandInvoker.ExecuteCommand();
+            
+            // Refresh data and clear form
+            LoadData();
+            ClearFields();
         }
 
         private void BtnUpdate_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(txtID.Text))
-            {
-                MessageBox.Show("Please select a user to update.");
-                return;
-            }
-
-            int userId = Convert.ToInt32(txtID.Text);
-            string username = txtUsername.Text.Trim();
-            string password = txtPassword.Text.Trim();
-
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
-            {
-                MessageBox.Show("Username and password are required.");
-                return;
-            }
-
-            bool success = _repository.Update(userId, username, password);
-            if (success)
-            {
-                MessageBox.Show("User updated successfully.");
-                ClearFields();
-                LoadData();
-            }
-            else
-            {
-                MessageBox.Show("Failed to update user.");
-            }
+            // Using Command pattern for update operation
+            _commandInvoker.SetCommand(new UpdateUserCommand(this, _dataAccess, GetUserFromForm));
+            _commandInvoker.ExecuteCommand();
+            
+            // Refresh data and clear form
+            LoadData();
+            ClearFields();
         }
 
         private void BtnDelete_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(txtID.Text))
-            {
-                MessageBox.Show("Please select a user to delete.");
-                return;
-            }
-
-            int userId = Convert.ToInt32(txtID.Text);
-
-            // Confirm deletion
-            DialogResult result = MessageBox.Show("Are you sure you want to delete this user?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (result == DialogResult.Yes)
-            {
-                bool success = _repository.Delete(userId);
-                if (success)
-                {
-                    MessageBox.Show("User deleted successfully.");
-                    ClearFields();
-                    LoadData();
-                }
-                else
-                {
-                    MessageBox.Show("Failed to delete user.");
-                }
-            }
+            // Using Command pattern for delete operation
+            _commandInvoker.SetCommand(new DeleteUserCommand(this, _dataAccess, GetSelectedUserId));
+            _commandInvoker.ExecuteCommand();
+            
+            // Refresh data and clear form
+            LoadData();
+            ClearFields();
         }
 
         private void BtnNew_Click(object sender, EventArgs e)
         {
-            ClearFields();
+            // Set form to new state
+            _stateContext.New();
             txtUsername.Focus();
         }
 
@@ -369,11 +236,27 @@ namespace Spa_Management_System
         {
             ClearFields();
         }
+        
+        // Helper method to get user from form inputs
+        private Spa_Management_System.UserModel GetUserFromForm()
+        {
+            return new Spa_Management_System.UserModel
+            {
+                UserId = string.IsNullOrEmpty(txtID.Text) ? 0 : Convert.ToInt32(txtID.Text),
+                Username = txtUsername.Text.Trim(),
+                Password = txtPassword.Text.Trim()
+            };
+        }
+        
+        // Helper method to get the selected user ID
+        private int GetSelectedUserId()
+        {
+            return string.IsNullOrEmpty(txtID.Text) ? 0 : Convert.ToInt32(txtID.Text);
+        }
 
         private void btnExitProgram_Click(object sender, EventArgs e)
         {
             this.Close();
         }
-
     }
 }

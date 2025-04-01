@@ -256,12 +256,12 @@ namespace Spa_Management_System
     // Manager class implementing Observer Pattern for business logic
     public class OrderManager
     {
-        private readonly OrderDAO _dao;
+        private readonly OrderDataAccess _dataAccess;
         private readonly List<IOrderObserver> _observers;
 
         public OrderManager()
         {
-            _dao = new OrderDAO();
+            _dataAccess = new OrderDataAccess();
             _observers = new List<IOrderObserver>();
         }
 
@@ -287,88 +287,25 @@ namespace Spa_Management_System
 
         public DataTable GetAllOrders()
         {
-            return _dao.GetAllOrders();
+            return _dataAccess.GetAll();
         }
 
         public void InsertOrder(OrderModel order)
         {
-            _dao.InsertOrder(order);
+            _dataAccess.Insert(order);
             NotifyObservers();
         }
 
         public void UpdateOrder(OrderModel order)
         {
-            _dao.UpdateOrder(order);
+            _dataAccess.Update(order);
             NotifyObservers();
         }
 
         public void DeleteOrder(int orderId)
         {
-            _dao.DeleteOrder(orderId);
+            _dataAccess.Delete(orderId);
             NotifyObservers();
-        }
-    }
-
-    // DAO Pattern: Data Access Object for Order
-    public class OrderDAO
-    {
-        // Singleton Pattern: Using the SqlConnectionManager Singleton
-        private readonly SqlConnectionManager _connectionManager;
-
-        public OrderDAO()
-        {
-            _connectionManager = SqlConnectionManager.Instance;
-        }
-
-        public DataTable GetAllOrders()
-        {
-            string query = "SELECT OrderId, CustomerId, UserId, OrderTime, TotalAmount, Discount, FinalAmount, Notes, Status FROM tbOrder";
-            return _connectionManager.ExecuteQuery(query);
-        }
-
-        public void InsertOrder(OrderModel order)
-        {
-            string query = "INSERT INTO tbOrder (CustomerId, UserId, OrderTime, TotalAmount, Discount, FinalAmount, Notes, Status) " +
-                           "VALUES (@CustomerId, @UserId, @OrderTime, @TotalAmount, @Discount, @FinalAmount, @Notes, @Status)";
-            SqlParameter[] parameters = {
-                new SqlParameter("@CustomerId", order.CustomerId),
-                new SqlParameter("@UserId", order.UserId),
-                new SqlParameter("@OrderTime", order.OrderTime),
-                new SqlParameter("@TotalAmount", order.TotalAmount),
-                new SqlParameter("@Discount", order.Discount),
-                new SqlParameter("@FinalAmount", order.FinalAmount),
-                new SqlParameter("@Notes", order.Notes ?? (object)DBNull.Value),
-                new SqlParameter("@Status", order.Status ?? (object)DBNull.Value)
-            };
-            _connectionManager.ExecuteNonQuery(query, parameters);
-        }
-
-        public void UpdateOrder(OrderModel order)
-        {
-            string query = "UPDATE tbOrder SET CustomerId = @CustomerId, UserId = @UserId, OrderTime = @OrderTime, " +
-                           "TotalAmount = @TotalAmount, Discount = @Discount, FinalAmount = @FinalAmount, Notes = @Notes, " +
-                           "Status = @Status WHERE OrderId = @OrderId";
-            SqlParameter[] parameters = {
-                new SqlParameter("@CustomerId", order.CustomerId),
-                new SqlParameter("@UserId", order.UserId),
-                new SqlParameter("@OrderTime", order.OrderTime),
-                new SqlParameter("@TotalAmount", order.TotalAmount),
-                new SqlParameter("@Discount", order.Discount),
-                new SqlParameter("@FinalAmount", order.FinalAmount),
-                new SqlParameter("@Notes", order.Notes ?? (object)DBNull.Value),
-                new SqlParameter("@Status", order.Status ?? (object)DBNull.Value),
-                new SqlParameter("@OrderId", order.OrderId)
-            };
-            _connectionManager.ExecuteNonQuery(query, parameters);
-        }
-
-        public void DeleteOrder(int orderId)
-        {
-            string query = "DELETE FROM tbOrder WHERE OrderId = @OrderId";
-            SqlParameter[] parameters = {
-                new SqlParameter("@OrderId", orderId)
-            };
-            _connectionManager.ExecuteNonQuery(query, parameters);
         }
     }
 }
