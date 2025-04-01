@@ -105,9 +105,9 @@
             label11.Font = new Font("Microsoft Sans Serif", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label11.Location = new Point(474, 15);
             label11.Name = "label11";
-            label11.Size = new Size(226, 24);
+            label11.Size = new Size(181, 24);
             label11.TabIndex = 74;
-            label11.Text = "Customer Management";
+            label11.Text = "Card Management";
             // 
             // btnExitProgram
             // 

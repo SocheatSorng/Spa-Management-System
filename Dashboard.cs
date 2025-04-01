@@ -404,125 +404,188 @@ namespace Spa_Management_System
 
         private void BtnAllForm_Click(object sender, EventArgs e)
         {
-            // Create a custom popup form
-            Form popupForm = new Form();
-            popupForm.Size = new Size(200, 300); // Increased height to accommodate new button
-            popupForm.FormBorderStyle = FormBorderStyle.None;
-            popupForm.BackColor = Color.White;
-            popupForm.ShowInTaskbar = false;
-            popupForm.StartPosition = FormStartPosition.Manual;
-            popupForm.TopMost = true;
+            // Check if popup is already open and close it if clicking the button again
+            if (this.Controls.OfType<Panel>().Any(p => p.Name == "popupMenuPanel"))
+            {
+                ClosePopupMenu();
+                return;
+            }
+
+            // Create a custom popup panel (using Panel instead of Form)
+            Panel popupMenuPanel = new Panel();
+            popupMenuPanel.Name = "popupMenuPanel";
+            popupMenuPanel.Size = new Size(200, 300); // Increased height to accommodate all buttons
+            popupMenuPanel.BorderStyle = BorderStyle.FixedSingle;
+            popupMenuPanel.BackColor = Color.White;
+
+            // Add shadow effect
+            popupMenuPanel.Paint += (s, args) =>
+            {
+                ControlPaint.DrawBorder(args.Graphics, popupMenuPanel.ClientRectangle,
+                    Color.LightGray, 1, ButtonBorderStyle.Solid,
+                    Color.LightGray, 1, ButtonBorderStyle.Solid,
+                    Color.Gray, 1, ButtonBorderStyle.Solid,
+                    Color.Gray, 1, ButtonBorderStyle.Solid);
+            };
 
             // Calculate position to show next to the btnAllForm
-            Point btnLocation = btnAllForm.PointToScreen(new Point(0, 0));
-            popupForm.Location = new Point(btnLocation.X + btnAllForm.Width, btnLocation.Y);
+            Point btnScreenLocation = btnAllForm.PointToScreen(new Point(0, 0));
+            Point formScreenLocation = this.PointToScreen(new Point(0, 0));
+            Point relativeLoc = new Point(
+                btnScreenLocation.X - formScreenLocation.X + btnAllForm.Width,
+                btnScreenLocation.Y - formScreenLocation.Y
+            );
+            popupMenuPanel.Location = relativeLoc;
 
-            // Create CardRegistration button
-            Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnCardRegistration = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
-            btnCardRegistration.Text = "Card Registration";
-            btnCardRegistration.Size = new Size(180, 40);
-            btnCardRegistration.Location = new Point(10, 10);
-            btnCardRegistration.Click += (s, args) =>
+            // Create buttons with consistent styling - add all original buttons
+            // Card Registration button
+            CreateMenuButton(popupMenuPanel, "Card Registration", 10, 10, (s, args) =>
             {
+                ClosePopupMenu();
                 CardRegistration cardRegistrationForm = new CardRegistration();
                 cardRegistrationForm.Show();
-                popupForm.Close();
-            };
+            });
 
-            // Create Consumable button
-            Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnConsumable = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
-            btnConsumable.Text = "Consumable";
-            btnConsumable.Size = new Size(180, 40);
-            btnConsumable.Location = new Point(10, 10);
-            btnConsumable.Click += (s, args) => {
-                Consumable consumableForm = new Consumable();
-                consumableForm.Show();
-                popupForm.Close();
-            };
-
-            // Create Customer button
-            Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnCustomer = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
-            btnCustomer.Text = "Customer";
-            btnCustomer.Size = new Size(180, 40);
-            btnCustomer.Location = new Point(10, 50);
-            btnCustomer.Click += (s, args) => {
+            // Customer button
+            CreateMenuButton(popupMenuPanel, "Customer", 10, 50, (s, args) =>
+            {
+                ClosePopupMenu();
                 Customer customerForm = new Customer();
                 customerForm.Show();
-                popupForm.Close();
-            };
+            });
 
-            // Create Invoice button
-            Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnInvoice = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
-            btnInvoice.Text = "Invoice";
-            btnInvoice.Size = new Size(180, 40);
-            btnInvoice.Location = new Point(10, 90);
-            btnInvoice.Click += (s, args) =>
+            // Service button
+            CreateMenuButton(popupMenuPanel, "Service", 10, 90, (s, args) =>
             {
-                Invoice invoiceForm = new Invoice();
-                invoiceForm.Show();
-                popupForm.Close();
-            };
-
-            // Create Order button
-            Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnOrder = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
-            btnOrder.Text = "Order";
-            btnOrder.Size = new Size(180, 40);
-            btnOrder.Location = new Point(10, 130);
-            btnOrder.Click += (s, args) =>
-            {
-                Order orderForm = new Order();
-                orderForm.Show();
-                popupForm.Close();
-            };
-
-            // Create Payment button
-            Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnPayment = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
-            btnPayment.Text = "Payment";
-            btnPayment.Size = new Size(180, 40);
-            btnPayment.Location = new Point(10, 170);
-            btnPayment.Click += (s, args) =>
-            {
-                Payment paymentForm = new Payment();
-                paymentForm.Show();
-                popupForm.Close();
-            };
-
-            // Create Service button
-            Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnService = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
-            btnService.Text = "Service";
-            btnService.Size = new Size(180, 40);
-            btnService.Location = new Point(10, 210);
-            btnService.Click += (s, args) => {
+                ClosePopupMenu();
                 Service serviceForm = new Service();
                 serviceForm.Show();
-                popupForm.Close();
-            };
+            });
 
-            // Create User button
-            Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnUser = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
-            btnUser.Text = "User";
-            btnUser.Size = new Size(180, 40);
-            btnUser.Location = new Point(10, 250);
-            btnUser.Click += (s, args) => {
+            // Consumable button
+            CreateMenuButton(popupMenuPanel, "Consumable", 10, 130, (s, args) =>
+            {
+                ClosePopupMenu();
+                Consumable consumableForm = new Consumable();
+                consumableForm.Show();
+            });
+
+            // Invoice button
+            CreateMenuButton(popupMenuPanel, "Invoice", 10, 170, (s, args) =>
+            {
+                ClosePopupMenu();
+                Invoice invoiceForm = new Invoice();
+                invoiceForm.Show();
+            });
+
+            // Order button
+            CreateMenuButton(popupMenuPanel, "Order", 10, 210, (s, args) =>
+            {
+                ClosePopupMenu();
+                Order orderForm = new Order();
+                orderForm.Show();
+            });
+
+            // User button
+            CreateMenuButton(popupMenuPanel, "User", 10, 250, (s, args) =>
+            {
+                ClosePopupMenu();
                 User userForm = new User();
                 userForm.Show();
-                popupForm.Close();
+            });
+
+            // Add close button at the top-right
+            Bunifu.UI.WinForms.BunifuButton.BunifuIconButton closeButton = new Bunifu.UI.WinForms.BunifuButton.BunifuIconButton();
+            closeButton.Size = new Size(24, 24);
+            closeButton.Location = new Point(popupMenuPanel.Width - 27, 3);
+            closeButton.BackgroundColor = Color.Transparent;
+            closeButton.BorderColor = Color.Transparent;
+            closeButton.BorderRadius = 12;
+            closeButton.RoundBorders = true;
+            closeButton.Click += (s, args) => ClosePopupMenu();
+            popupMenuPanel.Controls.Add(closeButton);
+
+            // Add the panel to the form
+            this.Controls.Add(popupMenuPanel);
+            popupMenuPanel.BringToFront();
+
+            // Add event to close popup when user clicks elsewhere
+            EventHandler docClickHandler = null;
+            docClickHandler = (s, args) =>
+            {
+                // Check if click was outside the popup
+                if (s is Control control && !IsChildOf(control, popupMenuPanel) && control != btnAllForm)
+                {
+                    ClosePopupMenu();
+                    this.Click -= docClickHandler;
+                }
             };
 
-            // Add buttons to the popup form
-            popupForm.Controls.Add(btnCardRegistration);
-            popupForm.Controls.Add(btnConsumable);
-            popupForm.Controls.Add(btnCustomer);
-            popupForm.Controls.Add(btnInvoice);
-            popupForm.Controls.Add(btnOrder);
-            popupForm.Controls.Add(btnPayment);
-            popupForm.Controls.Add(btnService);
-            popupForm.Controls.Add(btnUser);
+            this.Click += docClickHandler;
 
-
-            // Show the popup form
-            popupForm.Show();
+            // Also close popup if form loses focus
+            this.Deactivate += (s, args) => ClosePopupMenu();
         }
+
+        // Helper method to create styled menu buttons
+        private Bunifu.UI.WinForms.BunifuButton.BunifuButton2 CreateMenuButton(Panel panel, string text, int x, int y, EventHandler clickHandler)
+        {
+            Bunifu.UI.WinForms.BunifuButton.BunifuButton2 button = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
+            button.Text = text;
+            button.Size = new Size(180, 40);
+            button.Location = new Point(x, y);
+
+            // Styling the button
+            button.BackColor = Color.Transparent;
+            button.ForeColor = Color.Black;
+            button.Font = new Font("Century Gothic", 10, FontStyle.Regular);
+
+            // Set initial background color to a light gray that blends with your theme
+            button.IdleFillColor = Color.FromArgb(245, 245, 245);
+            button.IdleBorderColor = Color.FromArgb(230, 230, 230);
+            button.IdleBorderRadius = 10;
+            button.IdleBorderThickness = 1;
+
+            // Hover effect
+            button.onHoverState.FillColor = Color.FromArgb(60, 120, 188);
+            button.onHoverState.ForeColor = Color.White;
+            button.onHoverState.BorderColor = Color.FromArgb(60, 120, 188);
+
+            // Active state (when clicked)
+            button.OnPressedState.FillColor = Color.FromArgb(40, 96, 144);
+            button.OnPressedState.ForeColor = Color.White;
+            button.OnPressedState.BorderColor = Color.FromArgb(40, 96, 144);
+
+            button.Click += clickHandler;
+            panel.Controls.Add(button);
+
+            return button;
+        }
+
+        // Helper method to check if a control is child of another
+        private bool IsChildOf(Control child, Control parent)
+        {
+            if (child == parent) return true;
+
+            foreach (Control c in parent.Controls)
+            {
+                if (c == child) return true;
+                if (IsChildOf(child, c)) return true;
+            }
+
+            return false;
+        }
+
+        // Method to close the popup menu
+        private void ClosePopupMenu()
+        {
+            foreach (Control c in this.Controls.OfType<Panel>().Where(p => p.Name == "popupMenuPanel").ToList())
+            {
+                this.Controls.Remove(c);
+                c.Dispose();
+            }
+        }
+        
         private void BtnRefresh_Click(object sender, EventArgs e)
         {
             // Show loading cursor
