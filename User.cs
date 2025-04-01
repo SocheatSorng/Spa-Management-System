@@ -176,10 +176,27 @@ namespace Spa_Management_System
         public User()
         {
             InitializeComponent();
+
+            // Add the same dragging capability to the top panel
+            bunifuPanel2.MouseDown += (s, e) =>
+            {
+                if (e.Button == MouseButtons.Left)
+                {
+                    ReleaseCapture();
+                    SendMessage(Handle, 0xA1, 0x2, 0);
+                }
+            };
+
             _repository = new UserRepository();
             LoadData();
             SetupEventHandlers();
         }
+        // Add these at the top of your class, right after the "public partial class Service : Form" line
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern bool ReleaseCapture();
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+
 
         private void SetupEventHandlers()
         {
@@ -211,7 +228,7 @@ namespace Spa_Management_System
 
             // Hide password column for security
             if (dgvUser.Columns.Contains("Password"))
-            { 
+            {
                 dgvUser.Columns["Password"].Visible = false;
             }
         }
@@ -357,5 +374,6 @@ namespace Spa_Management_System
         {
             this.Close();
         }
+
     }
 }

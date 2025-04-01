@@ -102,6 +102,7 @@
             sliderPriceFilter = new Bunifu.UI.WinForms.BunifuHSlider();
             lblPriceRange = new Bunifu.UI.WinForms.BunifuLabel();
             btnRefresh = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
+            bunifuFormDock1 = new Bunifu.UI.WinForms.BunifuFormDock();
             bunifuPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)LogoImage).BeginInit();
             bunifuPanel2.SuspendLayout();
@@ -2030,6 +2031,46 @@
             btnRefresh.TextPadding = new Padding(0);
             btnRefresh.UseDefaultRadiusAndThickness = true;
             // 
+            // bunifuFormDock1
+            // 
+            bunifuFormDock1.AllowFormDragging = true;
+            bunifuFormDock1.AllowFormDropShadow = true;
+            bunifuFormDock1.AllowFormResizing = true;
+            bunifuFormDock1.AllowHidingBottomRegion = true;
+            bunifuFormDock1.AllowOpacityChangesWhileDragging = false;
+            bunifuFormDock1.BorderOptions.BottomBorder.BorderColor = Color.Silver;
+            bunifuFormDock1.BorderOptions.BottomBorder.BorderThickness = 1;
+            bunifuFormDock1.BorderOptions.BottomBorder.ShowBorder = true;
+            bunifuFormDock1.BorderOptions.LeftBorder.BorderColor = Color.Silver;
+            bunifuFormDock1.BorderOptions.LeftBorder.BorderThickness = 1;
+            bunifuFormDock1.BorderOptions.LeftBorder.ShowBorder = true;
+            bunifuFormDock1.BorderOptions.RightBorder.BorderColor = Color.Silver;
+            bunifuFormDock1.BorderOptions.RightBorder.BorderThickness = 1;
+            bunifuFormDock1.BorderOptions.RightBorder.ShowBorder = true;
+            bunifuFormDock1.BorderOptions.TopBorder.BorderColor = Color.Silver;
+            bunifuFormDock1.BorderOptions.TopBorder.BorderThickness = 1;
+            bunifuFormDock1.BorderOptions.TopBorder.ShowBorder = true;
+            bunifuFormDock1.ContainerControl = this;
+            bunifuFormDock1.DockingIndicatorsColor = Color.FromArgb(202, 215, 233);
+            bunifuFormDock1.DockingIndicatorsOpacity = 0.5D;
+            bunifuFormDock1.DockingOptions.DockAll = true;
+            bunifuFormDock1.DockingOptions.DockBottomLeft = true;
+            bunifuFormDock1.DockingOptions.DockBottomRight = true;
+            bunifuFormDock1.DockingOptions.DockFullScreen = true;
+            bunifuFormDock1.DockingOptions.DockLeft = true;
+            bunifuFormDock1.DockingOptions.DockRight = true;
+            bunifuFormDock1.DockingOptions.DockTopLeft = true;
+            bunifuFormDock1.DockingOptions.DockTopRight = true;
+            bunifuFormDock1.FormDraggingOpacity = 0.9D;
+            bunifuFormDock1.ParentForm = this;
+            bunifuFormDock1.ShowCursorChanges = true;
+            bunifuFormDock1.ShowDockingIndicators = true;
+            bunifuFormDock1.TitleBarOptions.AllowFormDragging = true;
+            bunifuFormDock1.TitleBarOptions.BunifuFormDock = bunifuFormDock1;
+            bunifuFormDock1.TitleBarOptions.DoubleClickToExpandWindow = true;
+            bunifuFormDock1.TitleBarOptions.TitleBarControl = null;
+            bunifuFormDock1.TitleBarOptions.UseBackColorOnDockingIndicators = false;
+            // 
             // Dashboard
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -2119,5 +2160,6 @@
         private Bunifu.UI.WinForms.BunifuHSlider sliderPriceFilter;
         private Bunifu.UI.WinForms.BunifuLabel lblPriceRange;
         private Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnRefresh;
+        private Bunifu.UI.WinForms.BunifuFormDock bunifuFormDock1;
     }
 }

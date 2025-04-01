@@ -1567,12 +1567,11 @@ namespace Spa_Management_System
                 MessageBox.Show("Error adding consumable to order: " + ex.Message);
             }
         }
-
         private void ProcessPayment(int invoiceId)
         {
             try
             {
-                // First, display the invoice details to the user
+                // First, get the invoice details to pre-fill the payment form
                 string query = "SELECT i.InvoiceId, i.TotalAmount, c.CardId, o.CustomerId " +
                               "FROM tbInvoice i " +
                               "JOIN tbOrder o ON i.OrderId = o.OrderId " +
@@ -1585,40 +1584,111 @@ namespace Spa_Management_System
                 if (invoiceResult.Rows.Count > 0)
                 {
                     decimal totalAmount = Convert.ToDecimal(invoiceResult.Rows[0]["TotalAmount"]);
+                    string cardId = invoiceResult.Rows[0]["CardId"].ToString();
+                    int customerId = Convert.ToInt32(invoiceResult.Rows[0]["CustomerId"]);
 
-                    // Show payment confirmation dialog
-                    DialogResult result = MessageBox.Show(
-                        $"Total amount to pay: ${totalAmount}\nConfirm payment?",
-                        "Payment Confirmation",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question);
-
-                    if (result == DialogResult.Yes)
+                    // Create a quick payment dialog form
+                    using (Form paymentDialog = new Form())
                     {
-                        // Only process payment after confirmation
-                        int userId = 1; // Default user ID
-                        string paymentMethod = "Cash";
+                        // Configure the dialog
+                        paymentDialog.Text = "Process Payment";
+                        paymentDialog.Size = new Size(400, 500);
+                        paymentDialog.StartPosition = FormStartPosition.CenterParent;
+                        paymentDialog.FormBorderStyle = FormBorderStyle.FixedDialog;
+                        paymentDialog.MaximizeBox = false;
+                        paymentDialog.MinimizeBox = false;
 
-                        string paymentQuery = "EXEC sp_ProcessPayment @InvoiceId, @PaymentMethod, @TransactionReference, @UserId, @Notes";
-                        SqlParameter[] parameters = {
-                    new SqlParameter("@InvoiceId", invoiceId),
-                    new SqlParameter("@PaymentMethod", paymentMethod),
-                    new SqlParameter("@TransactionReference", DBNull.Value),
-                    new SqlParameter("@UserId", userId),
-                    new SqlParameter("@Notes", "Payment processed from Dashboard")
-                };
+                        // Add controls to display invoice information
+                        Label lblTitleInvoice = new Label { Text = "Invoice ID:", Location = new Point(20, 20), Width = 100 };
+                        Label lblInvoiceValue = new Label { Text = invoiceId.ToString(), Location = new Point(130, 20), Width = 200, Font = new Font(lblTitleInvoice.Font, FontStyle.Bold) };
 
-                        DataTable paymentResult = _connectionManager.ExecuteQuery(paymentQuery, parameters);
-                        if (paymentResult.Rows.Count > 0)
+                        Label lblTitleAmount = new Label { Text = "Total Amount:", Location = new Point(20, 50), Width = 100 };
+                        Label lblAmountValue = new Label { Text = "$" + totalAmount.ToString("0.00"), Location = new Point(130, 50), Width = 200, Font = new Font(lblTitleAmount.Font, FontStyle.Bold) };
+
+                        Label lblTitleCard = new Label { Text = "Card ID:", Location = new Point(20, 80), Width = 100 };
+                        Label lblCardValue = new Label { Text = cardId, Location = new Point(130, 80), Width = 200 };
+
+                        // Add payment method selection
+                        Label lblPayMethod = new Label { Text = "Payment Method:", Location = new Point(20, 120), Width = 120 };
+                        ComboBox cmbPayMethod = new ComboBox
                         {
-                            MessageBox.Show("Payment processed successfully. Card has been released.");
+                            Location = new Point(140, 120),
+                            Width = 200,
+                            DropDownStyle = ComboBoxStyle.DropDownList
+                        };
+                        cmbPayMethod.Items.AddRange(new string[] { "Cash", "Credit Card", "Debit Card", "Mobile Payment" });
+                        cmbPayMethod.SelectedIndex = 0;
+
+                        // Transaction reference field
+                        Label lblTransRef = new Label { Text = "Transaction Ref:", Location = new Point(20, 160), Width = 120 };
+                        TextBox txtTransRef = new TextBox { Location = new Point(140, 160), Width = 200 };
+
+                        // Notes field
+                        Label lblNotes = new Label { Text = "Notes:", Location = new Point(20, 200), Width = 100 };
+                        TextBox txtNotes = new TextBox
+                        {
+                            Location = new Point(20, 230),
+                            Width = 340,
+                            Height = 100,
+                            Multiline = true,
+                            Text = $"Payment for Invoice #{invoiceId}, Card: {cardId}"
+                        };
+
+                        // Add buttons
+                        Button btnProcess = new Button
+                        {
+                            Text = "Process Payment",
+                            Location = new Point(120, 350),
+                            Width = 150,
+                            DialogResult = DialogResult.OK
+                        };
+
+                        Button btnCancel = new Button
+                        {
+                            Text = "Cancel",
+                            Location = new Point(280, 350),
+                            Width = 80,
+                            DialogResult = DialogResult.Cancel
+                        };
+
+                        // Add controls to form
+                        paymentDialog.Controls.AddRange(new Control[] {
+                    lblTitleInvoice, lblInvoiceValue,
+                    lblTitleAmount, lblAmountValue,
+                    lblTitleCard, lblCardValue,
+                    lblPayMethod, cmbPayMethod,
+                    lblTransRef, txtTransRef,
+                    lblNotes, txtNotes,
+                    btnProcess, btnCancel
+                });
+
+                        // Show the dialog
+                        DialogResult result = paymentDialog.ShowDialog();
+
+                        if (result == DialogResult.OK)
+                        {
+                            // Process the payment
+                            int userId = 1; // Default user ID
+                            string paymentMethod = cmbPayMethod.SelectedItem.ToString();
+                            string transactionRef = txtTransRef.Text.Trim();
+                            string notes = txtNotes.Text.Trim();
+
+                            // Use stored procedure to process payment
+                            string paymentQuery = "EXEC sp_ProcessPayment @InvoiceId, @PaymentMethod, @TransactionReference, @UserId, @Notes";
+                            SqlParameter[] parameters = {
+                        new SqlParameter("@InvoiceId", invoiceId),
+                        new SqlParameter("@PaymentMethod", paymentMethod),
+                        new SqlParameter("@TransactionReference", string.IsNullOrEmpty(transactionRef) ? DBNull.Value : (object)transactionRef),
+                        new SqlParameter("@UserId", userId),
+                        new SqlParameter("@Notes", string.IsNullOrEmpty(notes) ? DBNull.Value : (object)notes)
+                    };
+
+                            _connectionManager.ExecuteNonQuery(paymentQuery, parameters);
+
+                            // Clear current order and show success message
                             ClearCurrentOrder();
+                            MessageBox.Show("Payment processed successfully. Card has been released.");
                         }
-                    }
-                    else
-                    {
-                        // Cancel payment process - the order remains active
-                        MessageBox.Show("Payment cancelled. The order remains active.");
                     }
                 }
             }
@@ -1627,7 +1697,6 @@ namespace Spa_Management_System
                 MessageBox.Show("Error processing payment: " + ex.Message);
             }
         }
-
         private Image LoadImageSafely(string imagePath)
         {
             try
@@ -1790,25 +1859,4 @@ namespace Spa_Management_System
 
     }
 
-    // Model classes if not already defined elsewhere
-    public class CustomerModel
-    {
-        public int CustomerId { get; set; }
-        public string CardId { get; set; }
-        public DateTime IssuedTime { get; set; }
-        public DateTime? ReleasedTime { get; set; }
-        public string Notes { get; set; }
-    }
-
-    public class OrderItemModel
-    {
-        public int OrderItemId { get; set; }
-        public int OrderId { get; set; }
-        public string ItemType { get; set; }
-        public int ItemId { get; set; }
-        public string ItemName { get; set; }
-        public int Quantity { get; set; }
-        public decimal UnitPrice { get; set; }
-        public decimal TotalPrice { get; set; }
-    }
 }

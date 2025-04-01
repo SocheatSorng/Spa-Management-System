@@ -71,4 +71,33 @@ namespace Spa_Management_System
         public DateTime ModifiedDate { get; set; }
         public string ImagePath { get; set; }
     }
+    // Card model class to hold card information
+    public class CardModel
+    {
+        public string CardId { get; set; }
+        public string Status { get; set; }
+        public DateTime? LastUsed { get; set; }
+        public DateTime CreatedDate { get; set; }
+    }
+    // Customer model class
+    public class CustomerModel
+    {
+        public int CustomerId { get; set; }
+        public string CardId { get; set; }
+        public DateTime IssuedTime { get; set; }
+        public DateTime? ReleasedTime { get; set; }
+        public string Notes { get; set; }
+    }
+
+    public class OrderItemModel
+    {
+        public int OrderItemId { get; set; }
+        public int OrderId { get; set; }
+        public string ItemType { get; set; }
+        public int ItemId { get; set; }
+        public string ItemName { get; set; }
+        public int Quantity { get; set; }
+        public decimal UnitPrice { get; set; }
+        public decimal TotalPrice { get; set; }
+    }
 }

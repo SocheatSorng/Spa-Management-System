@@ -8,31 +8,55 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
 
 namespace Spa_Management_System
 {
     public delegate void CardScannedEventHandler(object sender, string cardId);
     public partial class Customer : Form
     {
-        // Customer model class
-        private class CustomerModel
-        {
-            public int CustomerId { get; set; }
-            public string CardId { get; set; }
-            public DateTime IssuedTime { get; set; }
-            public DateTime? ReleasedTime { get; set; }
-            public string Notes { get; set; }
-        }
+
 
         // Repository Pattern for Customer data access
         private class CustomerRepository
         {
             private readonly SqlConnectionManager _connectionManager;
-
+ 
             public CustomerRepository()
             {
                 // Get singleton instance of connection manager
                 _connectionManager = SqlConnectionManager.Instance;
+            }
+
+            public DataTable GetAllCards()
+            {
+                try
+                {
+                    string query = "EXEC sp_GetAllCards";
+                    return _connectionManager.ExecuteQuery(query);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error retrieving cards: " + ex.Message);
+                    return new DataTable();
+                }
+            }
+            public bool RegisterCard(string cardId)
+            {
+                try
+                {
+                    // Using the sp_RegisterCard stored procedure
+                    string query = "EXEC sp_RegisterCard @CardId";
+                    SqlParameter parameter = new SqlParameter("@CardId", cardId);
+
+                    DataTable result = _connectionManager.ExecuteQuery(query, parameter);
+                    return result.Rows.Count > 0;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error registering card: " + ex.Message);
+                    return false;
+                }
             }
             public DataTable ExecuteQuery(string query, params SqlParameter[] parameters)
             {
@@ -81,6 +105,36 @@ namespace Spa_Management_System
                     MessageBox.Show("Error searching customers: " + ex.Message);
                     return new DataTable();
                 }
+            }
+            public CustomerModel GetCustomerByCardId(string cardId)
+            {
+                CustomerModel customer = null;
+                try
+                {
+                    string query = "EXEC sp_GetCustomerByCardId @CardId";
+                    SqlParameter parameter = new SqlParameter("@CardId", cardId);
+                    DataTable dataTable = _connectionManager.ExecuteQuery(query, parameter);
+
+                    if (dataTable.Rows.Count > 0)
+                    {
+                        DataRow row = dataTable.Rows[0];
+                        customer = new CustomerModel
+                        {
+                            CustomerId = Convert.ToInt32(row["CustomerId"]),
+                            CardId = row["CardId"].ToString(),
+                            IssuedTime = Convert.ToDateTime(row["IssuedTime"]),
+                            ReleasedTime = row["ReleasedTime"] == DBNull.Value ?
+                                         (DateTime?)null : Convert.ToDateTime(row["ReleasedTime"]),
+                            Notes = row["Notes"] == DBNull.Value ?
+                                  string.Empty : row["Notes"].ToString()
+                        };
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error retrieving customer: " + ex.Message);
+                }
+                return customer;
             }
 
             public CustomerModel GetById(int customerId)
@@ -235,10 +289,25 @@ namespace Spa_Management_System
         public Customer()
         {
             InitializeComponent();
+
+            // Add the same dragging capability to the top panel
+            bunifuPanel2.MouseDown += (s, e) => {
+                if (e.Button == MouseButtons.Left)
+                {
+                    ReleaseCapture();
+                    SendMessage(Handle, 0xA1, 0x2, 0);
+                }
+            };
+
             _repository = new CustomerRepository();
             LoadData();
             SetupEventHandlers();
         }
+        // Add these at the top of your class, right after the "public partial class Service : Form" line
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern bool ReleaseCapture();
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
 
         public event CardScannedEventHandler CardScanned;
 
@@ -281,15 +350,32 @@ namespace Spa_Management_System
                 // Check if card exists and get its status
                 string query = "EXEC sp_CheckCardStatus @CardId";
                 SqlParameter parameter = new SqlParameter("@CardId", cardId);
-
                 DataTable cardStatus = _repository.ExecuteQuery(query, parameter);
 
                 if (cardStatus.Rows.Count == 0)
                 {
-                    MessageBox.Show("Card not found in the system.");
+                    // Ask if the user wants to register this new card
+                    DialogResult result = MessageBox.Show(
+                        $"Card {cardId} is not registered in the system. Would you like to register it now?",
+                        "Register New Card",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        // Directly call the register method
+                        bool success = _repository.RegisterCard(cardId);
+                        if (success)
+                        {
+                            MessageBox.Show($"Card {cardId} registered successfully.");
+                            ClearFields();
+                            LoadData();
+                        }
+                    }
                     return;
                 }
 
+                // Get the status of the card
                 string status = cardStatus.Rows[0]["Status"].ToString();
 
                 if (status == "Available")
@@ -330,7 +416,6 @@ namespace Spa_Management_System
                         txtCustomerID.Text = customer.CardId;
                         txtIssuedTime.Text = customer.IssuedTime.ToString("yyyy-MM-dd HH:mm:ss");
                         txtNote.Text = customer.Notes;
-
                         MessageBox.Show($"Card {cardId} is currently in use by customer ID {customerId}.");
                     }
                 }
@@ -345,27 +430,21 @@ namespace Spa_Management_System
             }
         }
 
-
         private void LoadData()
         {
-            var customers = _repository.GetAll();
+            // Get all cards, not just customers with assigned cards
+            DataTable allCards = _repository.GetAllCards();
+            dgvCustomer.DataSource = allCards;
 
-            // Create DataTable for display
-            DataTable dt = new DataTable();
-            dt.Columns.Add("CustomerId", typeof(int));
-            dt.Columns.Add("CardId", typeof(string));
-            dt.Columns.Add("IssuedTime", typeof(DateTime));
-            dt.Columns.Add("Status", typeof(string));
-
-            foreach (var customer in customers)
+            // Rename the columns for better display
+            if (dgvCustomer.Columns.Count > 0)
             {
-                string status = customer.ReleasedTime.HasValue ? "Released" : "Active";
-                dt.Rows.Add(customer.CustomerId, customer.CardId, customer.IssuedTime, status);
+                dgvCustomer.Columns["CardId"].HeaderText = "Card ID";
+                dgvCustomer.Columns["Status"].HeaderText = "Status";
+                dgvCustomer.Columns["LastUsed"].HeaderText = "Last Used";
+                dgvCustomer.Columns["CreatedDate"].HeaderText = "Created Date";
             }
-
-            dgvCustomer.DataSource = dt;
         }
-
         private void ClearFields()
         {
             txtID.Clear();
@@ -393,48 +472,70 @@ namespace Spa_Management_System
             if (e.RowIndex >= 0)
             {
                 DataGridViewRow row = dgvCustomer.Rows[e.RowIndex];
-                int customerId = Convert.ToInt32(row.Cells["CustomerId"].Value);
 
-                CustomerModel customer = _repository.GetById(customerId);
-                if (customer != null)
+                // Now we're working with card data, not customer data
+                string cardId = row.Cells["CardId"].Value.ToString();
+                string status = row.Cells["Status"].Value.ToString();
+
+                // Clear fields and show card info
+                txtID.Clear(); // No customer ID for a card that's not assigned
+                txtCustomerID.Text = cardId;
+                txtIssuedTime.Clear();
+                txtNote.Clear();
+
+                // If the card is in use, try to get the associated customer
+                if (status == "InUse")
                 {
-                    txtID.Text = customer.CustomerId.ToString();
-                    txtCustomerID.Text = customer.CardId;
-                    txtIssuedTime.Text = customer.IssuedTime.ToString("yyyy-MM-dd HH:mm:ss");
-                    txtNote.Text = customer.Notes;
+                    CustomerModel customer = _repository.GetCustomerByCardId(cardId);
+                    if (customer != null)
+                    {
+                        txtID.Text = customer.CustomerId.ToString();
+                        txtIssuedTime.Text = customer.IssuedTime.ToString("yyyy-MM-dd HH:mm:ss");
+                        txtNote.Text = customer.Notes;
+                    }
                 }
             }
         }
 
         private void BtnInsert_Click(object sender, EventArgs e)
         {
-            // For inserting, we need to get an available card first
-            DataTable availableCards = _repository.GetAvailableCards();
-            if (availableCards.Rows.Count == 0)
+            // This button registers a new card in the system
+            string cardId = txtCustomerID.Text.Trim();
+
+            if (string.IsNullOrEmpty(cardId))
             {
-                MessageBox.Show("No available cards found. Please register new cards first.");
+                MessageBox.Show("Please enter a card ID to register.");
                 return;
             }
 
-            // Show a form or dialog to select a card
-            // For simplicity, we'll just use the first available card
-            string cardId = availableCards.Rows[0]["CardId"].ToString();
-            string notes = txtNote.Text.Trim();
-
-            // Issue the card to a new customer
-            int customerId = _repository.IssueCardToCustomer(cardId, notes);
-            if (customerId > 0)
+            try
             {
-                MessageBox.Show($"Card {cardId} issued to new customer successfully.");
-                ClearFields();
-                LoadData();
+                // Directly register the card without first checking if it exists
+                bool success = _repository.RegisterCard(cardId);
+                if (success)
+                {
+                    MessageBox.Show($"Card {cardId} registered successfully.");
+                    ClearFields();
+                    LoadData();
+                }
+                else
+                {
+                    MessageBox.Show("Failed to register card.");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Failed to issue card.");
+                // Handle specific error for existing card
+                if (ex.Message.Contains("already registered"))
+                {
+                    MessageBox.Show("This card is already registered in the system.");
+                }
+                else
+                {
+                    MessageBox.Show($"Error: {ex.Message}");
+                }
             }
         }
-
         private void BtnUpdate_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(txtID.Text))
@@ -487,6 +588,7 @@ namespace Spa_Management_System
                 }
             }
         }
+       
 
         private void BtnNew_Click(object sender, EventArgs e)
         {

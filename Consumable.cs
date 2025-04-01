@@ -10,6 +10,7 @@ namespace Spa_Management_System
     // MVC Pattern: View component
     public partial class Consumable : Form
     {
+
         private readonly ConsumableContext _consumableContext;
         private DataTable _consumablesTable;
         private string _selectedImagePath;
@@ -20,6 +21,17 @@ namespace Spa_Management_System
         public Consumable()
         {
             InitializeComponent();
+            // Add this code for form dragging
+
+            // Add the same dragging capability to the top panel
+            bunifuPanel2.MouseDown += (s, e) =>
+            {
+                if (e.Button == MouseButtons.Left)
+                {
+                    ReleaseCapture();
+                    SendMessage(Handle, 0xA1, 0x2, 0);
+                }
+            };
 
             // Skip database operations during design time
             if (!IsDesignMode)
@@ -38,6 +50,11 @@ namespace Spa_Management_System
                 }
             }
         }
+        // Add these at the top of your class, right after the "public partial class Service : Form" line
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern bool ReleaseCapture();
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
 
         private void InitializeCategoryDropdown()
         {
@@ -321,6 +338,11 @@ namespace Spa_Management_System
         private void btnExitProgram_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void Consumable_Load(object sender, EventArgs e)
+        {
+
         }
     }
 

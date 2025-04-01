@@ -19,10 +19,25 @@ namespace Spa_Management_System
         public Service()
         {
             InitializeComponent();
+            
+            // Add the same dragging capability to the top panel
+            bunifuPanel2.MouseDown += (s, e) => {
+                if (e.Button == MouseButtons.Left)
+                {
+                    ReleaseCapture();
+                    SendMessage(Handle, 0xA1, 0x2, 0);
+                }
+            };
+                       
             _dao = new ServiceDAO();
             LoadServices();
             WireUpEvents(); // Attach event handlers
         }
+        // Add these at the top of your class, right after the "public partial class Service : Form" line
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern bool ReleaseCapture();
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
 
         // Load all services into the DataGridView
         private void LoadServices()
