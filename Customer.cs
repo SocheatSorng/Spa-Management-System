@@ -24,59 +24,59 @@ namespace Spa_Management_System
             // Subsystems
             private readonly CardSubsystem _cardSubsystem;
             private readonly CustomerSubsystem _customerSubsystem;
-            
+
             public CustomerFacade()
             {
                 _cardSubsystem = new CardSubsystem();
                 _customerSubsystem = new CustomerSubsystem();
             }
-            
+
             // Public facade methods that coordinate the subsystems
-            
+
             // Card-related operations
             public DataTable GetAllCards()
             {
                 return _cardSubsystem.GetAllCards();
             }
-            
+
             public bool RegisterCard(string cardId)
             {
                 return _cardSubsystem.RegisterCard(cardId);
             }
-            
+
             public DataTable GetAvailableCards()
             {
                 return _cardSubsystem.GetAvailableCards();
             }
-            
+
             // Customer-related operations
             public List<CustomerModel> GetAllCustomers()
             {
                 return _customerSubsystem.GetAll();
             }
-            
+
             public CustomerModel GetCustomerByCardId(string cardId)
             {
                 return _customerSubsystem.GetCustomerByCardId(cardId);
             }
-            
+
             public CustomerModel GetCustomerById(int customerId)
             {
                 return _customerSubsystem.GetById(customerId);
             }
-            
+
             public DataTable SearchCustomers(string searchText)
             {
                 return _customerSubsystem.Search(searchText);
             }
-            
+
             // Direct database access for flexibility (used by existing code)
             public DataTable ExecuteQuery(string query, params SqlParameter[] parameters)
             {
                 // We'll delegate this to either subsystem, since they both have _connectionManager
                 return _cardSubsystem.ExecuteQuery(query, parameters);
             }
-            
+
             // Combined operations (that require coordination between subsystems)
             public int IssueCardToCustomer(string cardId, string notes)
             {
@@ -86,19 +86,19 @@ namespace Spa_Management_System
                     MessageBox.Show("Card is not available or not registered.");
                     return -1;
                 }
-                
+
                 // Issue card to customer
                 int customerId = _customerSubsystem.IssueCard(cardId, notes);
-                
+
                 // If successful, update card status
                 if (customerId > 0)
                 {
                     _cardSubsystem.SetCardStatus(cardId, "InUse");
                 }
-                
+
                 return customerId;
             }
-            
+
             public bool ReleaseCustomerCard(int customerId)
             {
                 string cardId = _customerSubsystem.GetCardIdByCustomerId(customerId);
@@ -106,16 +106,16 @@ namespace Spa_Management_System
                 {
                     return false;
                 }
-                
+
                 bool released = _customerSubsystem.ReleaseCard(customerId);
                 if (released)
                 {
                     _cardSubsystem.SetCardStatus(cardId, "Available");
                 }
-                
+
                 return released;
             }
-            
+
             public bool UpdateCustomerNotes(int customerId, string notes)
             {
                 return _customerSubsystem.UpdateNotes(customerId, notes);
@@ -126,12 +126,12 @@ namespace Spa_Management_System
         private class CardSubsystem
         {
             private readonly SqlConnectionManager _connectionManager;
-            
+
             public CardSubsystem()
             {
                 _connectionManager = SqlConnectionManager.Instance;
             }
-            
+
             public DataTable GetAllCards()
             {
                 try
@@ -145,14 +145,14 @@ namespace Spa_Management_System
                     return new DataTable();
                 }
             }
-            
+
             public bool RegisterCard(string cardId)
             {
                 try
                 {
                     string query = "EXEC sp_RegisterCard @CardId";
                     SqlParameter parameter = new SqlParameter("@CardId", cardId);
-                    
+
                     DataTable result = _connectionManager.ExecuteQuery(query, parameter);
                     return result.Rows.Count > 0;
                 }
@@ -162,7 +162,7 @@ namespace Spa_Management_System
                     return false;
                 }
             }
-            
+
             public DataTable GetAvailableCards()
             {
                 try
@@ -176,14 +176,14 @@ namespace Spa_Management_System
                     return new DataTable();
                 }
             }
-            
+
             public bool IsCardAvailable(string cardId)
             {
                 try
                 {
                     string query = "SELECT Status FROM tbCard WHERE CardId = @CardId";
                     SqlParameter parameter = new SqlParameter("@CardId", cardId);
-                    
+
                     DataTable result = _connectionManager.ExecuteQuery(query, parameter);
                     if (result.Rows.Count > 0)
                     {
@@ -197,7 +197,7 @@ namespace Spa_Management_System
                     return false;
                 }
             }
-            
+
             public bool SetCardStatus(string cardId, string status)
             {
                 try
@@ -208,7 +208,7 @@ namespace Spa_Management_System
                         new SqlParameter("@LastUsed", DateTime.Now),
                         new SqlParameter("@CardId", cardId)
                     };
-                    
+
                     int rowsAffected = _connectionManager.ExecuteNonQuery(query, parameters);
                     return rowsAffected > 0;
                 }
@@ -218,7 +218,7 @@ namespace Spa_Management_System
                     return false;
                 }
             }
-            
+
             // Direct database access for facade delegation
             public DataTable ExecuteQuery(string query, params SqlParameter[] parameters)
             {
@@ -229,12 +229,12 @@ namespace Spa_Management_System
         private class CustomerSubsystem
         {
             private readonly SqlConnectionManager _connectionManager;
-            
+
             public CustomerSubsystem()
             {
                 _connectionManager = SqlConnectionManager.Instance;
             }
-            
+
             public List<CustomerModel> GetAll()
             {
                 List<CustomerModel> customers = new List<CustomerModel>();
@@ -242,7 +242,7 @@ namespace Spa_Management_System
                 {
                     string query = "SELECT CustomerId, CardId, IssuedTime, ReleasedTime, Notes FROM tbCustomer";
                     DataTable dataTable = _connectionManager.ExecuteQuery(query);
-                    
+
                     foreach (DataRow row in dataTable.Rows)
                     {
                         customers.Add(CreateCustomerFromRow(row));
@@ -254,7 +254,7 @@ namespace Spa_Management_System
                 }
                 return customers;
             }
-            
+
             public DataTable Search(string searchText)
             {
                 try
@@ -269,7 +269,7 @@ namespace Spa_Management_System
                     return new DataTable();
                 }
             }
-            
+
             public CustomerModel GetCustomerByCardId(string cardId)
             {
                 try
@@ -277,7 +277,7 @@ namespace Spa_Management_System
                     string query = "SELECT CustomerId, CardId, IssuedTime, ReleasedTime, Notes FROM tbCustomer WHERE CardId = @CardId AND ReleasedTime IS NULL";
                     SqlParameter parameter = new SqlParameter("@CardId", cardId);
                     DataTable dataTable = _connectionManager.ExecuteQuery(query, parameter);
-                    
+
                     if (dataTable.Rows.Count > 0)
                     {
                         return CreateCustomerFromRow(dataTable.Rows[0]);
@@ -289,7 +289,7 @@ namespace Spa_Management_System
                 }
                 return null;
             }
-            
+
             public CustomerModel GetById(int customerId)
             {
                 try
@@ -297,7 +297,7 @@ namespace Spa_Management_System
                     string query = "SELECT CustomerId, CardId, IssuedTime, ReleasedTime, Notes FROM tbCustomer WHERE CustomerId = @CustomerId";
                     SqlParameter parameter = new SqlParameter("@CustomerId", customerId);
                     DataTable dataTable = _connectionManager.ExecuteQuery(query, parameter);
-                    
+
                     if (dataTable.Rows.Count > 0)
                     {
                         return CreateCustomerFromRow(dataTable.Rows[0]);
@@ -309,7 +309,7 @@ namespace Spa_Management_System
                 }
                 return null;
             }
-            
+
             public int IssueCard(string cardId, string notes)
             {
                 try
@@ -320,7 +320,7 @@ namespace Spa_Management_System
                         new SqlParameter("@IssuedTime", DateTime.Now),
                         new SqlParameter("@Notes", string.IsNullOrEmpty(notes) ? DBNull.Value : (object)notes)
                     };
-                    
+
                     object result = _connectionManager.ExecuteScalar(query, parameters);
                     if (result != null && result != DBNull.Value)
                     {
@@ -333,7 +333,7 @@ namespace Spa_Management_System
                 }
                 return -1;
             }
-            
+
             public bool ReleaseCard(int customerId)
             {
                 try
@@ -343,7 +343,7 @@ namespace Spa_Management_System
                         new SqlParameter("@ReleasedTime", DateTime.Now),
                         new SqlParameter("@CustomerId", customerId)
                     };
-                    
+
                     int rowsAffected = _connectionManager.ExecuteNonQuery(query, parameters);
                     return rowsAffected > 0;
                 }
@@ -353,7 +353,7 @@ namespace Spa_Management_System
                     return false;
                 }
             }
-            
+
             public bool UpdateNotes(int customerId, string notes)
             {
                 try
@@ -363,7 +363,7 @@ namespace Spa_Management_System
                         new SqlParameter("@Notes", string.IsNullOrEmpty(notes) ? DBNull.Value : (object)notes),
                         new SqlParameter("@CustomerId", customerId)
                     };
-                    
+
                     int rowsAffected = _connectionManager.ExecuteNonQuery(query, parameters);
                     return rowsAffected > 0;
                 }
@@ -373,14 +373,14 @@ namespace Spa_Management_System
                     return false;
                 }
             }
-            
+
             public string GetCardIdByCustomerId(int customerId)
             {
                 try
                 {
                     string query = "SELECT CardId FROM tbCustomer WHERE CustomerId = @CustomerId";
                     SqlParameter parameter = new SqlParameter("@CustomerId", customerId);
-                    
+
                     object result = _connectionManager.ExecuteScalar(query, parameter);
                     if (result != null && result != DBNull.Value)
                     {
@@ -393,7 +393,7 @@ namespace Spa_Management_System
                 }
                 return null;
             }
-            
+
             private CustomerModel CreateCustomerFromRow(DataRow row)
             {
                 return new CustomerModel
@@ -416,7 +416,8 @@ namespace Spa_Management_System
             InitializeComponent();
 
             // Add the same dragging capability to the top panel
-            bunifuPanel2.MouseDown += (s, e) => {
+            bunifuPanel2.MouseDown += (s, e) =>
+            {
                 if (e.Button == MouseButtons.Left)
                 {
                     ReleaseCapture();
@@ -441,7 +442,6 @@ namespace Spa_Management_System
             // Wire up button click events
             btnInsert.Click += BtnInsert_Click;
             btnUpdate.Click += BtnUpdate_Click;
-            btnDelete.Click += BtnDelete_Click;
             btnNew.Click += BtnNew_Click;
             btnClear.Click += BtnClear_Click;
             txtSearch.TextChanged += TxtSearch_TextChanged;
@@ -685,35 +685,57 @@ namespace Spa_Management_System
             }
         }
 
-        private void BtnDelete_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrEmpty(txtID.Text))
-            {
-                MessageBox.Show("Please select a customer to release card.");
-                return;
-            }
+        // private void BtnDelete_Click(object sender, EventArgs e)
+        // {
+        //     string cardId = txtCustomerID.Text.Trim();
 
-            int customerId = Convert.ToInt32(txtID.Text);
+        //     if (string.IsNullOrEmpty(cardId))
+        //     {
+        //         MessageBox.Show("Please select a card to delete.");
+        //         return;
+        //     }
 
-            // Confirm release
-            DialogResult result = MessageBox.Show("Are you sure you want to release this card?",
-                                                 "Confirm Release", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (result == DialogResult.Yes)
-            {
-                bool success = _facade.ReleaseCustomerCard(customerId);
-                if (success)
-                {
-                    MessageBox.Show("Card released successfully.");
-                    ClearFields();
-                    LoadData();
-                }
-                else
-                {
-                    MessageBox.Show("Failed to release card.");
-                }
-            }
-        }
-       
+        //     try
+        //     {
+        //         // Check if the card is in use (assigned to a customer)
+        //         string query = "EXEC sp_CheckCardStatus @CardId";
+        //         SqlParameter parameter = new SqlParameter("@CardId", cardId);
+        //         DataTable cardStatus = _facade.ExecuteQuery(query, parameter);
+
+        //         if (cardStatus.Rows.Count > 0 && cardStatus.Rows[0]["Status"].ToString() == "InUse")
+        //         {
+        //             MessageBox.Show("Cannot delete card that is currently assigned to a customer. Please release the card first.",
+        //                            "Card In Use", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //             return;
+        //         }
+
+        //         // Confirm deletion
+        //         DialogResult result = MessageBox.Show("Are you sure you want to delete this card?",
+        //                                             "Confirm Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+        //         if (result == DialogResult.Yes)
+        //         {
+        //             string deleteQuery = "DELETE FROM tbCard WHERE CardId = @CardId";
+        //             SqlParameter deleteParam = new SqlParameter("@CardId", cardId);
+
+        //             int rowsAffected = _facade.ExecuteQuery(deleteQuery, deleteParam).Rows.Count;
+        //             if (rowsAffected > 0)
+        //             {
+        //                 MessageBox.Show("Card deleted successfully.");
+        //                 ClearFields();
+        //                 LoadData();
+        //             }
+        //             else
+        //             {
+        //                 MessageBox.Show("Failed to delete card.");
+        //             }
+        //         }
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         MessageBox.Show("Error deleting card: " + ex.Message);
+        //     }
+        // }
+
 
         private void BtnNew_Click(object sender, EventArgs e)
         {
@@ -724,6 +746,59 @@ namespace Spa_Management_System
         private void BtnClear_Click(object sender, EventArgs e)
         {
             ClearFields();
+        }
+
+        private void btnSetDamaged_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string cardId = txtCustomerID.Text.Trim();
+                if (string.IsNullOrEmpty(cardId))
+                {
+                    MessageBox.Show("Please select a card or enter a card ID.");
+                    return;
+                }
+
+                // Check if the card is in use (assigned to a customer)
+                string query = "EXEC sp_CheckCardStatus @CardId";
+                SqlParameter parameter = new SqlParameter("@CardId", cardId);
+                DataTable cardStatus = _facade.ExecuteQuery(query, parameter);
+
+                if (cardStatus.Rows.Count == 0)
+                {
+                    MessageBox.Show("Card not found in the system.");
+                    return;
+                }
+
+                if (cardStatus.Rows.Count > 0 && cardStatus.Rows[0]["Status"].ToString() == "InUse")
+                {
+                    MessageBox.Show("Cannot mark a card as damaged while it is assigned to a customer. Please release the card first.", 
+                                   "Card In Use", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // Confirm marking as damaged
+                DialogResult result = MessageBox.Show("Are you sure you want to mark this card as damaged? This will make it unusable.",
+                                                    "Confirm Action", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (result == DialogResult.Yes)
+                {
+                    // Update card status to Damaged
+                    string updateQuery = "UPDATE tbCard SET Status = 'Damaged', LastUsed = @LastUsed WHERE CardId = @CardId";
+                    SqlParameter[] updateParams = {
+                        new SqlParameter("@LastUsed", DateTime.Now),
+                        new SqlParameter("@CardId", cardId)
+                    };
+                    
+                    _facade.ExecuteQuery(updateQuery, updateParams);
+                    MessageBox.Show("Card marked as damaged successfully.");
+                    ClearFields();
+                    LoadData();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error marking card as damaged: " + ex.Message);
+            }
         }
     }
 }

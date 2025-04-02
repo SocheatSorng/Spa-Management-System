@@ -277,7 +277,7 @@ namespace Spa_Management_System
             btnDashboard.Click += (s, e) => { /* Toggle home view */ };
             btnAllForm.Click += BtnAllForm_Click;
             btnStatistic.Click += (s, e) => { /* Open statistics view */ };
-            btnInvoice.Click += (s, e) => { /* Open invoices view */ };
+            btnInvoice.Click += btnInvoice_Click;
             btnSetting.Click += (s, e) => { /* Open settings view */ };
             btnLogout.Click += (s, e) => { /* Logout */ };
 
@@ -414,7 +414,7 @@ namespace Spa_Management_System
             // Create a custom popup panel (using Panel instead of Form)
             Panel popupMenuPanel = new Panel();
             popupMenuPanel.Name = "popupMenuPanel";
-            popupMenuPanel.Size = new Size(200, 300); // Increased height to accommodate all buttons
+            popupMenuPanel.Size = new Size(200, 270); // Increased height to accommodate all buttons
             popupMenuPanel.BorderStyle = BorderStyle.FixedSingle;
             popupMenuPanel.BackColor = Color.White;
 
@@ -438,16 +438,8 @@ namespace Spa_Management_System
             popupMenuPanel.Location = relativeLoc;
 
             // Create buttons with consistent styling - add all original buttons
-            // Card Registration button
-            CreateMenuButton(popupMenuPanel, "Card Registration", 10, 10, (s, args) =>
-            {
-                ClosePopupMenu();
-                CardRegistration cardRegistrationForm = new CardRegistration();
-                cardRegistrationForm.Show();
-            });
-
             // Customer button
-            CreateMenuButton(popupMenuPanel, "Customer", 10, 50, (s, args) =>
+            CreateMenuButton(popupMenuPanel, "Card Management", 10, 10, (s, args) =>
             {
                 ClosePopupMenu();
                 Customer customerForm = new Customer();
@@ -455,7 +447,7 @@ namespace Spa_Management_System
             });
 
             // Service button
-            CreateMenuButton(popupMenuPanel, "Service", 10, 90, (s, args) =>
+            CreateMenuButton(popupMenuPanel, "Service", 10, 50, (s, args) =>
             {
                 ClosePopupMenu();
                 Service serviceForm = new Service();
@@ -463,7 +455,7 @@ namespace Spa_Management_System
             });
 
             // Consumable button
-            CreateMenuButton(popupMenuPanel, "Consumable", 10, 130, (s, args) =>
+            CreateMenuButton(popupMenuPanel, "Foods/Drinks", 10, 90, (s, args) =>
             {
                 ClosePopupMenu();
                 Consumable consumableForm = new Consumable();
@@ -471,7 +463,7 @@ namespace Spa_Management_System
             });
 
             // Invoice button
-            CreateMenuButton(popupMenuPanel, "Invoice", 10, 170, (s, args) =>
+            CreateMenuButton(popupMenuPanel, "Invoice", 10, 130, (s, args) =>
             {
                 ClosePopupMenu();
                 Invoice invoiceForm = new Invoice();
@@ -479,7 +471,7 @@ namespace Spa_Management_System
             });
 
             // Order button
-            CreateMenuButton(popupMenuPanel, "Order", 10, 210, (s, args) =>
+            CreateMenuButton(popupMenuPanel, "Order", 10, 170, (s, args) =>
             {
                 ClosePopupMenu();
                 Order orderForm = new Order();
@@ -487,7 +479,7 @@ namespace Spa_Management_System
             });
 
             // User button
-            CreateMenuButton(popupMenuPanel, "User", 10, 250, (s, args) =>
+            CreateMenuButton(popupMenuPanel, "User", 10, 210, (s, args) =>
             {
                 ClosePopupMenu();
                 User userForm = new User();
@@ -585,7 +577,7 @@ namespace Spa_Management_System
                 c.Dispose();
             }
         }
-        
+
         private void BtnRefresh_Click(object sender, EventArgs e)
         {
             // Show loading cursor
@@ -1973,6 +1965,23 @@ namespace Spa_Management_System
             }
         }
 
+        private void btnInvoice_Click(object sender, EventArgs e)
+        {
+            Invoice invoiceForm = new Invoice();
+            invoiceForm.Show();
+        }
+
+        private void btnPayment_Click(object sender, EventArgs e)
+        {
+            Payment paymentForm = new Payment();
+            paymentForm.Show();
+        }
+
+        private void btnStatistic_Click(object sender, EventArgs e)
+        {
+            Statistic statisticForm = new Statistic();
+            statisticForm.Show();
+        }
     }
 
 }

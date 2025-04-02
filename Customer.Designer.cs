@@ -38,7 +38,6 @@
             Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderEdges borderEdges3 = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderEdges();
             Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderEdges borderEdges4 = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderEdges();
             Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderEdges borderEdges5 = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderEdges();
-            Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderEdges borderEdges6 = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderEdges();
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
@@ -63,7 +62,6 @@
             btnExitProgram = new Bunifu.UI.WinForms.BunifuButton.BunifuIconButton();
             txtSearch = new Bunifu.UI.WinForms.BunifuTextBox();
             btnClear = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
-            btnDelete = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
             btnUpdate = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
             btnInsert = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
             btnNew = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
@@ -77,6 +75,7 @@
             txtNote = new Bunifu.UI.WinForms.BunifuTextBox();
             label4 = new Label();
             bunifuFormDock1 = new Bunifu.UI.WinForms.BunifuFormDock();
+            btnSetDamaged = new Button();
             bunifuPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvCustomer).BeginInit();
             SuspendLayout();
@@ -95,7 +94,7 @@
             bunifuPanel2.Location = new Point(0, 0);
             bunifuPanel2.Name = "bunifuPanel2";
             bunifuPanel2.ShowBorders = true;
-            bunifuPanel2.Size = new Size(1370, 65);
+            bunifuPanel2.Size = new Size(1148, 65);
             bunifuPanel2.TabIndex = 92;
             // 
             // label11
@@ -131,7 +130,7 @@
             btnExitProgram.DialogResult = DialogResult.None;
             btnExitProgram.Image = (Image)resources.GetObject("btnExitProgram.Image");
             btnExitProgram.ImageMargin = new Padding(0);
-            btnExitProgram.Location = new Point(1237, 12);
+            btnExitProgram.Location = new Point(1113, 13);
             btnExitProgram.Name = "btnExitProgram";
             btnExitProgram.RoundBorders = true;
             btnExitProgram.ShowBorders = true;
@@ -166,7 +165,7 @@
             txtSearch.IconPadding = 10;
             txtSearch.IconRight = null;
             txtSearch.IconRightCursor = Cursors.IBeam;
-            txtSearch.Location = new Point(685, 140);
+            txtSearch.Location = new Point(474, 81);
             txtSearch.MaxLength = 32767;
             txtSearch.MinimumSize = new Size(1, 1);
             txtSearch.Modified = false;
@@ -241,7 +240,7 @@
             btnClear.DisabledFillColor = Color.FromArgb(204, 204, 204);
             btnClear.DisabledForecolor = Color.FromArgb(168, 160, 168);
             btnClear.FocusState = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.ButtonStates.Pressed;
-            btnClear.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnClear.Font = new Font("Sitka Text", 9F);
             btnClear.ForeColor = Color.Black;
             btnClear.IconLeftAlign = ContentAlignment.MiddleLeft;
             btnClear.IconLeftCursor = Cursors.Default;
@@ -259,7 +258,7 @@
             btnClear.IdleIconLeftImage = null;
             btnClear.IdleIconRightImage = null;
             btnClear.IndicateFocus = false;
-            btnClear.Location = new Point(437, 139);
+            btnClear.Location = new Point(271, 77);
             btnClear.Name = "btnClear";
             btnClear.OnDisabledState.BorderColor = Color.FromArgb(191, 191, 191);
             btnClear.OnDisabledState.BorderRadius = 35;
@@ -301,94 +300,6 @@
             btnClear.TextPadding = new Padding(0);
             btnClear.UseDefaultRadiusAndThickness = true;
             // 
-            // btnDelete
-            // 
-            btnDelete.AllowAnimations = true;
-            btnDelete.AllowMouseEffects = true;
-            btnDelete.AllowToggling = false;
-            btnDelete.AnimationSpeed = 200;
-            btnDelete.AutoGenerateColors = false;
-            btnDelete.AutoRoundBorders = false;
-            btnDelete.AutoSizeLeftIcon = true;
-            btnDelete.AutoSizeRightIcon = true;
-            btnDelete.BackColor = Color.Transparent;
-            btnDelete.BackColor1 = Color.White;
-            btnDelete.BackgroundImage = (Image)resources.GetObject("btnDelete.BackgroundImage");
-            btnDelete.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
-            btnDelete.ButtonText = "Delete";
-            btnDelete.ButtonTextMarginLeft = 0;
-            btnDelete.ColorContrastOnClick = 45;
-            btnDelete.ColorContrastOnHover = 45;
-            borderEdges3.BottomLeft = true;
-            borderEdges3.BottomRight = true;
-            borderEdges3.TopLeft = true;
-            borderEdges3.TopRight = true;
-            btnDelete.CustomizableEdges = borderEdges3;
-            btnDelete.DialogResult = DialogResult.None;
-            btnDelete.DisabledBorderColor = Color.FromArgb(191, 191, 191);
-            btnDelete.DisabledFillColor = Color.FromArgb(204, 204, 204);
-            btnDelete.DisabledForecolor = Color.FromArgb(168, 160, 168);
-            btnDelete.FocusState = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.ButtonStates.Pressed;
-            btnDelete.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnDelete.ForeColor = Color.Black;
-            btnDelete.IconLeftAlign = ContentAlignment.MiddleLeft;
-            btnDelete.IconLeftCursor = Cursors.Default;
-            btnDelete.IconLeftPadding = new Padding(11, 3, 3, 3);
-            btnDelete.IconMarginLeft = 11;
-            btnDelete.IconPadding = 10;
-            btnDelete.IconRightAlign = ContentAlignment.MiddleRight;
-            btnDelete.IconRightCursor = Cursors.Default;
-            btnDelete.IconRightPadding = new Padding(3, 3, 7, 3);
-            btnDelete.IconSize = 25;
-            btnDelete.IdleBorderColor = Color.White;
-            btnDelete.IdleBorderRadius = 35;
-            btnDelete.IdleBorderThickness = 1;
-            btnDelete.IdleFillColor = Color.White;
-            btnDelete.IdleIconLeftImage = null;
-            btnDelete.IdleIconRightImage = null;
-            btnDelete.IndicateFocus = false;
-            btnDelete.Location = new Point(351, 139);
-            btnDelete.Name = "btnDelete";
-            btnDelete.OnDisabledState.BorderColor = Color.FromArgb(191, 191, 191);
-            btnDelete.OnDisabledState.BorderRadius = 35;
-            btnDelete.OnDisabledState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
-            btnDelete.OnDisabledState.BorderThickness = 1;
-            btnDelete.OnDisabledState.FillColor = Color.FromArgb(204, 204, 204);
-            btnDelete.OnDisabledState.ForeColor = Color.FromArgb(168, 160, 168);
-            btnDelete.OnDisabledState.IconLeftImage = null;
-            btnDelete.OnDisabledState.IconRightImage = null;
-            btnDelete.onHoverState.BorderColor = Color.DarkGoldenrod;
-            btnDelete.onHoverState.BorderRadius = 35;
-            btnDelete.onHoverState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
-            btnDelete.onHoverState.BorderThickness = 1;
-            btnDelete.onHoverState.FillColor = Color.White;
-            btnDelete.onHoverState.ForeColor = Color.Black;
-            btnDelete.onHoverState.IconLeftImage = null;
-            btnDelete.onHoverState.IconRightImage = null;
-            btnDelete.OnIdleState.BorderColor = Color.White;
-            btnDelete.OnIdleState.BorderRadius = 35;
-            btnDelete.OnIdleState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
-            btnDelete.OnIdleState.BorderThickness = 1;
-            btnDelete.OnIdleState.FillColor = Color.White;
-            btnDelete.OnIdleState.ForeColor = Color.Black;
-            btnDelete.OnIdleState.IconLeftImage = null;
-            btnDelete.OnIdleState.IconRightImage = null;
-            btnDelete.OnPressedState.BorderColor = Color.FromArgb(40, 96, 144);
-            btnDelete.OnPressedState.BorderRadius = 35;
-            btnDelete.OnPressedState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
-            btnDelete.OnPressedState.BorderThickness = 1;
-            btnDelete.OnPressedState.FillColor = Color.FromArgb(40, 96, 144);
-            btnDelete.OnPressedState.ForeColor = Color.White;
-            btnDelete.OnPressedState.IconLeftImage = null;
-            btnDelete.OnPressedState.IconRightImage = null;
-            btnDelete.Size = new Size(80, 39);
-            btnDelete.TabIndex = 121;
-            btnDelete.TextAlign = ContentAlignment.MiddleCenter;
-            btnDelete.TextAlignment = HorizontalAlignment.Center;
-            btnDelete.TextMarginLeft = 0;
-            btnDelete.TextPadding = new Padding(0);
-            btnDelete.UseDefaultRadiusAndThickness = true;
-            // 
             // btnUpdate
             // 
             btnUpdate.AllowAnimations = true;
@@ -407,17 +318,17 @@
             btnUpdate.ButtonTextMarginLeft = 0;
             btnUpdate.ColorContrastOnClick = 45;
             btnUpdate.ColorContrastOnHover = 45;
-            borderEdges4.BottomLeft = true;
-            borderEdges4.BottomRight = true;
-            borderEdges4.TopLeft = true;
-            borderEdges4.TopRight = true;
-            btnUpdate.CustomizableEdges = borderEdges4;
+            borderEdges3.BottomLeft = true;
+            borderEdges3.BottomRight = true;
+            borderEdges3.TopLeft = true;
+            borderEdges3.TopRight = true;
+            btnUpdate.CustomizableEdges = borderEdges3;
             btnUpdate.DialogResult = DialogResult.None;
             btnUpdate.DisabledBorderColor = Color.FromArgb(191, 191, 191);
             btnUpdate.DisabledFillColor = Color.FromArgb(204, 204, 204);
             btnUpdate.DisabledForecolor = Color.FromArgb(168, 160, 168);
             btnUpdate.FocusState = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.ButtonStates.Pressed;
-            btnUpdate.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnUpdate.Font = new Font("Sitka Text", 9F);
             btnUpdate.ForeColor = Color.Black;
             btnUpdate.IconLeftAlign = ContentAlignment.MiddleLeft;
             btnUpdate.IconLeftCursor = Cursors.Default;
@@ -435,7 +346,7 @@
             btnUpdate.IdleIconLeftImage = null;
             btnUpdate.IdleIconRightImage = null;
             btnUpdate.IndicateFocus = false;
-            btnUpdate.Location = new Point(265, 139);
+            btnUpdate.Location = new Point(185, 77);
             btnUpdate.Name = "btnUpdate";
             btnUpdate.OnDisabledState.BorderColor = Color.FromArgb(191, 191, 191);
             btnUpdate.OnDisabledState.BorderRadius = 35;
@@ -495,17 +406,17 @@
             btnInsert.ButtonTextMarginLeft = 0;
             btnInsert.ColorContrastOnClick = 45;
             btnInsert.ColorContrastOnHover = 45;
-            borderEdges5.BottomLeft = true;
-            borderEdges5.BottomRight = true;
-            borderEdges5.TopLeft = true;
-            borderEdges5.TopRight = true;
-            btnInsert.CustomizableEdges = borderEdges5;
+            borderEdges4.BottomLeft = true;
+            borderEdges4.BottomRight = true;
+            borderEdges4.TopLeft = true;
+            borderEdges4.TopRight = true;
+            btnInsert.CustomizableEdges = borderEdges4;
             btnInsert.DialogResult = DialogResult.None;
             btnInsert.DisabledBorderColor = Color.FromArgb(191, 191, 191);
             btnInsert.DisabledFillColor = Color.FromArgb(204, 204, 204);
             btnInsert.DisabledForecolor = Color.FromArgb(168, 160, 168);
             btnInsert.FocusState = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.ButtonStates.Pressed;
-            btnInsert.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnInsert.Font = new Font("Sitka Text", 9F);
             btnInsert.ForeColor = Color.Black;
             btnInsert.IconLeftAlign = ContentAlignment.MiddleLeft;
             btnInsert.IconLeftCursor = Cursors.Default;
@@ -523,7 +434,7 @@
             btnInsert.IdleIconLeftImage = null;
             btnInsert.IdleIconRightImage = null;
             btnInsert.IndicateFocus = false;
-            btnInsert.Location = new Point(179, 139);
+            btnInsert.Location = new Point(99, 77);
             btnInsert.Name = "btnInsert";
             btnInsert.OnDisabledState.BorderColor = Color.FromArgb(191, 191, 191);
             btnInsert.OnDisabledState.BorderRadius = 35;
@@ -583,17 +494,17 @@
             btnNew.ButtonTextMarginLeft = 0;
             btnNew.ColorContrastOnClick = 45;
             btnNew.ColorContrastOnHover = 45;
-            borderEdges6.BottomLeft = true;
-            borderEdges6.BottomRight = true;
-            borderEdges6.TopLeft = true;
-            borderEdges6.TopRight = true;
-            btnNew.CustomizableEdges = borderEdges6;
+            borderEdges5.BottomLeft = true;
+            borderEdges5.BottomRight = true;
+            borderEdges5.TopLeft = true;
+            borderEdges5.TopRight = true;
+            btnNew.CustomizableEdges = borderEdges5;
             btnNew.DialogResult = DialogResult.None;
             btnNew.DisabledBorderColor = Color.FromArgb(191, 191, 191);
             btnNew.DisabledFillColor = Color.FromArgb(204, 204, 204);
             btnNew.DisabledForecolor = Color.FromArgb(168, 160, 168);
             btnNew.FocusState = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.ButtonStates.Pressed;
-            btnNew.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnNew.Font = new Font("Sitka Text", 9F);
             btnNew.ForeColor = Color.Black;
             btnNew.IconLeftAlign = ContentAlignment.MiddleLeft;
             btnNew.IconLeftCursor = Cursors.Default;
@@ -611,7 +522,7 @@
             btnNew.IdleIconLeftImage = null;
             btnNew.IdleIconRightImage = null;
             btnNew.IndicateFocus = false;
-            btnNew.Location = new Point(93, 139);
+            btnNew.Location = new Point(13, 77);
             btnNew.Name = "btnNew";
             btnNew.OnDisabledState.BorderColor = Color.FromArgb(191, 191, 191);
             btnNew.OnDisabledState.BorderRadius = 35;
@@ -656,7 +567,7 @@
             // dgvCustomer
             // 
             dgvCustomer.AllowCustomTheming = false;
-            dataGridViewCellStyle1.BackColor = Color.FromArgb(248, 251, 255);
+            dataGridViewCellStyle1.BackColor = Color.FromArgb(255, 232, 191);
             dataGridViewCellStyle1.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
             dataGridViewCellStyle1.ForeColor = Color.Black;
             dgvCustomer.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
@@ -666,53 +577,54 @@
             dgvCustomer.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
             dgvCustomer.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = Color.DodgerBlue;
+            dataGridViewCellStyle2.BackColor = Color.Orange;
             dataGridViewCellStyle2.Font = new Font("Segoe UI Semibold", 11.75F, FontStyle.Bold);
             dataGridViewCellStyle2.ForeColor = Color.White;
-            dataGridViewCellStyle2.SelectionBackColor = Color.FromArgb(24, 115, 204);
+            dataGridViewCellStyle2.SelectionBackColor = Color.FromArgb(204, 132, 0);
             dataGridViewCellStyle2.SelectionForeColor = Color.White;
             dataGridViewCellStyle2.WrapMode = DataGridViewTriState.True;
             dgvCustomer.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             dgvCustomer.ColumnHeadersHeight = 40;
-            dgvCustomer.CurrentTheme.AlternatingRowsStyle.BackColor = Color.FromArgb(248, 251, 255);
+            dgvCustomer.CurrentTheme.AlternatingRowsStyle.BackColor = Color.FromArgb(255, 232, 191);
             dgvCustomer.CurrentTheme.AlternatingRowsStyle.Font = new Font("Segoe UI Semibold", 9.75F, FontStyle.Bold);
             dgvCustomer.CurrentTheme.AlternatingRowsStyle.ForeColor = Color.Black;
-            dgvCustomer.CurrentTheme.AlternatingRowsStyle.SelectionBackColor = Color.FromArgb(210, 232, 255);
+            dgvCustomer.CurrentTheme.AlternatingRowsStyle.SelectionBackColor = Color.FromArgb(255, 201, 102);
             dgvCustomer.CurrentTheme.AlternatingRowsStyle.SelectionForeColor = Color.Black;
-            dgvCustomer.CurrentTheme.BackColor = Color.White;
-            dgvCustomer.CurrentTheme.GridColor = Color.FromArgb(221, 238, 255);
-            dgvCustomer.CurrentTheme.HeaderStyle.BackColor = Color.DodgerBlue;
+            dgvCustomer.CurrentTheme.BackColor = Color.Orange;
+            dgvCustomer.CurrentTheme.GridColor = Color.FromArgb(255, 226, 173);
+            dgvCustomer.CurrentTheme.HeaderStyle.BackColor = Color.Orange;
             dgvCustomer.CurrentTheme.HeaderStyle.Font = new Font("Segoe UI Semibold", 11.75F, FontStyle.Bold);
             dgvCustomer.CurrentTheme.HeaderStyle.ForeColor = Color.White;
-            dgvCustomer.CurrentTheme.HeaderStyle.SelectionBackColor = Color.FromArgb(24, 115, 204);
+            dgvCustomer.CurrentTheme.HeaderStyle.SelectionBackColor = Color.FromArgb(204, 132, 0);
             dgvCustomer.CurrentTheme.HeaderStyle.SelectionForeColor = Color.White;
             dgvCustomer.CurrentTheme.Name = null;
-            dgvCustomer.CurrentTheme.RowsStyle.BackColor = Color.White;
+            dgvCustomer.CurrentTheme.RowsStyle.BackColor = Color.FromArgb(255, 237, 204);
             dgvCustomer.CurrentTheme.RowsStyle.Font = new Font("Segoe UI Semibold", 9.75F, FontStyle.Bold);
             dgvCustomer.CurrentTheme.RowsStyle.ForeColor = Color.Black;
-            dgvCustomer.CurrentTheme.RowsStyle.SelectionBackColor = Color.FromArgb(210, 232, 255);
+            dgvCustomer.CurrentTheme.RowsStyle.SelectionBackColor = Color.FromArgb(255, 201, 102);
             dgvCustomer.CurrentTheme.RowsStyle.SelectionForeColor = Color.Black;
             dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = Color.White;
+            dataGridViewCellStyle3.BackColor = Color.FromArgb(255, 237, 204);
             dataGridViewCellStyle3.Font = new Font("Segoe UI Semibold", 9.75F, FontStyle.Bold);
             dataGridViewCellStyle3.ForeColor = Color.Black;
-            dataGridViewCellStyle3.SelectionBackColor = Color.FromArgb(210, 232, 255);
+            dataGridViewCellStyle3.SelectionBackColor = Color.FromArgb(255, 201, 102);
             dataGridViewCellStyle3.SelectionForeColor = Color.Black;
             dataGridViewCellStyle3.WrapMode = DataGridViewTriState.False;
             dgvCustomer.DefaultCellStyle = dataGridViewCellStyle3;
             dgvCustomer.EnableHeadersVisualStyles = false;
-            dgvCustomer.GridColor = Color.FromArgb(221, 238, 255);
-            dgvCustomer.HeaderBackColor = Color.DodgerBlue;
+            dgvCustomer.GridColor = Color.FromArgb(255, 226, 173);
+            dgvCustomer.HeaderBackColor = Color.Orange;
             dgvCustomer.HeaderBgColor = Color.Empty;
             dgvCustomer.HeaderForeColor = Color.White;
-            dgvCustomer.Location = new Point(685, 210);
+            dgvCustomer.Location = new Point(474, 151);
             dgvCustomer.Name = "dgvCustomer";
             dgvCustomer.RowHeadersVisible = false;
             dgvCustomer.RowTemplate.Height = 40;
+            dgvCustomer.ScrollBars = ScrollBars.Vertical;
             dgvCustomer.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvCustomer.Size = new Size(665, 506);
             dgvCustomer.TabIndex = 123;
-            dgvCustomer.Theme = Bunifu.UI.WinForms.BunifuDataGridView.PresetThemes.Light;
+            dgvCustomer.Theme = Bunifu.UI.WinForms.BunifuDataGridView.PresetThemes.Orange;
             // 
             // txtID
             // 
@@ -742,7 +654,7 @@
             txtID.IconPadding = 10;
             txtID.IconRight = null;
             txtID.IconRightCursor = Cursors.IBeam;
-            txtID.Location = new Point(246, 213);
+            txtID.Location = new Point(166, 151);
             txtID.MaxLength = 32767;
             txtID.MinimumSize = new Size(1, 1);
             txtID.Modified = false;
@@ -792,10 +704,10 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Font = new Font("Microsoft Sans Serif", 14.25F, FontStyle.Bold);
-            label1.Location = new Point(93, 213);
+            label1.Font = new Font("Sitka Text", 14.2499981F);
+            label1.Location = new Point(13, 151);
             label1.Name = "label1";
-            label1.Size = new Size(29, 24);
+            label1.Size = new Size(32, 28);
             label1.TabIndex = 124;
             label1.Text = "ID";
             // 
@@ -826,7 +738,7 @@
             txtCustomerID.IconPadding = 10;
             txtCustomerID.IconRight = null;
             txtCustomerID.IconRightCursor = Cursors.IBeam;
-            txtCustomerID.Location = new Point(246, 263);
+            txtCustomerID.Location = new Point(166, 201);
             txtCustomerID.MaxLength = 32767;
             txtCustomerID.MinimumSize = new Size(1, 1);
             txtCustomerID.Modified = false;
@@ -876,10 +788,10 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Font = new Font("Microsoft Sans Serif", 14.25F, FontStyle.Bold);
-            label2.Location = new Point(93, 263);
+            label2.Font = new Font("Sitka Text", 14.2499981F);
+            label2.Location = new Point(13, 201);
             label2.Name = "label2";
-            label2.Size = new Size(135, 24);
+            label2.Size = new Size(132, 28);
             label2.TabIndex = 126;
             label2.Text = "Card Number";
             // 
@@ -911,7 +823,7 @@
             txtIssuedTime.IconPadding = 10;
             txtIssuedTime.IconRight = null;
             txtIssuedTime.IconRightCursor = Cursors.IBeam;
-            txtIssuedTime.Location = new Point(246, 313);
+            txtIssuedTime.Location = new Point(166, 251);
             txtIssuedTime.MaxLength = 32767;
             txtIssuedTime.MinimumSize = new Size(1, 1);
             txtIssuedTime.Modified = false;
@@ -961,10 +873,10 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Font = new Font("Microsoft Sans Serif", 14.25F, FontStyle.Bold);
-            label3.Location = new Point(93, 313);
+            label3.Font = new Font("Sitka Text", 14.2499981F);
+            label3.Location = new Point(13, 251);
             label3.Name = "label3";
-            label3.Size = new Size(124, 24);
+            label3.Size = new Size(119, 28);
             label3.TabIndex = 128;
             label3.Text = "Issued Time";
             // 
@@ -995,7 +907,7 @@
             txtNote.IconPadding = 10;
             txtNote.IconRight = null;
             txtNote.IconRightCursor = Cursors.IBeam;
-            txtNote.Location = new Point(246, 363);
+            txtNote.Location = new Point(166, 301);
             txtNote.MaxLength = 32767;
             txtNote.MinimumSize = new Size(1, 1);
             txtNote.Modified = false;
@@ -1045,10 +957,10 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Font = new Font("Microsoft Sans Serif", 14.25F, FontStyle.Bold);
-            label4.Location = new Point(93, 363);
+            label4.Font = new Font("Sitka Text", 14.2499981F);
+            label4.Location = new Point(13, 301);
             label4.Name = "label4";
-            label4.Size = new Size(54, 24);
+            label4.Size = new Size(55, 28);
             label4.TabIndex = 130;
             label4.Text = "Note";
             // 
@@ -1092,11 +1004,27 @@
             bunifuFormDock1.TitleBarOptions.TitleBarControl = null;
             bunifuFormDock1.TitleBarOptions.UseBackColorOnDockingIndicators = false;
             // 
+            // btnSetDamaged
+            // 
+            btnSetDamaged.BackColor = Color.FromArgb(229, 57, 53);
+            btnSetDamaged.FlatAppearance.BorderSize = 0;
+            btnSetDamaged.FlatStyle = FlatStyle.Flat;
+            btnSetDamaged.Font = new Font("Sitka Text", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnSetDamaged.ForeColor = Color.White;
+            btnSetDamaged.Location = new Point(13, 367);
+            btnSetDamaged.Name = "btnSetDamaged";
+            btnSetDamaged.Size = new Size(424, 40);
+            btnSetDamaged.TabIndex = 132;
+            btnSetDamaged.Text = "Set as Damaged";
+            btnSetDamaged.UseVisualStyleBackColor = false;
+            btnSetDamaged.Click += btnSetDamaged_Click;
+            // 
             // Customer
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1370, 728);
+            ClientSize = new Size(1148, 670);
+            Controls.Add(btnSetDamaged);
             Controls.Add(txtNote);
             Controls.Add(label4);
             Controls.Add(txtIssuedTime);
@@ -1107,7 +1035,6 @@
             Controls.Add(label1);
             Controls.Add(dgvCustomer);
             Controls.Add(btnClear);
-            Controls.Add(btnDelete);
             Controls.Add(btnUpdate);
             Controls.Add(btnInsert);
             Controls.Add(btnNew);
@@ -1130,7 +1057,6 @@
         private Bunifu.UI.WinForms.BunifuButton.BunifuIconButton btnExitProgram;
         private Bunifu.UI.WinForms.BunifuTextBox txtSearch;
         private Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnClear;
-        private Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnDelete;
         private Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnUpdate;
         private Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnInsert;
         private Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnNew;
@@ -1144,5 +1070,6 @@
         private Bunifu.UI.WinForms.BunifuTextBox txtNote;
         private Label label4;
         private Bunifu.UI.WinForms.BunifuFormDock bunifuFormDock1;
+        private Button btnSetDamaged;
     }
 }
