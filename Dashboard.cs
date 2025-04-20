@@ -2025,8 +2025,21 @@ namespace Spa_Management_System
 
         private void btnStatistic_Click(object sender, EventArgs e)
         {
-            Statistic statisticForm = new Statistic();
-            statisticForm.Show();
+            // Check if a statistics form is already open
+            Form existingForm = Application.OpenForms.OfType<Statistic>().FirstOrDefault();
+            
+            if (existingForm != null)
+            {
+                // If a form is already open, bring it to front
+                existingForm.BringToFront();
+                existingForm.Focus();
+            }
+            else
+            {
+                // If no form is open, create a new one
+                Statistic statisticForm = new Statistic();
+                statisticForm.Show();
+            }
         }
 
         private void btnSetting_Click(object sender, EventArgs e)

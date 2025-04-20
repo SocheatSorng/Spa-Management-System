@@ -352,14 +352,97 @@ namespace Spa_Management_System
             }
 
             // Check if the SpaManagement.sql file exists
-            string scriptPath = Path.Combine(Application.StartupPath, "SpaManagement.sql");
-            bool scriptExists = File.Exists(scriptPath);
+            string currentDirectory = Directory.GetCurrentDirectory();
+            string projectDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            string absolutePath = Path.Combine(projectDirectory, "SpaManagement.sql");
+            
+            string scriptPath = null;
+            bool scriptExists = false;
+            
+            // Debug information
+            Console.WriteLine($"Current Directory: {currentDirectory}");
+            Console.WriteLine($"Project Directory: {projectDirectory}");
+            Console.WriteLine($"Absolute Path: {absolutePath}");
+            
+            // Try different paths in priority order
+            string[] possiblePaths = new string[] 
+            {
+                "SpaManagement.sql",  // Current directory
+                absolutePath, // Absolute path
+                Path.Combine(Directory.GetCurrentDirectory(), "SpaManagement.sql"), // Current directory explicit
+                Path.Combine(Application.StartupPath, "SpaManagement.sql"), // Application directory
+                Path.GetFullPath("SpaManagement.sql"), // Resolved path
+                Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "SpaManagement.sql"), // Executable directory
+                Path.Combine(Environment.CurrentDirectory, "SpaManagement.sql"), // Environment current directory
+            };
+            
+            foreach (string path in possiblePaths)
+            {
+                Console.WriteLine($"Checking path: {path}, Exists: {File.Exists(path)}");
+                if (File.Exists(path))
+                {
+                    scriptPath = path;
+                    scriptExists = true;
+                    break;
+                }
+            }
+            
+            // If not found in standard locations, try parent directories
+            if (!scriptExists)
+            {
+                DialogResult result = MessageBox.Show(
+                    "SpaManagement.sql file not found. Do you want to browse for it?",
+                    "File Not Found",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+                    
+                if (result == DialogResult.Yes)
+                {
+                    using (OpenFileDialog dlg = new OpenFileDialog())
+                    {
+                        dlg.Title = "Select SpaManagement.sql file";
+                        dlg.Filter = "SQL files (*.sql)|*.sql|All files (*.*)|*.*";
+                        
+                        if (dlg.ShowDialog() == DialogResult.OK)
+                        {
+                            scriptPath = dlg.FileName;
+                            scriptExists = true;
+                            
+                            // Try to copy to application directory for future use
+                            try
+                            {
+                                string targetPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpaManagement.sql");
+                                File.Copy(scriptPath, targetPath, true);
+                                scriptPath = targetPath;
+                                Console.WriteLine($"Copied file to: {targetPath}");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Failed to copy file: {ex.Message}");
+                                // Continue using the selected file even if copy fails
+                            }
+                        }
+                        else
+                        {
+                            // User canceled the dialog, continue with no SQL file
+                            scriptExists = false;
+                        }
+                    }
+                }
+            }
+            
+            if (scriptPath == null)
+            {
+                string errorMessage = "Could not find SpaManagement.sql file in any location. Please ensure the file exists in the project directory.";
+                MessageBox.Show(errorMessage, "Script Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             // Create a dialog for database creation
             using (Form createDbDialog = new Form())
             {
                 createDbDialog.Text = "Create New Database";
-                createDbDialog.Size = new System.Drawing.Size(400, 330); // Increased height from 280 to 330
+                createDbDialog.Size = new System.Drawing.Size(400, 330);
                 createDbDialog.StartPosition = FormStartPosition.CenterParent;
                 createDbDialog.FormBorderStyle = FormBorderStyle.FixedDialog;
                 createDbDialog.MaximizeBox = false;
@@ -376,91 +459,91 @@ namespace Spa_Management_System
                 Label lblPass = new Label { Text = "Password:", Location = new System.Drawing.Point(40, 110), Width = 100, Enabled = false };
                 TextBox txtPass = new TextBox { Location = new System.Drawing.Point(150, 110), Width = 200, PasswordChar = '•', Enabled = false };
 
-                // Schema creation option
+                // Schema creation option - always checked but shows status
                 CheckBox chkCreateSchema = new CheckBox { 
                     Text = "Create tables and schema after database creation", 
                     Location = new System.Drawing.Point(20, 160),
                     Width = 350, 
-                    Checked = scriptExists,
-                    Enabled = scriptExists
+                    Checked = true,
+                    Enabled = true
                 };
                 
-                // Update the script file message to be more helpful and add a Browse button
-                Label lblScriptNote = null;
-                Button btnBrowseScript = null;
-
+                // Update script status message
+                Label lblScriptStatus = new Label { 
+                    Location = new System.Drawing.Point(20, 190),
+                    Width = 350,
+                    AutoSize = false,
+                    Height = 40
+                };
+                
+                // Check specifically for the path mentioned in the image
+                string specificPath = "SpaManagement.sql";
+                
+                // Check multiple possible locations for the SQL file
+                string[] dialogPossiblePaths = new string[]
+                {
+                    specificPath,  // Current directory
+                    Path.Combine(Application.StartupPath, "SpaManagement.sql"), // Application directory
+                    ".\\SpaManagement.sql", // Explicit current directory
+                    "..\\SpaManagement.sql" // Parent directory
+                };
+                
+                foreach (string path in dialogPossiblePaths)
+                {
+                    if (File.Exists(path))
+                    {
+                        scriptPath = path;
+                    scriptExists = true;
+                        lblScriptStatus.Text = "SpaManagement.sql found";
+                    lblScriptStatus.ForeColor = System.Drawing.Color.Green;
+                        break;
+                }
+                }
+                
                 if (!scriptExists)
                 {
-                    lblScriptNote = new Label { 
-                        Text = "SpaManagement.sql not found in application directory.",
-                        Location = new System.Drawing.Point(40, 190),
-                        Width = 350,
-                        ForeColor = System.Drawing.Color.Red
-                    };
+                    lblScriptStatus.Text = "SpaManagement.sql not found in any of the expected locations";
+                    lblScriptStatus.ForeColor = System.Drawing.Color.Red;
                     
-                    // Add a second label with more detailed instructions
-                    Label lblScriptInstructions = new Label {
-                        Text = "Copy SpaManagement.sql to the application folder or browse to select it:",
-                        Location = new System.Drawing.Point(40, 210),
-                        Width = 350,
-                        ForeColor = System.Drawing.Color.Black
-                    };
-                    
-                    // Add a Browse button to locate the script file
-                    btnBrowseScript = new Button {
+                    // Add a browse button when file is not found
+                    Button btnBrowse = new Button {
                         Text = "Browse...",
-                        Location = new System.Drawing.Point(150, 230),
-                        Width = 100
+                        Location = new System.Drawing.Point(275, 190),
+                        Size = new System.Drawing.Size(75, 23)
                     };
                     
-                    // Handle browse button click
-                    btnBrowseScript.Click += (s, args) => {
+                    btnBrowse.Click += (s, args) => {
                         using (OpenFileDialog openFileDialog = new OpenFileDialog())
                         {
-                            openFileDialog.Filter = "SQL Files (*.sql)|*.sql|All Files (*.*)|*.*";
-                            openFileDialog.Title = "Select SpaManagement.sql File";
-                            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                            openFileDialog.Filter = "SQL Files (*.sql)|*.sql";
+                            openFileDialog.Title = "Select SpaManagement.sql file";
                             
                             if (openFileDialog.ShowDialog() == DialogResult.OK)
                             {
-                                string selectedFilePath = openFileDialog.FileName;
-                                
-                                try
-                                {
+                                try {
                                     // Copy the file to the application directory
-                                    string targetPath = Path.Combine(Application.StartupPath, "SpaManagement.sql");
-                                    File.Copy(selectedFilePath, targetPath, true);
+                                    string fileName = Path.GetFileName(openFileDialog.FileName);
+                                    string destFile = Path.Combine(Directory.GetCurrentDirectory(), fileName);
                                     
-                                    MessageBox.Show(
-                                        $"SpaManagement.sql copied to application directory successfully!\n\nPath: {targetPath}",
-                                        "File Copied", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    File.Copy(openFileDialog.FileName, destFile, true);
                                     
-                                    // Update the UI
-                                    lblScriptNote.Text = "SpaManagement.sql found and ready to use!";
-                                    lblScriptNote.ForeColor = System.Drawing.Color.Green;
-                                    lblScriptInstructions.Visible = false;
-                                    btnBrowseScript.Visible = false;
-                                    chkCreateSchema.Enabled = true;
-                                    chkCreateSchema.Checked = true;
-                                    
-                                    // Update our flag
+                                    scriptPath = destFile;
                                     scriptExists = true;
+                                    lblScriptStatus.Text = "SpaManagement.sql found";
+                                    lblScriptStatus.ForeColor = System.Drawing.Color.Green;
+                                    btnBrowse.Visible = false;
                                 }
-                                catch (Exception ex)
-                                {
-                                    MessageBox.Show(
-                                        $"Error copying file: {ex.Message}\n\nPlease try copying the file manually to: {Application.StartupPath}",
-                                        "Copy Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                catch (Exception ex) {
+                                    MessageBox.Show("Error copying file: " + ex.Message, "Error", 
+                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
                             }
                         }
                     };
                     
-                    // Add the new controls to the form
-                    createDbDialog.Controls.Add(lblScriptInstructions);
-                    createDbDialog.Controls.Add(btnBrowseScript);
+                    createDbDialog.Controls.Add(btnBrowse);
                 }
-
+                
                 // Event handler for checkbox
                 chkSqlAuth.CheckedChanged += (s, args) => 
                 {
@@ -471,20 +554,16 @@ namespace Spa_Management_System
                 };
 
                 // Buttons
-                Button btnCreate = new Button { Text = "Create", Location = new System.Drawing.Point(150, 270), Width = 100, DialogResult = DialogResult.OK };
-                Button btnCancel = new Button { Text = "Cancel", Location = new System.Drawing.Point(260, 270), Width = 100, DialogResult = DialogResult.Cancel };
+                Button btnCreate = new Button { Text = "Create", Location = new System.Drawing.Point(150, 230), Width = 100, DialogResult = DialogResult.OK };
+                Button btnCancel = new Button { Text = "Cancel", Location = new System.Drawing.Point(260, 230), Width = 100, DialogResult = DialogResult.Cancel };
 
                 // Add controls to form
                 createDbDialog.Controls.AddRange(new Control[] { 
                     lblDbName, txtDbName, chkSqlAuth, 
                     lblUser, txtUser, lblPass, txtPass,
-                    chkCreateSchema, btnCreate, btnCancel 
+                    chkCreateSchema, lblScriptStatus,
+                    btnCreate, btnCancel 
                 });
-                
-                if (lblScriptNote != null)
-                {
-                    createDbDialog.Controls.Add(lblScriptNote);
-                }
 
                 // Show dialog
                 if (createDbDialog.ShowDialog() == DialogResult.OK)
@@ -554,18 +633,34 @@ namespace Spa_Management_System
                                         txtDatabase.SelectedItem = dbName;
                                         MessageBox.Show($"Using existing database '{dbName}'.", 
                                             "Database Selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                            
+                                        // Check if schema creation is requested
+                                        if (chkCreateSchema.Checked && scriptExists)
+                                        {
+                                            DialogResult createSchemaResult = MessageBox.Show(
+                                                $"Do you want to recreate tables and schema in the existing database '{dbName}'?\n\nWARNING: This will delete all existing data!",
+                                                "Create Schema",
+                                                MessageBoxButtons.YesNo,
+                                                MessageBoxIcon.Warning);
+                                                
+                                            if (createSchemaResult == DialogResult.Yes)
+                                            {
+                                                ExecuteDatabaseScript(masterBuilder.ConnectionString, dbName);
+                                            }
+                                        }
                                         return;
                                     }
                                     else
                                     {
                                         return;
                                     }
-
                                 }
                             }
                             
                             // Create new database
                             string createDbQuery = $"CREATE DATABASE [{dbName}]";
+                            try
+                            {
                             using (SqlCommand createCmd = new SqlCommand(createDbQuery, masterConn))
                             {
                                 createCmd.ExecuteNonQuery();
@@ -575,11 +670,49 @@ namespace Spa_Management_System
                                 "Database Created", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             
                             isNewDatabase = true;
+                            }
+                            catch (SqlException sqlEx)
+                            {
+                                // Error 1801 is "Database already exists"
+                                if (sqlEx.Number == 1801)
+                                {
+                                    DialogResult useExistingResult = MessageBox.Show(
+                                        $"Database '{dbName}' already exists. Would you like to use it and apply the schema?",
+                                        "Database Exists",
+                                        MessageBoxButtons.YesNo,
+                                        MessageBoxIcon.Question);
+                                    
+                                    if (useExistingResult == DialogResult.Yes)
+                                    {
+                                        isNewDatabase = false;
+                                    }
+                                    else
+                                    {
+                                        return;
+                                    }
+                                }
+                                else
+                                {
+                                    throw; // Re-throw if it's a different SQL error
+                                }
+                            }
                                 
                             // Create schema (tables, etc) if requested and script exists
-                            if (chkCreateSchema.Checked && scriptExists)
+                            if (chkCreateSchema.Checked)
                             {
-                                ExecuteDatabaseScript(masterBuilder.ConnectionString, dbName);
+                                // Check again if the script exists at the path
+                                if (File.Exists(scriptPath))
+                                {
+                                    ExecuteDatabaseScript(masterBuilder.ConnectionString, dbName);
+                                }
+                                else
+                                {
+                                    MessageBox.Show(
+                                        "Database created successfully but schema was not applied because SpaManagement.sql was not found.",
+                                        "Schema Not Applied",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Warning);
+                                }
                             }
                             
                             // Update the database dropdown
@@ -608,193 +741,1064 @@ namespace Spa_Management_System
             return "-- Using external SpaManagement.sql script instead";
         }
 
-        private void ExecuteDatabaseScript(string connectionString, string dbName)
+        private void ExecuteDatabaseScript(string masterConnectionString, string dbName)
         {
             try
             {
-                // Find the SpaManagement.sql file in the application directory
-                string scriptPath = Path.Combine(Application.StartupPath, "SpaManagement.sql");
+                // Get the current directory and display it for debugging
+                string currentDirectory = Directory.GetCurrentDirectory();
+                string projectDirectory = AppDomain.CurrentDomain.BaseDirectory;
                 
-                // Check if the script file exists
-                if (!File.Exists(scriptPath))
+                // Try to locate the script with absolute path
+                string absolutePath = Path.Combine(projectDirectory, "SpaManagement.sql");
+                string scriptPath = null;
+                
+                // Check if debug file exists to display paths (for troubleshooting)
+                string debugInfo = $"Current Directory: {currentDirectory}\nProject Directory: {projectDirectory}\nLooking for file at: {absolutePath}";
+                Console.WriteLine(debugInfo);
+                
+                // Try different paths in priority order
+                string[] possiblePaths = new string[] 
                 {
-                    MessageBox.Show($"Could not find the database script file at: {scriptPath}\n\nPlease make sure SpaManagement.sql is in the application directory.",
-                        "Script File Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
+                    "SpaManagement.sql",  // Current directory
+                    absolutePath, // Absolute path
+                    Path.Combine(Directory.GetCurrentDirectory(), "SpaManagement.sql"), // Current directory explicit
+                    Path.Combine(Application.StartupPath, "SpaManagement.sql"), // Application directory
+                    Path.GetFullPath("SpaManagement.sql"), // Resolved path
+                    Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "SpaManagement.sql"), // Executable directory
+                    Path.Combine(Environment.CurrentDirectory, "SpaManagement.sql"), // Environment current directory
+                };
+                
+                foreach (string path in possiblePaths)
+                {
+                    // Display check for debugging
+                    Console.WriteLine($"Checking path: {path}, Exists: {File.Exists(path)}");
+                    
+                    if (File.Exists(path))
+                    {
+                        scriptPath = path;
+                        break;
+                    }
+                }
+                
+                // If script not found in any location, prompt user to locate it
+                if (scriptPath == null)
+                {
+                    DialogResult result = MessageBox.Show(
+                        "SpaManagement.sql file not found. Do you want to browse for it?",
+                        "File Not Found",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question);
+                        
+                    if (result == DialogResult.Yes)
+                    {
+                        using (OpenFileDialog dlg = new OpenFileDialog())
+                        {
+                            dlg.Title = "Select SpaManagement.sql file";
+                            dlg.Filter = "SQL files (*.sql)|*.sql|All files (*.*)|*.*";
+                            
+                            if (dlg.ShowDialog() == DialogResult.OK)
+                            {
+                                scriptPath = dlg.FileName;
+                            }
+                            else
+                            {
+                                return; // User canceled the dialog
+                            }
+                        }
+                    }
+                    else
+                    {
+                        string errorMessage = "Could not find SpaManagement.sql file. Please ensure the file exists in the project directory.";
+                        MessageBox.Show(errorMessage, "Script Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
                 }
                 
                 // Read the script content
                 string scriptContent = File.ReadAllText(scriptPath);
                 
-                // First, properly handle database creation
-                // We need to completely remove/skip any CREATE DATABASE statements and related commands
-                StringBuilder processedScript = new StringBuilder();
-                bool inCreateDatabaseBlock = false;
+                // Preprocess the script to remove any database creation statements
+                string processedScript = PreprocessSqlScript(scriptContent, dbName);
                 
-                // More thorough handling of database creation
-                Regex createDbRegex = new Regex(@"CREATE\s+DATABASE\s+\[?\w+\]?|USE\s+\[?master\]?", RegexOptions.IgnoreCase);
-                Regex useDbRegex = new Regex(@"USE\s+\[?(\w+)\]?", RegexOptions.IgnoreCase);
-                
-                // Split on GO to process each batch
-                string[] batches = Regex.Split(scriptContent, @"^\s*GO\s*$", RegexOptions.Multiline);
-                
-                foreach (string batch in batches)
+                // Simpler approach - execute straight SQL commands to create tables
+                using (SqlConnection connection = new SqlConnection(masterConnectionString))
                 {
-                    string trimmedBatch = batch.Trim();
-                    if (string.IsNullOrWhiteSpace(trimmedBatch))
-                        continue;
-                        
-                    // Check if this batch contains CREATE DATABASE or USE [master]
-                    if (createDbRegex.IsMatch(trimmedBatch))
+                    connection.Open();
+                    
+                    // First, set the database context
+                    using (SqlCommand useDbCommand = new SqlCommand($"USE [{dbName}]", connection))
                     {
-                        // Skip database creation batches entirely
-                        continue;
+                        useDbCommand.ExecuteNonQuery();
                     }
                     
-                    // Replace any USE [SpaManagement] with USE [our_new_db_name]
-                    string modifiedBatch = useDbRegex.Replace(trimmedBatch, match => {
-                        string dbNameInScript = match.Groups[1].Value;
-                        // Only modify if it's SpaManagement, leave other USE statements intact
-                        if (string.Equals(dbNameInScript, "SpaManagement", StringComparison.OrdinalIgnoreCase) ||
-                            string.Equals(dbNameInScript, "[SpaManagement]", StringComparison.OrdinalIgnoreCase))
-                        {
-                            return $"USE [{dbName}]";
-                        }
-                        return match.Value;
-                    });
-                    
-                    // Add the batch to our processed script
-                    processedScript.AppendLine(modifiedBatch);
-                    processedScript.AppendLine("GO");
-                }
-                
-                // Now use the processed script content
-                string finalScript = processedScript.ToString();
-                
-                // Build connection string to the newly created database 
-                SqlConnectionStringBuilder dbBuilder = new SqlConnectionStringBuilder(connectionString);
-                dbBuilder.InitialCatalog = dbName;
-                
-                using (SqlConnection dbConnection = new SqlConnection(dbBuilder.ConnectionString))
-                {
-                    dbConnection.Open();
-                    Cursor = Cursors.WaitCursor;
-                    
-                    // Show progress dialog
-                    using (Form progressDialog = new Form())
+                    try
                     {
-                        progressDialog.Text = "Creating Database Schema";
-                        progressDialog.Size = new Size(400, 100);
-                        progressDialog.StartPosition = FormStartPosition.CenterScreen;
-                        progressDialog.FormBorderStyle = FormBorderStyle.FixedDialog;
-                        progressDialog.ControlBox = false;
+                        // Create tables one by one to avoid complex parsing
+                        // First, create the table structure
+                        CreateBasicTableStructure(connection, dbName);
                         
-                        Label lblStatus = new Label
-                        {
-                            Text = "Creating database schema...",
-                            AutoSize = true,
-                            Location = new Point(20, 20)
-                        };
+                        // Then add indexes, constraints, etc.
+                        ExecuteNonTableCommands(processedScript, connection);
                         
-                        ProgressBar progressBar = new ProgressBar
-                        {
-                            Style = ProgressBarStyle.Marquee,
-                            Location = new Point(20, 40),
-                            Size = new Size(350, 20)
-                        };
-                        
-                        progressDialog.Controls.Add(lblStatus);
-                        progressDialog.Controls.Add(progressBar);
-                        
-                        // Show the dialog without blocking
-                        progressDialog.Show(this);
-                        Application.DoEvents();
-                        
-                        try
-                        {
-                            // Split by GO again for execution
-                            batches = Regex.Split(finalScript, @"^\s*GO\s*$", RegexOptions.Multiline);
-                            
-                            int totalBatches = batches.Length;
-                            int completedBatches = 0;
-                            int errorCount = 0;
-                            
-                            foreach (string batch in batches)
-                            {
-                                string trimmedBatch = batch.Trim();
-                                if (string.IsNullOrWhiteSpace(trimmedBatch))
-                                    continue;
-                                    
-                                // Update status
-                                lblStatus.Text = $"Executing batch {++completedBatches} of {totalBatches}...";
-                                Application.DoEvents();
-                                
-                                try
-                                {
-                                    using (SqlCommand command = new SqlCommand(trimmedBatch, dbConnection))
-                                    {
-                                        command.CommandTimeout = 60; // Set longer timeout
-                                        command.ExecuteNonQuery();
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    errorCount++;
-                                    
-                                    // Log the error but continue with other batches
-                                    Console.WriteLine($"Error executing batch: {ex.Message}");
-                                    Console.WriteLine($"Batch content: {trimmedBatch}");
-                                    
-                                    // Only show a maximum of 3 error messages to avoid dialog spam
-                                    if (errorCount <= 3)
-                                    {
-                                        // Update dialog to show error
-                                        lblStatus.Text = $"Error: {ex.Message}";
-                                        lblStatus.ForeColor = System.Drawing.Color.Red;
-                                        Application.DoEvents();
-                                        System.Threading.Thread.Sleep(2000); // Pause briefly so user can see the error
-                                        
-                                        // Reset status for next batch
-                                        lblStatus.Text = $"Continuing with batch {completedBatches + 1} of {totalBatches}...";
-                                        lblStatus.ForeColor = System.Drawing.SystemColors.ControlText;
-                                        Application.DoEvents();
-                                    }
-                                }
-                            }
-                            
-                            // Close the progress dialog
-                            progressDialog.Close();
-                            
-                            // Show final result
-                            if (errorCount > 0)
-                            {
-                                MessageBox.Show($"Database schema created with {errorCount} errors. Some features may not work correctly.",
-                                    "Schema Created with Errors", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            }
-                            else
-                            {
-                                MessageBox.Show("Database schema created successfully!",
-                                    "Schema Created", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            progressDialog.Close();
-                            MessageBox.Show($"Error executing script: {ex.Message}",
-                                "Script Execution Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                        finally
-                        {
-                            Cursor = Cursors.Default;
-                        }
+                        MessageBox.Show($"Database schema created successfully!", "Success", 
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (SqlException ex)
+                    {
+                        MessageBox.Show($"Error creating schema: {ex.Message}\nError Number: {ex.Number}", 
+                            "SQL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error executing database script: {ex.Message}",
-                    "Script Execution Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error executing database script: {ex.Message}", 
+                    "Script Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void CreateBasicTableStructure(SqlConnection connection, string dbName)
+        {
+            // Basic table creation scripts
+            string[] tableCreationScripts = {
+                @"CREATE TABLE [dbo].[tbCard](
+	[CardId] [varchar](255) NOT NULL,
+	[Status] [varchar](20) NULL,
+	[LastUsed] [datetime] NULL,
+	[CreatedDate] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[CardId] ASC
+))",
+                @"CREATE TABLE [dbo].[tbConsumable](
+	[ConsumableId] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [varchar](100) NOT NULL,
+	[Description] [text] NULL,
+	[Price] [decimal](10, 2) NOT NULL,
+	[Category] [varchar](50) NULL,
+	[StockQuantity] [int] NOT NULL,
+	[CreatedDate] [datetime] NULL,
+	[ModifiedDate] [datetime] NULL,
+	[ImagePath] [varchar](255) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ConsumableId] ASC
+))",
+                @"CREATE TABLE [dbo].[tbCustomer](
+	[CustomerId] [int] IDENTITY(1,1) NOT NULL,
+	[CardId] [varchar](255) NOT NULL,
+	[IssuedTime] [datetime] NULL,
+	[ReleasedTime] [datetime] NULL,
+	[Notes] [text] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[CustomerId] ASC
+))",
+                @"CREATE TABLE [dbo].[tbInvoice](
+	[InvoiceId] [int] IDENTITY(1,1) NOT NULL,
+	[OrderId] [int] NOT NULL,
+	[InvoiceDate] [datetime] NULL,
+	[TotalAmount] [decimal](10, 2) NOT NULL,
+	[Notes] [text] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[InvoiceId] ASC
+))",
+                @"CREATE TABLE [dbo].[tbOrder](
+	[OrderId] [int] IDENTITY(1,1) NOT NULL,
+	[CustomerId] [int] NOT NULL,
+	[UserId] [int] NOT NULL,
+	[OrderTime] [datetime] NULL,
+	[Notes] [text] NULL,
+	[TotalAmount] [decimal](10, 2) NULL,
+	[Discount] [decimal](10, 2) NULL,
+	[FinalAmount] [decimal](10, 2) NULL,
+	[Status] [varchar](20) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[OrderId] ASC
+))",
+                @"CREATE TABLE [dbo].[tbOrderItem](
+	[OrderItemId] [int] IDENTITY(1,1) NOT NULL,
+	[OrderId] [int] NOT NULL,
+	[ItemType] [varchar](20) NOT NULL,
+	[ItemId] [int] NOT NULL,
+	[Quantity] [int] NULL,
+	[UnitPrice] [decimal](10, 2) NOT NULL,
+	[TotalPrice] [decimal](10, 2) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[OrderItemId] ASC
+))",
+                @"CREATE TABLE [dbo].[tbPayment](
+	[PaymentId] [int] IDENTITY(1,1) NOT NULL,
+	[InvoiceId] [int] NOT NULL,
+	[PaymentDate] [datetime] NULL,
+	[PaymentMethod] [varchar](50) NOT NULL,
+	[TransactionReference] [varchar](100) NULL,
+	[Status] [varchar](20) NULL,
+	[UserId] [int] NOT NULL,
+	[Notes] [text] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[PaymentId] ASC
+))",
+                @"CREATE TABLE [dbo].[tbService](
+	[ServiceId] [int] IDENTITY(1,1) NOT NULL,
+	[ServiceName] [varchar](100) NOT NULL,
+	[Description] [text] NULL,
+	[Price] [decimal](10, 2) NOT NULL,
+	[CreatedDate] [datetime] NULL,
+	[ModifiedDate] [datetime] NULL,
+	[ImagePath] [varchar](255) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ServiceId] ASC
+))",
+                @"CREATE TABLE [dbo].[tbUser](
+	[UserId] [int] IDENTITY(1,1) NOT NULL,
+	[Username] [varchar](50) NOT NULL,
+	[Password] [varchar](255) NOT NULL,
+	[CreatedDate] [datetime] NULL,
+	[ModifiedDate] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[UserId] ASC
+))"
+            };
+            
+            // Create each table, ignore if already exists
+            foreach (string tableScript in tableCreationScripts)
+            {
+                try
+                {
+                    using (SqlCommand cmd = new SqlCommand(tableScript, connection))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (SqlException ex)
+                {
+                    // Ignore if table already exists (error 2714)
+                    if (ex.Number != 2714)
+                    {
+                        throw; // Re-throw other errors
+                    }
+                }
+            }
+        }
+
+        private void ExecuteNonTableCommands(string script, SqlConnection connection)
+        {
+            // Process stored procedures, defaults, indexes, etc.
+            
+            // First create the essential stored procedures directly
+            CreateEssentialStoredProcedures(connection);
+            
+            // Extract all stored procedure creation blocks
+            Regex spRegex = new Regex(@"CREATE\s+PROCEDURE\s+\[dbo\]\.\[([^\]]+)\](?:\s|.)*?END(?:\s+GO)?", 
+                RegexOptions.IgnoreCase | RegexOptions.Singleline);
+            
+            // Extract ALTER TABLE statements for defaults and constraints
+            Regex alterTableRegex = new Regex(@"ALTER\s+TABLE\s+\[dbo\]\.\[([^\]]+)\](?:\s|.)*?GO", 
+                RegexOptions.IgnoreCase | RegexOptions.Singleline);
+            
+            // Extract index creation statements
+            Regex indexRegex = new Regex(@"CREATE\s+(?:UNIQUE\s+)?(?:CLUSTERED|NONCLUSTERED)\s+INDEX\s+\[([^\]]+)\](?:\s|.)*?GO", 
+                RegexOptions.IgnoreCase | RegexOptions.Singleline);
+            
+            // Find all stored procedures and execute them
+            foreach (Match match in spRegex.Matches(script))
+            {
+                try
+                {
+                    using (SqlCommand cmd = new SqlCommand(match.Value.Replace("GO", ""), connection))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (SqlException ex)
+                {
+                    if (ex.Number != 2714) // Ignore if object already exists
+                    {
+                        Console.WriteLine($"Error executing stored procedure: {ex.Message}");
+                    }
+                }
+            }
+            
+            // Execute ALTER TABLE statements for defaults and constraints
+            foreach (Match match in alterTableRegex.Matches(script))
+            {
+                try
+                {
+                    using (SqlCommand cmd = new SqlCommand(match.Value.Replace("GO", ""), connection))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (SqlException ex)
+                {
+                    Console.WriteLine($"Error executing ALTER TABLE: {ex.Message}");
+                }
+            }
+            
+            // Execute index creation statements
+            foreach (Match match in indexRegex.Matches(script))
+            {
+                try
+                {
+                    using (SqlCommand cmd = new SqlCommand(match.Value.Replace("GO", ""), connection))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (SqlException ex)
+                {
+                    Console.WriteLine($"Error creating index: {ex.Message}");
+                }
+            }
+            
+            // Add default values for columns
+            AddDefaultColumnValues(connection);
+        }
+
+        private void CreateEssentialStoredProcedures(SqlConnection connection)
+        {
+            string[] essentialProcedures = {
+                @"CREATE PROCEDURE [dbo].[sp_RegisterCard]
+    @CardId VARCHAR(255)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    -- Check if card already exists
+    IF EXISTS (SELECT 1 FROM tbCard WHERE CardId = @CardId)
+    BEGIN
+        RAISERROR('This card is already registered in the system.', 16, 1);
+        RETURN;
+    END
+    
+    -- Register new card
+    INSERT INTO tbCard (CardId, Status, CreatedDate)
+    VALUES (@CardId, 'Available', GETDATE());
+    
+    SELECT @CardId AS CardId, 'Available' AS Status;
+END",
+                @"CREATE PROCEDURE [dbo].[sp_IssueCardToCustomer]
+    @CardId VARCHAR(255),
+    @Notes TEXT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRANSACTION;
+    
+    -- Check if card exists and is available
+    IF NOT EXISTS (SELECT 1 FROM tbCard WHERE CardId = @CardId AND Status = 'Available')
+    BEGIN
+        ROLLBACK;
+        RAISERROR('Card not available or not registered.', 16, 1);
+        RETURN;
+    END
+    
+    -- Update card status
+    UPDATE tbCard
+    SET Status = 'InUse',
+        LastUsed = GETDATE()
+    WHERE CardId = @CardId;
+    
+    -- Create customer record
+    INSERT INTO tbCustomer (CardId, IssuedTime, Notes)
+    VALUES (@CardId, GETDATE(), @Notes);
+    
+    DECLARE @CustomerId INT = SCOPE_IDENTITY();
+    
+    COMMIT TRANSACTION;
+    
+    SELECT @CustomerId AS CustomerId, @CardId AS CardId;
+END",
+                @"CREATE PROCEDURE [dbo].[sp_CheckCardStatus]
+    @CardId VARCHAR(255)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    SELECT 
+        c.CardId,
+        c.Status,
+        c.LastUsed,
+        cust.CustomerId,
+        cust.IssuedTime,
+        o.OrderId,
+        o.TotalAmount,
+        o.FinalAmount
+    FROM tbCard c
+    LEFT JOIN tbCustomer cust ON c.CardId = cust.CardId AND cust.ReleasedTime IS NULL
+    LEFT JOIN tbOrder o ON cust.CustomerId = o.CustomerId AND o.Status = 'Active'
+    WHERE c.CardId = @CardId;
+END",
+                @"CREATE PROCEDURE [dbo].[sp_CreateUser]
+    @Username VARCHAR(50),
+    @Password VARCHAR(255)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    INSERT INTO tbUser (Username, Password)
+    VALUES (@Username, @Password);
+    
+    SELECT SCOPE_IDENTITY() AS UserId;
+END",
+                @"CREATE PROCEDURE [dbo].[sp_AddOrderItem]
+    @OrderId INT,
+    @ItemType VARCHAR(20),
+    @ItemId INT,
+    @Quantity INT = 1
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @UnitPrice DECIMAL(10,2);
+    DECLARE @TotalPrice DECIMAL(10,2);
+    
+    -- Get the price based on item type
+    IF @ItemType = 'Service'
+    BEGIN
+        SELECT @UnitPrice = Price FROM tbService WHERE ServiceId = @ItemId;
+    END
+    ELSE IF @ItemType = 'Consumable'
+    BEGIN
+        SELECT @UnitPrice = Price FROM tbConsumable WHERE ConsumableId = @ItemId;
+        
+        -- Update stock quantity
+        UPDATE tbConsumable SET 
+            StockQuantity = StockQuantity - @Quantity,
+            ModifiedDate = GETDATE()
+        WHERE ConsumableId = @ItemId;
+    END
+    
+    SET @TotalPrice = @UnitPrice * @Quantity;
+    
+    -- Add item to order
+    INSERT INTO tbOrderItem (OrderId, ItemType, ItemId, Quantity, UnitPrice, TotalPrice)
+    VALUES (@OrderId, @ItemType, @ItemId, @Quantity, @UnitPrice, @TotalPrice);
+    
+    -- Update order totals
+    UPDATE tbOrder
+    SET TotalAmount = (SELECT SUM(TotalPrice) FROM tbOrderItem WHERE OrderId = @OrderId),
+        FinalAmount = (SELECT SUM(TotalPrice) FROM tbOrderItem WHERE OrderId = @OrderId) - Discount
+    WHERE OrderId = @OrderId;
+    
+    SELECT SCOPE_IDENTITY() AS OrderItemId;
+END",
+                @"CREATE PROCEDURE [dbo].[sp_ApplyOrderDiscount]
+    @OrderId INT,
+    @DiscountAmount DECIMAL(10,2)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    UPDATE tbOrder
+    SET Discount = @DiscountAmount,
+        FinalAmount = TotalAmount - @DiscountAmount
+    WHERE OrderId = @OrderId;
+    
+    SELECT OrderId, TotalAmount, Discount, FinalAmount
+    FROM tbOrder
+    WHERE OrderId = @OrderId;
+END",
+                @"CREATE PROCEDURE [dbo].[sp_CompleteOrder]
+    @OrderId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRANSACTION;
+    
+    -- Update order status
+    UPDATE tbOrder
+    SET Status = 'Completed'
+    WHERE OrderId = @OrderId;
+    
+    -- Create invoice
+    INSERT INTO tbInvoice (OrderId, TotalAmount)
+    SELECT OrderId, FinalAmount
+    FROM tbOrder
+    WHERE OrderId = @OrderId;
+    
+    DECLARE @InvoiceId INT = SCOPE_IDENTITY();
+    
+    COMMIT TRANSACTION;
+    
+    -- Return the invoice details
+    SELECT 
+        i.InvoiceId,
+        i.OrderId,
+        i.InvoiceDate,
+        i.TotalAmount,
+        c.CardId AS CustomerCardId
+    FROM tbInvoice i
+    JOIN tbOrder o ON i.OrderId = o.OrderId
+    JOIN tbCustomer c ON o.CustomerId = c.CustomerId
+    WHERE i.InvoiceId = @InvoiceId;
+END",
+                @"CREATE PROCEDURE [dbo].[sp_CreateOrder]
+    @CustomerId INT,
+    @UserId INT,
+    @Notes TEXT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    INSERT INTO tbOrder (CustomerId, UserId, Notes)
+    VALUES (@CustomerId, @UserId, @Notes);
+    
+    SELECT SCOPE_IDENTITY() AS OrderId;
+END",
+                @"CREATE PROCEDURE [dbo].[sp_CreateService]
+    @ServiceName VARCHAR(100),
+    @Description TEXT = NULL,
+    @Price DECIMAL(10,2),
+    @ImagePath VARCHAR(255) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    INSERT INTO tbService (ServiceName, Description, Price, ImagePath)
+    VALUES (@ServiceName, @Description, @Price, @ImagePath);
+    
+    SELECT SCOPE_IDENTITY() AS ServiceId;
+END",
+                @"CREATE PROCEDURE [dbo].[sp_GenerateDailySalesReport]
+    @Date DATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    -- Daily order summary
+    SELECT 
+        COUNT(OrderId) AS TotalOrders,
+        SUM(TotalAmount) AS GrossSales,
+        SUM(Discount) AS TotalDiscounts,
+        SUM(FinalAmount) AS NetSales
+    FROM tbOrder
+    WHERE CONVERT(DATE, OrderTime) = @Date
+    AND Status = 'Completed';
+    
+    -- Payment method breakdown
+    SELECT 
+        PaymentMethod,
+        COUNT(PaymentId) AS PaymentCount,
+        SUM(i.TotalAmount) AS TotalAmount
+    FROM tbPayment p
+    JOIN tbInvoice i ON p.InvoiceId = i.InvoiceId
+    WHERE CONVERT(DATE, p.PaymentDate) = @Date
+    GROUP BY PaymentMethod
+    ORDER BY TotalAmount DESC;
+    
+    -- Top selling services
+    SELECT 
+        s.ServiceId,
+        s.ServiceName,
+        COUNT(oi.OrderItemId) AS TimesSold,
+        SUM(oi.Quantity) AS TotalQuantity,
+        SUM(oi.TotalPrice) AS TotalSales
+    FROM tbOrderItem oi
+    JOIN tbService s ON oi.ItemId = s.ServiceId
+    JOIN tbOrder o ON oi.OrderId = o.OrderId
+    WHERE oi.ItemType = 'Service'
+    AND CONVERT(DATE, o.OrderTime) = @Date
+    AND o.Status = 'Completed'
+    GROUP BY s.ServiceId, s.ServiceName
+    ORDER BY TotalSales DESC;
+    
+    -- Top selling consumables
+    SELECT 
+        c.ConsumableId,
+        c.Name,
+        COUNT(oi.OrderItemId) AS TimesSold,
+        SUM(oi.Quantity) AS TotalQuantity,
+        SUM(oi.TotalPrice) AS TotalSales
+    FROM tbOrderItem oi
+    JOIN tbConsumable c ON oi.ItemId = c.ConsumableId
+    JOIN tbOrder o ON oi.OrderId = o.OrderId
+    WHERE oi.ItemType = 'Consumable'
+    AND CONVERT(DATE, o.OrderTime) = @Date
+    AND o.Status = 'Completed'
+    GROUP BY c.ConsumableId, c.Name
+    ORDER BY TotalSales DESC;
+END",
+                @"CREATE PROCEDURE [dbo].[sp_GetActiveOrders]
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    SELECT 
+        o.OrderId,
+        o.CustomerId,
+        c.CardId AS CustomerCardId,
+        o.UserId,
+        u.Username AS UserName,
+        o.OrderTime,
+        o.TotalAmount,
+        o.Discount,
+        o.FinalAmount,
+        o.Status
+    FROM tbOrder o
+    JOIN tbCustomer c ON o.CustomerId = c.CustomerId
+    JOIN tbUser u ON o.UserId = u.UserId
+    WHERE o.Status = 'Active'
+    ORDER BY o.OrderTime DESC;
+END",
+                @"CREATE PROCEDURE [dbo].[sp_GetAvailableCards]
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    SELECT 
+        CardId,
+        LastUsed,
+        CreatedDate
+    FROM tbCard
+    WHERE Status = 'Available'
+    ORDER BY LastUsed DESC;
+END",
+                @"CREATE PROCEDURE [dbo].[sp_GetAvailableConsumables]
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    SELECT 
+        ConsumableId,
+        Name,
+        Description,
+        Price,
+        Category,
+        StockQuantity,
+        CreatedDate,
+        ModifiedDate
+    FROM tbConsumable
+    WHERE StockQuantity > 0
+    ORDER BY Category, Name;
+END",
+                @"CREATE PROCEDURE [dbo].[sp_GetAvailableServices]
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    SELECT 
+        ServiceId,
+        ServiceName,
+        Description,
+        Price,
+        ImagePath,
+        CreatedDate,
+        ModifiedDate
+    FROM tbService
+    ORDER BY ServiceName;
+END",
+                @"CREATE PROCEDURE [dbo].[sp_GetOrderDetails]
+    @OrderId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    -- Get order header
+    SELECT 
+        o.OrderId,
+        o.CustomerId,
+        c.CardId AS CustomerCardId,
+        o.UserId,
+        u.Username AS UserName,
+        o.OrderTime,
+        o.TotalAmount,
+        o.Discount,
+        o.FinalAmount,
+        o.Status,
+        o.Notes
+    FROM tbOrder o
+    JOIN tbCustomer c ON o.CustomerId = c.CustomerId
+    JOIN tbUser u ON o.UserId = u.UserId
+    WHERE o.OrderId = @OrderId;
+    
+    -- Get order items
+    SELECT 
+        oi.OrderItemId,
+        oi.OrderId,
+        oi.ItemType,
+        oi.ItemId,
+        CASE 
+            WHEN oi.ItemType = 'Service' THEN s.ServiceName
+            WHEN oi.ItemType = 'Consumable' THEN c.Name
+            ELSE 'Unknown'
+        END AS ItemName,
+        oi.Quantity,
+        oi.UnitPrice,
+        oi.TotalPrice
+    FROM tbOrderItem oi
+    LEFT JOIN tbService s ON oi.ItemType = 'Service' AND oi.ItemId = s.ServiceId
+    LEFT JOIN tbConsumable c ON oi.ItemType = 'Consumable' AND oi.ItemId = c.ConsumableId
+    WHERE oi.OrderId = @OrderId
+    ORDER BY oi.OrderItemId;
+END",
+                @"CREATE PROCEDURE [dbo].[sp_GetServiceById]
+    @ServiceId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    SELECT 
+        ServiceId,
+        ServiceName, 
+        Description,
+        Price,
+        ImagePath,
+        CreatedDate,
+        ModifiedDate
+    FROM tbService
+    WHERE ServiceId = @ServiceId;
+END",
+                @"CREATE PROCEDURE [dbo].[sp_ProcessPayment]
+    @InvoiceId INT,
+    @PaymentMethod VARCHAR(50),
+    @TransactionReference VARCHAR(100) = NULL,
+    @UserId INT,
+    @Notes TEXT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRANSACTION;
+    
+    DECLARE @TotalAmount DECIMAL(10,2);
+    DECLARE @OrderId INT;
+    DECLARE @CustomerId INT;
+    DECLARE @CardId VARCHAR(255);
+    
+    -- Get total amount and order ID from invoice
+    SELECT @TotalAmount = TotalAmount, @OrderId = OrderId
+    FROM tbInvoice
+    WHERE InvoiceId = @InvoiceId;
+    
+    -- Get customer ID and card ID from order
+    SELECT @CustomerId = o.CustomerId, @CardId = c.CardId
+    FROM tbOrder o
+    JOIN tbCustomer c ON o.CustomerId = c.CustomerId
+    WHERE o.OrderId = @OrderId;
+    
+    -- Create payment record
+    INSERT INTO tbPayment (InvoiceId, PaymentMethod, TransactionReference, UserId, Notes)
+    VALUES (@InvoiceId, @PaymentMethod, @TransactionReference, @UserId, @Notes);
+    
+    DECLARE @PaymentId INT = SCOPE_IDENTITY();
+    
+    -- Update customer record
+    UPDATE tbCustomer
+    SET ReleasedTime = GETDATE()
+    WHERE CustomerId = @CustomerId;
+    
+    -- Release the card
+    UPDATE tbCard
+    SET Status = 'Available'
+    WHERE CardId = @CardId;
+    
+    COMMIT TRANSACTION;
+    
+    SELECT @PaymentId AS PaymentId;
+END",
+                @"CREATE PROCEDURE [dbo].[sp_RegisterCardBatch]
+    @Prefix VARCHAR(10),
+    @StartNumber INT,
+    @Count INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @i INT = 0;
+    DECLARE @CardId VARCHAR(255);
+    
+    WHILE @i < @Count
+    BEGIN
+        SET @CardId = @Prefix + RIGHT('00000' + CAST(@StartNumber + @i AS VARCHAR(10)), 5);
+        
+        -- Only insert if it doesn't already exist
+        IF NOT EXISTS (SELECT 1 FROM tbCard WHERE CardId = @CardId)
+        BEGIN
+            INSERT INTO tbCard (CardId, Status, CreatedDate)
+            VALUES (@CardId, 'Available', GETDATE());
+        END
+        
+        SET @i = @i + 1;
+    END
+    
+    SELECT 'Registered ' + CAST(@Count AS VARCHAR(10)) + ' cards with prefix ' + @Prefix AS Result;
+END",
+                @"CREATE PROCEDURE [dbo].[sp_SetCardAsDamaged]
+    @CardId VARCHAR(255)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    -- Check if card is in use
+    IF EXISTS (SELECT 1 FROM tbCard WHERE CardId = @CardId AND Status = 'InUse')
+    BEGIN
+        RAISERROR('Cannot mark card as damaged while it is in use.', 16, 1);
+        RETURN;
+    END
+    
+    UPDATE tbCard
+    SET Status = 'Damaged'
+    WHERE CardId = @CardId;
+    
+    SELECT CardId, Status FROM tbCard WHERE CardId = @CardId;
+END",
+                @"CREATE PROCEDURE [dbo].[sp_UpdateOrderItemQuantity]
+    @OrderItemId INT,
+    @Quantity INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE @OrderId INT;
+    DECLARE @UnitPrice DECIMAL(10,2);
+    
+    -- Get order ID and unit price
+    SELECT @OrderId = OrderId, @UnitPrice = UnitPrice 
+    FROM tbOrderItem 
+    WHERE OrderItemId = @OrderItemId;
+    
+    -- Update the order item
+    UPDATE tbOrderItem
+    SET Quantity = @Quantity,
+        TotalPrice = @UnitPrice * @Quantity
+    WHERE OrderItemId = @OrderItemId;
+    
+    -- Update the order totals
+    UPDATE tbOrder
+    SET TotalAmount = (SELECT SUM(TotalPrice) FROM tbOrderItem WHERE OrderId = @OrderId),
+        FinalAmount = (SELECT SUM(TotalPrice) FROM tbOrderItem WHERE OrderId = @OrderId) - Discount
+    WHERE OrderId = @OrderId;
+END",
+                @"CREATE PROCEDURE [dbo].[sp_UpdateService]
+    @ServiceId INT,
+    @ServiceName VARCHAR(100),
+    @Description TEXT = NULL,
+    @Price DECIMAL(10,2),
+    @ImagePath VARCHAR(255) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    UPDATE tbService
+    SET ServiceName = @ServiceName,
+        Description = @Description,
+        Price = @Price,
+        ImagePath = @ImagePath,
+        ModifiedDate = GETDATE()
+    WHERE ServiceId = @ServiceId;
+    
+    SELECT @ServiceId AS ServiceId;
+END",
+                @"CREATE PROCEDURE [dbo].[sp_GetAllCards]
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    -- Check if the table exists
+    IF OBJECT_ID('dbo.tbCard', 'U') IS NOT NULL
+    BEGIN
+        -- Return all cards
+        SELECT 
+            CardId,
+            Status,
+            LastUsed,
+            CreatedDate
+        FROM tbCard
+        ORDER BY Status, LastUsed DESC;
+    END
+    ELSE
+    BEGIN
+        -- Return empty result if table doesn't exist
+        SELECT 
+            '' AS CardId,
+            '' AS Status,
+            NULL AS LastUsed,
+            NULL AS CreatedDate
+        WHERE 1 = 0;
+    END
+END"
+            };
+            
+            foreach (string procScript in essentialProcedures)
+            {
+                try
+                {
+                    // First try to drop the procedure if it exists
+                    string procName = "";
+                    Match match = Regex.Match(procScript, @"CREATE\s+PROCEDURE\s+\[dbo\]\.\[([^\]]+)\]", RegexOptions.IgnoreCase);
+                    if (match.Success)
+                    {
+                        procName = match.Groups[1].Value;
+                        string dropSql = $"IF OBJECT_ID('dbo.{procName}', 'P') IS NOT NULL DROP PROCEDURE [dbo].[{procName}]";
+                        
+                        using (SqlCommand dropCmd = new SqlCommand(dropSql, connection))
+                        {
+                            dropCmd.ExecuteNonQuery();
+                        }
+                    }
+                    
+                    // Now create the procedure
+                    using (SqlCommand cmd = new SqlCommand(procScript, connection))
+                    {
+                        cmd.ExecuteNonQuery();
+                        Console.WriteLine($"Created stored procedure: {procName}");
+                    }
+                }
+                catch (SqlException ex)
+                {
+                    MessageBox.Show($"Error creating stored procedure: {ex.Message}", "Stored Procedure Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    Console.WriteLine($"Error creating stored procedure: {ex.Message}");
+                }
+            }
+        }
+
+        private void AddDefaultColumnValues(SqlConnection connection)
+        {
+            string[] defaultCommands = {
+                "ALTER TABLE [dbo].[tbCard] ADD DEFAULT ('Available') FOR [Status]",
+                "ALTER TABLE [dbo].[tbCard] ADD DEFAULT (getdate()) FOR [CreatedDate]",
+                "ALTER TABLE [dbo].[tbConsumable] ADD DEFAULT ((0)) FOR [StockQuantity]",
+                "ALTER TABLE [dbo].[tbConsumable] ADD DEFAULT (getdate()) FOR [CreatedDate]",
+                "ALTER TABLE [dbo].[tbConsumable] ADD DEFAULT (getdate()) FOR [ModifiedDate]",
+                "ALTER TABLE [dbo].[tbCustomer] ADD DEFAULT (getdate()) FOR [IssuedTime]",
+                "ALTER TABLE [dbo].[tbInvoice] ADD DEFAULT (getdate()) FOR [InvoiceDate]",
+                "ALTER TABLE [dbo].[tbOrder] ADD DEFAULT (getdate()) FOR [OrderTime]",
+                "ALTER TABLE [dbo].[tbOrder] ADD DEFAULT ((0)) FOR [TotalAmount]",
+                "ALTER TABLE [dbo].[tbOrder] ADD DEFAULT ((0)) FOR [Discount]",
+                "ALTER TABLE [dbo].[tbOrder] ADD DEFAULT ((0)) FOR [FinalAmount]",
+                "ALTER TABLE [dbo].[tbOrder] ADD DEFAULT ('Active') FOR [Status]",
+                "ALTER TABLE [dbo].[tbOrderItem] ADD DEFAULT ((1)) FOR [Quantity]",
+                "ALTER TABLE [dbo].[tbPayment] ADD DEFAULT (getdate()) FOR [PaymentDate]",
+                "ALTER TABLE [dbo].[tbPayment] ADD DEFAULT ('Completed') FOR [Status]",
+                "ALTER TABLE [dbo].[tbService] ADD DEFAULT (getdate()) FOR [CreatedDate]",
+                "ALTER TABLE [dbo].[tbService] ADD DEFAULT (getdate()) FOR [ModifiedDate]",
+                "ALTER TABLE [dbo].[tbUser] ADD DEFAULT (getdate()) FOR [CreatedDate]",
+                "ALTER TABLE [dbo].[tbUser] ADD DEFAULT (getdate()) FOR [ModifiedDate]"
+            };
+            
+            foreach (string command in defaultCommands)
+            {
+                try
+                {
+                    using (SqlCommand cmd = new SqlCommand(command, connection))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (SqlException ex)
+                {
+                    // Ignore if constraint already exists
+                    Console.WriteLine($"Error adding default value: {ex.Message}");
+                }
+            }
+        }
+
+        private string PreprocessSqlScript(string script, string dbName)
+        {
+            // Remove comments to make sure we don't miss anything inside comments
+            string noComments = RemoveSqlComments(script);
+            
+            // Replace variable with database name
+            string withDbName = noComments.Replace("$(DatabaseName)", dbName);
+            
+            // Remove any CREATE DATABASE statements and related configurations
+            string[] linesToRemove = new string[]
+            {
+                "CREATE DATABASE",
+                "ALTER DATABASE",
+                "USE [master]",
+                "USE master",
+                "EXEC [SpaManagement]",
+                "CONTAINMENT =",
+                "ON PRIMARY",
+                "LOG ON",
+                "WITH CATALOG_COLLATION",
+                "SET COMPATIBILITY_LEVEL",
+                "SET ANSI_NULL_DEFAULT",
+                "SET ANSI_NULLS",
+                "SET ANSI_PADDING",
+                "SET ANSI_WARNINGS",
+                "SET ARITHABORT",
+                "SET AUTO_CLOSE",
+                "SET AUTO_SHRINK",
+                "SET AUTO_UPDATE_STATISTICS",
+                "SET CURSOR_CLOSE_ON_COMMIT",
+                "SET CURSOR_DEFAULT",
+                "SET CONCAT_NULL_YIELDS_NULL",
+                "SET NUMERIC_ROUNDABORT",
+                "SET RECURSIVE_TRIGGERS",
+                "SET DISABLE_BROKER",
+                "SET AUTO_UPDATE_STATISTICS_ASYNC",
+                "SET DATE_CORRELATION_OPTIMIZATION",
+                "SET TRUSTWORTHY",
+                "SET ALLOW_SNAPSHOT_ISOLATION",
+                "SET PARAMETERIZATION",
+                "SET READ_COMMITTED_SNAPSHOT",
+                "SET HONOR_BROKER_PRIORITY",
+                "SET RECOVERY",
+                "SET MULTI_USER",
+                "SET PAGE_VERIFY",
+                "SET DB_CHAINING",
+                "SET FILESTREAM",
+                "SET TARGET_RECOVERY_TIME",
+                "SET DELAYED_DURABILITY",
+                "SET ACCELERATED_DATABASE_RECOVERY",
+                "SET QUERY_STORE",
+                "SET READ_WRITE"
+            };
+            
+            StringBuilder processedScript = new StringBuilder();
+            using (StringReader reader = new StringReader(withDbName))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    bool skipLine = false;
+                    
+                    // Skip lines with USE [master] or similar
+                    if (line.Trim().StartsWith("USE [master]", StringComparison.OrdinalIgnoreCase) || 
+                        line.Trim().StartsWith("USE master", StringComparison.OrdinalIgnoreCase))
+                    {
+                        skipLine = true;
+                    }
+                    else
+                    {
+                        foreach (string removeText in linesToRemove)
+                        {
+                            if (line.Trim().StartsWith(removeText, StringComparison.OrdinalIgnoreCase))
+                            {
+                                skipLine = true;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (!skipLine)
+                    {
+                        processedScript.AppendLine(line);
+                    }
+                }
+            }
+            
+            return processedScript.ToString();
+        }
+
+        private string RemoveSqlComments(string script)
+        {
+            // Remove /* ... */ style comments
+            script = Regex.Replace(script, @"/\*.*?\*/", "", RegexOptions.Singleline);
+            
+            // Remove -- style comments
+            script = Regex.Replace(script, @"--(.*?)$", "", RegexOptions.Multiline);
+            
+            return script;
         }
 
         private void chkIntegratedSecurity_CheckedChanged(object sender, EventArgs e)
