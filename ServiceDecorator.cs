@@ -18,12 +18,16 @@ namespace Spa_Management_System
     // Concrete Component
     public class BasicServiceComponent : IServiceComponent
     {
-        private readonly string _connectionString;
-
         public BasicServiceComponent()
         {
-            // You should adjust this to match your actual connection string source
-            _connectionString = "data source=SOCHEAT\\MSSQLEXPRESS2022; initial catalog=SpaManagement; trusted_connection=true; encrypt=false";
+
+        }
+
+        // Helper method to get connection from the central manager
+        private SqlConnection GetConnection()
+        {
+            // This ensures we're always using the latest connection
+            return SqlConnectionManager.Instance.CreateConnection();
         }
 
         // Get all services
@@ -32,7 +36,8 @@ namespace Spa_Management_System
             DataTable services = new DataTable();
             try
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                // Use the centralized connection manager
+                using (SqlConnection connection = GetConnection())
                 {
                     connection.Open();
 
@@ -63,7 +68,8 @@ namespace Spa_Management_System
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                // Use the centralized connection manager
+                using (SqlConnection connection = GetConnection())
                 {
                     connection.Open();
 
@@ -94,7 +100,8 @@ namespace Spa_Management_System
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                // Use the centralized connection manager
+                using (SqlConnection connection = GetConnection())
                 {
                     connection.Open();
 
@@ -125,7 +132,8 @@ namespace Spa_Management_System
         {
             try
             {
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                // Use the centralized connection manager
+                using (SqlConnection connection = GetConnection())
                 {
                     connection.Open();
 

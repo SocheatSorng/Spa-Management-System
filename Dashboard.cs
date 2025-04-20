@@ -64,6 +64,20 @@ namespace Spa_Management_System
             this.Controls.Add(lblPriceRange);
         }
 
+        private void Dashboard_Load(object sender, EventArgs e)
+        {
+            // Add a status strip to show database connection information
+            StatusStrip statusStrip = new StatusStrip();
+            ToolStripStatusLabel lblConnection = new ToolStripStatusLabel();
+            
+            string server = SqlConnectionManager.Instance.GetConnectedServerName();
+            string database = SqlConnectionManager.Instance.GetConnectedDatabaseName();
+            lblConnection.Text = $"Connected to: {server} / {database}";
+            
+            statusStrip.Items.Add(lblConnection);
+            this.Controls.Add(statusStrip);
+        }
+
         #region Data Loading Methods
 
         private void LoadServices()
@@ -276,9 +290,9 @@ namespace Spa_Management_System
             // Navigation buttons
             btnDashboard.Click += (s, e) => { /* Toggle home view */ };
             btnAllForm.Click += BtnAllForm_Click;
-            btnStatistic.Click += (s, e) => { /* Open statistics view */ };
+            btnStatistic.Click += btnStatistic_Click;
             btnInvoice.Click += btnInvoice_Click;
-            btnSetting.Click += (s, e) => { /* Open settings view */ };
+            btnSetting.Click += btnSetting_Click;
             btnLogout.Click += (s, e) => { /* Logout */ };
 
             SetupCategoryButtons();
@@ -328,7 +342,39 @@ namespace Spa_Management_System
 
         private void btnExitProgram_Clicked(object sender, EventArgs e)
         {
-            Application.Exit();
+            // Ask for confirmation
+            DialogResult result = MessageBox.Show(
+                "Are you sure you want to log out?", 
+                "Confirm Logout", 
+                MessageBoxButtons.YesNo, 
+                MessageBoxIcon.Question);
+                
+            if (result == DialogResult.Yes)
+            {
+                // Log the user out
+                SqlConnectionManager.SetAuthenticated(null, false);
+                
+                // Close the current form
+                this.Hide();
+                
+                // Show the login form
+                using (LoginForm loginForm = new LoginForm())
+                {
+                    DialogResult loginResult = loginForm.ShowDialog();
+                    
+                    // If login was unsuccessful or cancelled, exit the application
+                    if (loginResult != DialogResult.OK || !loginForm.LoginSuccessful)
+                    {
+                        this.Close();
+                        Application.Exit();
+                    }
+                    else
+                    {
+                        // Login successful, show dashboard again
+                        this.Show();
+                    }
+                }
+            }
         }
 
         private void TxtCustomerID_KeyDown(object sender, KeyEventArgs e)
@@ -1981,6 +2027,777 @@ namespace Spa_Management_System
         {
             Statistic statisticForm = new Statistic();
             statisticForm.Show();
+        }
+
+        private void btnSetting_Click(object sender, EventArgs e)
+        {
+            // Create a settings popup dialog
+            using (Form settingsForm = new Form())
+            {
+                settingsForm.Text = "Application Settings";
+                settingsForm.Size = new Size(450, 400);
+                settingsForm.StartPosition = FormStartPosition.CenterParent;
+                settingsForm.FormBorderStyle = FormBorderStyle.FixedDialog;
+                settingsForm.MaximizeBox = false;
+                settingsForm.MinimizeBox = false;
+                
+                // Add a panel with title
+                Panel titlePanel = new Panel
+                {
+                    Dock = DockStyle.Top,
+                    Height = 50,
+                    BackColor = Color.FromArgb(0, 122, 204)
+                };
+                
+                Label titleLabel = new Label
+                {
+                    Text = "System Settings",
+                    ForeColor = Color.White,
+                    Font = new Font("Century Gothic", 16, FontStyle.Bold),
+                    AutoSize = true
+                };
+                titleLabel.Location = new Point(10, (titlePanel.Height - titleLabel.Height) / 2);
+                titlePanel.Controls.Add(titleLabel);
+                
+                // Create a TabControl for settings categories
+                TabControl tabControl = new TabControl
+                {
+                    Dock = DockStyle.Fill,
+                    Padding = new Point(20, 10),
+                    Font = new Font("Century Gothic", 10)
+                };
+                
+                // Add General Settings tab
+                TabPage generalTab = new TabPage("General");
+                generalTab.Padding = new Padding(10);
+                
+                // Add Database Settings tab
+                TabPage databaseTab = new TabPage("Database");
+                databaseTab.Padding = new Padding(10);
+                
+                // Add Appearance Settings tab but mark it as under development
+                TabPage appearanceTab = new TabPage("Appearance (Coming Soon)");
+                appearanceTab.Padding = new Padding(10);
+                
+                // Create "Under Development" message for appearance tab
+                Label lblUnderDev = new Label
+                {
+                    Text = "This feature is currently under development.\nCheck back in a future update!",
+                    Location = new Point(50, 100),
+                    Size = new Size(300, 50),
+                    Font = new Font("Century Gothic", 10),
+                    ForeColor = Color.Gray,
+                    TextAlign = ContentAlignment.MiddleCenter
+                };
+                appearanceTab.Controls.Add(lblUnderDev);
+                
+                // Add content to General tab
+                CheckBox chkAutoRefresh = new CheckBox
+                {
+                    Text = "Auto-refresh products list",
+                    Location = new Point(20, 30),
+                    Checked = _autoRefreshEnabled,
+                    Width = 250
+                };
+                
+                Label lblRefreshInterval = new Label
+                {
+                    Text = "Refresh interval (minutes):",
+                    Location = new Point(20, 70),
+                    Width = 200
+                };
+                
+                NumericUpDown numRefreshInterval = new NumericUpDown
+                {
+                    Location = new Point(220, 68),
+                    Width = 80,
+                    Minimum = 1,
+                    Maximum = 60,
+                    Value = _autoRefreshInterval
+                };
+                
+                // Add content to Database tab
+                Label lblConnection = new Label
+                {
+                    Text = "Current Connection:",
+                    Location = new Point(20, 30),
+                    Width = 150
+                };
+                
+                string server = SqlConnectionManager.Instance.GetConnectedServerName();
+                string database = SqlConnectionManager.Instance.GetConnectedDatabaseName();
+                
+                Label lblConnectionValue = new Label
+                {
+                    Text = $"{server} / {database}",
+                    Location = new Point(180, 30),
+                    Width = 200,
+                    Font = new Font("Century Gothic", 10, FontStyle.Bold)
+                };
+                
+                Button btnChangeConnection = new Button
+                {
+                    Text = "Change Connection",
+                    Location = new Point(20, 70),
+                    Width = 150,
+                    Height = 30
+                };
+                
+                // Add click handler for change connection button
+                btnChangeConnection.Click += (s, args) =>
+                {
+                    settingsForm.Hide();
+                    
+                    // Show connection dialog
+                    using (ConnectionDialog connectionDialog = new ConnectionDialog())
+                    {
+                        if (connectionDialog.ShowDialog() == DialogResult.OK)
+                        {
+                            // Update connection
+                            SqlConnectionManager.ConnectionString = connectionDialog.ConnectionString;
+                            
+                            // Update the label
+                            string newServer = SqlConnectionManager.Instance.GetConnectedServerName();
+                            string newDb = SqlConnectionManager.Instance.GetConnectedDatabaseName();
+                            lblConnectionValue.Text = $"{newServer} / {newDb}";
+                            
+                            MessageBox.Show("Connection updated successfully.", "Connection Changed", 
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                    
+                    settingsForm.Show();
+                };
+                
+                // Add content to Appearance tab
+                Label lblTheme = new Label
+                {
+                    Text = "Theme:",
+                    Location = new Point(20, 30),
+                    Width = 100
+                };
+                
+                ComboBox cmbTheme = new ComboBox
+                {
+                    Location = new Point(130, 27),
+                    Width = 150,
+                    DropDownStyle = ComboBoxStyle.DropDownList
+                };
+                cmbTheme.Items.AddRange(new string[] { "Default", "Light", "Dark", "Blue" });
+                cmbTheme.SelectedIndex = 0;
+                
+                // Add theme preview panel
+                Panel themePreviewPanel = new Panel
+                {
+                    Location = new Point(20, 70),
+                    Size = new Size(330, 100),
+                    BorderStyle = BorderStyle.FixedSingle
+                };
+                
+                // Add theme preview elements
+                Button previewButton = new Button
+                {
+                    Text = "Sample Button",
+                    Location = new Point(20, 20),
+                    Size = new Size(120, 30)
+                };
+                
+                Label previewLabel = new Label
+                {
+                    Text = "Sample Text",
+                    Location = new Point(20, 60),
+                    AutoSize = true
+                };
+                
+                themePreviewPanel.Controls.AddRange(new Control[] { previewButton, previewLabel });
+                
+                // Add theme change handler
+                cmbTheme.SelectedIndexChanged += (s, args) =>
+                {
+                    UpdateThemePreview(cmbTheme.SelectedItem.ToString(), themePreviewPanel, previewButton, previewLabel);
+                };
+                
+                // Initialize preview with default theme
+                UpdateThemePreview("Default", themePreviewPanel, previewButton, previewLabel);
+                
+                // Add current user info at the bottom
+                string currentUser = SqlConnectionManager.CurrentUser ?? "Not logged in";
+                Label lblUserInfo = new Label
+                {
+                    Text = $"Current User: {currentUser}",
+                    Location = new Point(20, 280),
+                    Width = 400,
+                    ForeColor = Color.Gray,
+                    Font = new Font("Century Gothic", 9)
+                };
+                
+                // Add only a Close button
+                Button btnClose = new Button
+                {
+                    Text = "Close",
+                    Location = new Point(170, 320),
+                    Width = 100,
+                    Height = 30,
+                    DialogResult = DialogResult.Cancel
+                };
+                
+                // Add a tip label about using Enter to save
+                Label lblTip = new Label
+                {
+                    Text = "Press Enter to save changes",
+                    Location = new Point(20, 320),
+                    Width = 150,
+                    ForeColor = Color.Gray,
+                    Font = new Font("Century Gothic", 8, FontStyle.Italic)
+                };
+                
+                // Add controls to tabs
+                generalTab.Controls.AddRange(new Control[] { chkAutoRefresh, lblRefreshInterval, numRefreshInterval });
+                databaseTab.Controls.AddRange(new Control[] { lblConnection, lblConnectionValue, btnChangeConnection });
+                appearanceTab.Controls.AddRange(new Control[] { lblTheme, cmbTheme, themePreviewPanel });
+                
+                // Add tabs to TabControl
+                tabControl.Controls.AddRange(new Control[] { generalTab, databaseTab, appearanceTab });
+                
+                // Add event handler to prevent selecting the Appearance tab
+                tabControl.Selecting += (s, args) =>
+                {
+                    if (args.TabPageIndex == 2) // Appearance tab index
+                    {
+                        args.Cancel = true;
+                        MessageBox.Show("The Appearance settings are coming in a future update!", 
+                            "Feature Under Development", 
+                            MessageBoxButtons.OK, 
+                            MessageBoxIcon.Information);
+                    }
+                };
+                
+                // Add controls to form
+                settingsForm.Controls.AddRange(new Control[] { tabControl, lblUserInfo, btnClose, lblTip });
+                settingsForm.Controls.Add(titlePanel);
+                
+                // Handle the KeyDown event to save settings when Enter is pressed
+                settingsForm.KeyPreview = true;
+                settingsForm.KeyDown += (s, args) =>
+                {
+                    if (args.KeyCode == Keys.Enter)
+                    {
+                        // Save settings
+                        string selectedTheme = cmbTheme.SelectedItem.ToString();
+                        ApplyTheme(selectedTheme);
+                        
+                        // Save auto-refresh settings
+                        _autoRefreshEnabled = chkAutoRefresh.Checked;
+                        _autoRefreshInterval = (int)numRefreshInterval.Value;
+                        
+                        // Update the auto-refresh timer
+                        UpdateAutoRefreshTimer();
+                        
+                        MessageBox.Show("Settings saved successfully!", "Settings", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        args.Handled = true;
+                    }
+                };
+                
+                // Also handle double-click on theme combobox to apply theme immediately
+                cmbTheme.DoubleClick += (s, args) =>
+                {
+                    if (cmbTheme.SelectedItem != null)
+                    {
+                        string selectedTheme = cmbTheme.SelectedItem.ToString();
+                        ApplyTheme(selectedTheme);
+                        MessageBox.Show($"{selectedTheme} theme applied!", "Theme Changed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                };
+                
+                // Show the settings dialog
+                DialogResult result = settingsForm.ShowDialog();
+                
+                if (result == DialogResult.OK)
+                {
+                    // Save settings
+                    string selectedTheme = cmbTheme.SelectedItem.ToString();
+                    ApplyTheme(selectedTheme);
+                    
+                    // Save auto-refresh settings
+                    _autoRefreshEnabled = chkAutoRefresh.Checked;
+                    _autoRefreshInterval = (int)numRefreshInterval.Value;
+                    
+                    // Update the auto-refresh timer
+                    UpdateAutoRefreshTimer();
+                    
+                    MessageBox.Show("Settings saved successfully!", "Settings", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+
+        private void UpdateThemePreview(string themeName, Panel previewPanel, Button previewButton, Label previewLabel)
+        {
+            switch (themeName)
+            {
+                case "Light":
+                    previewPanel.BackColor = Color.White;
+                    previewButton.BackColor = Color.WhiteSmoke;
+                    previewButton.ForeColor = Color.Black;
+                    previewLabel.ForeColor = Color.Black;
+                    break;
+                    
+                case "Dark":
+                    previewPanel.BackColor = Color.FromArgb(50, 50, 50);
+                    previewButton.BackColor = Color.FromArgb(80, 80, 80);
+                    previewButton.ForeColor = Color.White;
+                    previewLabel.ForeColor = Color.White;
+                    break;
+                    
+                case "Blue":
+                    previewPanel.BackColor = Color.FromArgb(230, 240, 250);
+                    previewButton.BackColor = Color.FromArgb(0, 122, 204);
+                    previewButton.ForeColor = Color.White;
+                    previewLabel.ForeColor = Color.FromArgb(0, 80, 150);
+                    break;
+                    
+                default: // Default theme
+                    previewPanel.BackColor = SystemColors.Control;
+                    previewButton.BackColor = SystemColors.ButtonFace;
+                    previewButton.ForeColor = SystemColors.ControlText;
+                    previewLabel.ForeColor = SystemColors.ControlText;
+                    break;
+            }
+        }
+        
+        private void ApplyTheme(string themeName)
+        {
+            // Create color schemes based on the selected theme
+            Color backgroundColor;
+            Color panelColor;
+            Color buttonColor;
+            Color textColor;
+            Color accentColor;
+            Color headerColor;
+            Color sidebarColor;
+            Color cardColor;
+            Color borderColor;
+            Color orderPanelColor;
+            
+            switch (themeName)
+            {
+                case "Light":
+                    backgroundColor = Color.White;
+                    panelColor = Color.WhiteSmoke;
+                    buttonColor = Color.FromArgb(240, 240, 240);
+                    textColor = Color.Black;
+                    accentColor = Color.DarkGoldenrod;
+                    headerColor = Color.White;
+                    sidebarColor = Color.White;
+                    cardColor = Color.White;
+                    borderColor = Color.FromArgb(230, 230, 230);
+                    orderPanelColor = Color.White;
+                    break;
+                    
+                case "Dark":
+                    backgroundColor = Color.FromArgb(40, 40, 40);
+                    panelColor = Color.FromArgb(60, 60, 60);
+                    buttonColor = Color.FromArgb(70, 70, 70);
+                    textColor = Color.White;
+                    accentColor = Color.Gold;
+                    headerColor = Color.FromArgb(50, 50, 50);
+                    sidebarColor = Color.FromArgb(30, 30, 30);
+                    cardColor = Color.FromArgb(55, 55, 55);
+                    borderColor = Color.FromArgb(80, 80, 80);
+                    orderPanelColor = Color.FromArgb(50, 50, 50);
+                    break;
+                    
+                case "Blue":
+                    backgroundColor = Color.FromArgb(230, 240, 250);
+                    panelColor = Color.White;
+                    buttonColor = Color.FromArgb(0, 122, 204);
+                    textColor = Color.FromArgb(0, 80, 150);
+                    accentColor = Color.FromArgb(0, 122, 204);
+                    headerColor = Color.FromArgb(0, 122, 204);
+                    sidebarColor = Color.FromArgb(240, 245, 255);
+                    cardColor = Color.White;
+                    borderColor = Color.FromArgb(200, 220, 240);
+                    orderPanelColor = Color.White;
+                    break;
+                    
+                default: // Default theme
+                    backgroundColor = SystemColors.Control;
+                    panelColor = Color.White;
+                    buttonColor = SystemColors.ButtonFace;
+                    textColor = SystemColors.ControlText;
+                    accentColor = Color.DarkGoldenrod;
+                    headerColor = Color.White;
+                    sidebarColor = Color.White;
+                    cardColor = Color.White;
+                    borderColor = Color.LightGray;
+                    orderPanelColor = Color.White;
+                    return; // If default theme, don't change anything
+            }
+            
+            // Apply theme to main form
+            this.BackColor = backgroundColor;
+            
+            // Log the background color being applied
+            Console.WriteLine($"Applying theme: {themeName}, Background color: {backgroundColor}");
+            
+            // Apply theme to all panels in the main form
+            ApplyColorToControlsOfType<Panel>(this, panelColor, textColor);
+            ApplyColorToControlsOfType<Bunifu.UI.WinForms.BunifuPanel>(this, panelColor, textColor);
+            
+            // Special handling for main display panel
+            panDisplayItem.BackColor = backgroundColor;
+            
+            // Direct access to specific panels that might need special handling
+            try
+            {
+                // Try to find the right-side order panel by name or location
+                foreach (Control ctrl in this.Controls)
+                {
+                    if (ctrl is Panel || ctrl is Bunifu.UI.WinForms.BunifuPanel)
+                    {
+                        // If this is the right-side order panel
+                        if (ctrl.Location.X > this.Width - 500 && ctrl.Height > 400)
+                        {
+                            Console.WriteLine($"Found right panel: {ctrl.Name}, setting to {orderPanelColor}");
+                            ctrl.BackColor = orderPanelColor;
+                            
+                            // Apply to all child controls
+                            foreach (Control childCtrl in ctrl.Controls)
+                            {
+                                if (childCtrl is Label || childCtrl is Bunifu.UI.WinForms.BunifuLabel)
+                                {
+                                    childCtrl.ForeColor = textColor;
+                                }
+                                else if (childCtrl is Panel || childCtrl is Bunifu.UI.WinForms.BunifuPanel)
+                                {
+                                    childCtrl.BackColor = orderPanelColor;
+                                }
+                                else if (childCtrl is TextBox)
+                                {
+                                    if (themeName == "Dark")
+                                    {
+                                        childCtrl.BackColor = Color.FromArgb(70, 70, 70);
+                                        childCtrl.ForeColor = Color.White;
+                                    }
+                                }
+                                else if (childCtrl is Button)
+                                {
+                                    childCtrl.BackColor = buttonColor;
+                                    childCtrl.ForeColor = themeName == "Dark" ? Color.White : textColor;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error applying theme to order panel: {ex.Message}");
+            }
+            
+            // Apply theme to all product item panels by direct access
+            try
+            {
+                foreach (Control ctrl in panDisplayItem.Controls)
+                {
+                    if (ctrl is Bunifu.UI.WinForms.BunifuPanel itemPanel)
+                    {
+                        Console.WriteLine($"Applying to item panel: {cardColor}");
+                        itemPanel.BackgroundColor = cardColor;
+                        itemPanel.BorderColor = borderColor;
+                        
+                        // Apply theme to all controls within each product panel
+                        foreach (Control innerCtrl in itemPanel.Controls)
+                        {
+                            if (innerCtrl is Bunifu.UI.WinForms.BunifuLabel label)
+                            {
+                                if (label.Text.StartsWith("$"))
+                                {
+                                    // Price labels keep their accent color
+                                    label.ForeColor = accentColor;
+                                }
+                                else
+                                {
+                                    label.ForeColor = textColor;
+                                }
+                            }
+                            else if (innerCtrl is Label labelStd)
+                            {
+                                if (labelStd.Text.StartsWith("$"))
+                                {
+                                    labelStd.ForeColor = accentColor;
+                                }
+                                else
+                                {
+                                    labelStd.ForeColor = textColor;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error applying theme to product panels: {ex.Message}");
+            }
+            
+            // Apply to buttons
+            ApplyColorToControlsOfType<Button>(this, buttonColor, themeName == "Blue" || themeName == "Dark" ? Color.White : textColor);
+            
+            // Apply to Bunifu buttons if any
+            foreach (Control ctrl in this.Controls)
+            {
+                if (ctrl.GetType().Name.Contains("BunifuButton"))
+                {
+                    ctrl.BackColor = buttonColor;
+                    ctrl.ForeColor = themeName == "Blue" || themeName == "Dark" ? Color.White : textColor;
+                }
+            }
+            
+            // Apply to navigation buttons specifically
+            btnDashboard.BackColor = buttonColor;
+            btnAllForm.BackColor = buttonColor;
+            btnStatistic.BackColor = buttonColor;
+            btnInvoice.BackColor = buttonColor;
+            btnSetting.BackColor = buttonColor;
+            btnLogout.BackColor = buttonColor;
+            btnExitProgram.BackColor = buttonColor;
+            
+            // Apply to order panel - ensure all controls in the order panel get themed
+            if (bunifuPanel3 != null)
+            {
+                Console.WriteLine($"Applying to bunifuPanel3: {orderPanelColor}");
+                bunifuPanel3.BackgroundColor = orderPanelColor;
+                
+                // Apply theme to all controls in the order panel
+                ApplyColorToControlsOfType<Bunifu.UI.WinForms.BunifuLabel>(bunifuPanel3, 
+                    Color.Transparent, themeName == "Dark" ? Color.White : textColor);
+                
+                // Special handling for price labels in the order panel
+                if (bunifuLabel35 != null) bunifuLabel35.ForeColor = accentColor; // Subtotal
+                if (bunifuLabel36 != null) bunifuLabel36.ForeColor = accentColor; // Discount
+                if (bunifuLabel38 != null) bunifuLabel38.ForeColor = accentColor; // Total
+            }
+            
+            // Apply to the order details container
+            if (panOrderDetailOuter != null)
+            {
+                Console.WriteLine($"Applying to panOrderDetailOuter: {(themeName == "Dark" ? Color.FromArgb(45, 45, 45) : backgroundColor)}");
+                panOrderDetailOuter.BackColor = themeName == "Dark" ? Color.FromArgb(45, 45, 45) : backgroundColor;
+                
+                // Apply theme to all order item panels
+                foreach (Control ctrl in panOrderDetailOuter.Controls)
+                {
+                    if (ctrl is Bunifu.UI.WinForms.BunifuPanel orderItemPanel)
+                    {
+                        orderItemPanel.BackgroundColor = themeName == "Dark" ? Color.FromArgb(55, 55, 55) : cardColor;
+                        orderItemPanel.BorderColor = borderColor;
+                        
+                        // Theme all controls within the order item panel
+                        foreach (Control innerCtrl in orderItemPanel.Controls)
+                        {
+                            if (innerCtrl is Bunifu.UI.WinForms.BunifuLabel label)
+                            {
+                                if (label.Text.StartsWith("$"))
+                                {
+                                    label.ForeColor = accentColor;
+                                }
+                                else
+                                {
+                                    label.ForeColor = textColor;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Direct approach - find all panels that match certain size/location criteria that could be item panels
+            foreach (Control ctrl in this.Controls)
+            {
+                if (ctrl is Bunifu.UI.WinForms.BunifuPanel panel)
+                {
+                    // Product cards are typically around 280x280
+                    if (panel.Width >= 250 && panel.Width <= 300 && panel.Height >= 250 && panel.Height <= 300)
+                    {
+                        Console.WriteLine($"Found product card panel: {panel.Name}");
+                        panel.BackgroundColor = cardColor;
+                        panel.BorderColor = borderColor;
+                        
+                        // Theme child elements
+                        foreach (Control innerCtrl in panel.Controls)
+                        {
+                            if (innerCtrl is Label || innerCtrl is Bunifu.UI.WinForms.BunifuLabel)
+                            {
+                                if (innerCtrl.Text.StartsWith("$"))
+                                {
+                                    innerCtrl.ForeColor = accentColor;
+                                }
+                                else
+                                {
+                                    innerCtrl.ForeColor = textColor;
+                                }
+                            }
+                        }
+                    }
+                    // Order panel is typically wider
+                    else if (panel.Width > 400)
+                    {
+                        Console.WriteLine($"Found order panel: {panel.Name}");
+                        panel.BackgroundColor = orderPanelColor;
+                    }
+                }
+            }
+            
+            // Apply to category buttons with special handling to preserve the active category
+            btnServices.BackColor = panelColor;
+            btnFoods.BackColor = panelColor;
+            btnDrinks.BackColor = panelColor;
+            btnServices.ForeColor = textColor;
+            btnFoods.ForeColor = textColor;
+            btnDrinks.ForeColor = textColor;
+            
+            // Reset and apply the active category style with the new theme colors
+            SetCategoryButtonStyles(_currentCategory);
+            
+            // Apply to labels throughout the application
+            ApplyColorToControlsOfType<Label>(this, Color.Transparent, textColor);
+            ApplyColorToControlsOfType<Bunifu.UI.WinForms.BunifuLabel>(this, Color.Transparent, textColor);
+            
+            // Apply to sidebar
+            foreach (Control ctrl in this.Controls)
+            {
+                if (ctrl.Name == "SidePanel" || ctrl.Name.Contains("sidebar") || ctrl.Name.Contains("side_panel"))
+                {
+                    ctrl.BackColor = sidebarColor;
+                    // Apply to all controls in sidebar
+                    foreach (Control sidebarCtrl in ctrl.Controls)
+                    {
+                        if (sidebarCtrl is Button)
+                        {
+                            sidebarCtrl.BackColor = sidebarColor;
+                            sidebarCtrl.ForeColor = textColor;
+                        }
+                    }
+                }
+            }
+            
+            // Apply to TextBoxes
+            ApplyColorToControlsOfType<TextBox>(this, 
+                themeName == "Dark" ? Color.FromArgb(70, 70, 70) : Color.White, 
+                textColor);
+            
+            // Apply to Bunifu TextBoxes if any
+            foreach (Control ctrl in this.Controls)
+            {
+                if (ctrl.GetType().Name.Contains("BunifuTextBox"))
+                {
+                    if (themeName == "Dark")
+                    {
+                        ctrl.BackColor = Color.FromArgb(70, 70, 70);
+                        ctrl.ForeColor = Color.White;
+                    }
+                    else
+                    {
+                        ctrl.BackColor = Color.White;
+                        ctrl.ForeColor = textColor;
+                    }
+                }
+            }
+            
+            // Force a complete redraw
+            foreach (Control control in this.Controls)
+            {
+                control.Invalidate();
+                control.Update();
+            }
+            this.Invalidate(true);
+            this.Update();
+            Application.DoEvents();
+        }
+        
+        // Helper method to apply colors to all controls of a specific type
+        private void ApplyColorToControlsOfType<T>(Control container, Color backColor, Color foreColor) where T : Control
+        {
+            foreach (Control ctrl in container.Controls)
+            {
+                if (ctrl is T)
+                {
+                    ctrl.BackColor = backColor;
+                    ctrl.ForeColor = foreColor;
+                }
+                
+                // Recursively apply to child controls
+                if (ctrl.Controls.Count > 0)
+                {
+                    ApplyColorToControlsOfType<T>(ctrl, backColor, foreColor);
+                }
+            }
+        }
+
+        // Auto-refresh variables
+        private bool _autoRefreshEnabled = false;
+        private int _autoRefreshInterval = 5;
+        private System.Threading.Timer _autoRefreshTimer;
+
+        private void UpdateAutoRefreshTimer()
+        {
+            // Dispose of existing timer if any
+            if (_autoRefreshTimer != null)
+            {
+                _autoRefreshTimer.Dispose();
+                _autoRefreshTimer = null;
+            }
+
+            // Create a new timer if auto-refresh is enabled
+            if (_autoRefreshEnabled)
+            {
+                // Convert minutes to milliseconds
+                int intervalMs = _autoRefreshInterval * 60 * 1000;
+                
+                // Create a new timer that triggers the refresh
+                _autoRefreshTimer = new System.Threading.Timer(AutoRefreshCallback, null, intervalMs, intervalMs);
+                
+                Console.WriteLine($"Auto-refresh timer started with interval: {_autoRefreshInterval} minutes");
+            }
+            else
+            {
+                Console.WriteLine("Auto-refresh disabled");
+            }
+        }
+
+        private void AutoRefreshCallback(object state)
+        {
+            // We need to invoke the UI thread to refresh the product list
+            try
+            {
+                this.Invoke(new MethodInvoker(() =>
+                {
+                    Console.WriteLine("Auto-refresh triggered");
+                    try
+                    {
+                        // Call the refresh method
+                        BtnRefresh_Click(this, EventArgs.Empty);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error in auto-refresh: {ex.Message}");
+                    }
+                }));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error invoking auto-refresh: {ex.Message}");
+            }
+        }
+
+        private void Dashboard_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // Clean up the auto-refresh timer when the form is closing
+            if (_autoRefreshTimer != null)
+            {
+                _autoRefreshTimer.Dispose();
+                _autoRefreshTimer = null;
+            }
         }
     }
 
