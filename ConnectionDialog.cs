@@ -16,18 +16,17 @@ namespace Spa_Management_System
         public string ConnectionString { get; private set; }
         private List<string> availableServers = new List<string>();
         private bool isNewDatabase = false;
-        
-        // Declare variables as ComboBox directly
-        private System.Windows.Forms.Label lblServer;
-        private System.Windows.Forms.ComboBox txtServer;
-        private System.Windows.Forms.CheckBox chkIntegratedSecurity;
-        private System.Windows.Forms.Label lblDatabase;
-        private System.Windows.Forms.ComboBox txtDatabase;
-        private System.Windows.Forms.Label lblUsername;
-        private System.Windows.Forms.TextBox txtUsername;
-        private System.Windows.Forms.Label lblPassword;
-        private System.Windows.Forms.TextBox txtPassword;
-        private System.Windows.Forms.Button btnConnect;
+        private Bunifu.UI.WinForms.BunifuButton.BunifuButton btnConnect;
+        private Bunifu.UI.WinForms.BunifuButton.BunifuButton btnCreateDatabase;
+        private Bunifu.UI.WinForms.BunifuLabel bunifuLabel1;
+        private Bunifu.UI.WinForms.BunifuTextBox txtPassword;
+        private Bunifu.UI.WinForms.BunifuTextBox txtUsername;
+        private Bunifu.UI.WinForms.BunifuDropdown txtServer;
+        private Bunifu.UI.WinForms.BunifuDropdown txtDatabase;
+        private Bunifu.UI.WinForms.BunifuCheckBox chkIntegratedSecurity;
+        private Bunifu.UI.WinForms.BunifuLabel lblUseWinAuth;
+        private Bunifu.UI.WinForms.BunifuFormDrag bunifuFormDrag1;
+        private Bunifu.UI.WinForms.BunifuFormControlBox bunifuFormControlBox1;
 
         public ConnectionDialog()
         {
@@ -42,6 +41,9 @@ namespace Spa_Management_System
                 }
             };
             this.KeyPreview = true;
+            
+            // Wire up the click event for the connect button
+            btnConnect.Click += btnConnect_Click;
         }
 
         private async void ConnectionDialog_Load(object sender, EventArgs e)
@@ -49,13 +51,16 @@ namespace Spa_Management_System
             // Center the form on screen
             this.StartPosition = FormStartPosition.CenterScreen;
             
+            // Set initial state of username and password fields based on checkbox
+            txtUsername.Enabled = !chkIntegratedSecurity.Checked;
+            txtPassword.Enabled = !chkIntegratedSecurity.Checked;
+            
             // Add instructions label
             Label lblInstructions = new Label();
             lblInstructions.AutoSize = true;
             lblInstructions.Location = new System.Drawing.Point(20, 95);
             lblInstructions.Name = "lblInstructions";
             lblInstructions.Size = new System.Drawing.Size(350, 17);
-            lblInstructions.Text = "Configure your SQL Server connection.";
             lblInstructions.ForeColor = System.Drawing.Color.Navy;
             this.Controls.Add(lblInstructions);
             
@@ -67,13 +72,8 @@ namespace Spa_Management_System
             txtServer.Enabled = true; // Always enable the server field
             btnConnect.Enabled = true; // Always enable the connect button
 
-            // Add create database button
-            Button btnCreateDatabase = new Button();
-            btnCreateDatabase.Text = "Create Database";
-            btnCreateDatabase.Location = new System.Drawing.Point(20, 245);
-            btnCreateDatabase.Size = new System.Drawing.Size(120, 30);
+            // Wire up the click event for the create database button
             btnCreateDatabase.Click += btnCreateDatabase_Click;
-            this.Controls.Add(btnCreateDatabase);
 
             // Add server selection handler
             txtServer.SelectedIndexChanged += (s, args) => 
@@ -442,41 +442,150 @@ namespace Spa_Management_System
             using (Form createDbDialog = new Form())
             {
                 createDbDialog.Text = "Create New Database";
-                createDbDialog.Size = new System.Drawing.Size(400, 330);
+                createDbDialog.Size = new System.Drawing.Size(400, 350);
                 createDbDialog.StartPosition = FormStartPosition.CenterParent;
-                createDbDialog.FormBorderStyle = FormBorderStyle.FixedDialog;
+                createDbDialog.FormBorderStyle = FormBorderStyle.None;
                 createDbDialog.MaximizeBox = false;
                 createDbDialog.MinimizeBox = false;
 
                 // Create controls
-                Label lblDbName = new Label { Text = "Database Name:", Location = new System.Drawing.Point(20, 20), Width = 120 };
-                TextBox txtDbName = new TextBox { Location = new System.Drawing.Point(150, 20), Width = 200, Text = "SpaManagement" };
-
-                // For SQL Authentication
-                CheckBox chkSqlAuth = new CheckBox { Text = "Use SQL Server Authentication", Location = new System.Drawing.Point(20, 50), Width = 220 };
-                Label lblUser = new Label { Text = "Username:", Location = new System.Drawing.Point(40, 80), Width = 100, Enabled = false };
-                TextBox txtUser = new TextBox { Location = new System.Drawing.Point(150, 80), Width = 200, Enabled = false };
-                Label lblPass = new Label { Text = "Password:", Location = new System.Drawing.Point(40, 110), Width = 100, Enabled = false };
-                TextBox txtPass = new TextBox { Location = new System.Drawing.Point(150, 110), Width = 200, PasswordChar = '•', Enabled = false };
-
-                // Schema creation option - always checked but shows status
-                CheckBox chkCreateSchema = new CheckBox { 
-                    Text = "Create tables and schema after database creation", 
-                    Location = new System.Drawing.Point(20, 160),
-                    Width = 350, 
-                    Checked = true,
-                    Enabled = true
-                };
+                Bunifu.UI.WinForms.BunifuFormControlBox bunifuControlBox = new Bunifu.UI.WinForms.BunifuFormControlBox();
+                bunifuControlBox.Location = new Point(340, 0);
+                bunifuControlBox.Size = new Size(60, 30);
+                bunifuControlBox.MaximizeBox = false;
+                bunifuControlBox.BackColor = Color.Transparent;
+                bunifuControlBox.ShowDesignBorders = false;
+                createDbDialog.Controls.Add(bunifuControlBox);
                 
+                // Add BunifuFormDrag to make the form draggable
+                Bunifu.UI.WinForms.BunifuFormDrag formDrag = new Bunifu.UI.WinForms.BunifuFormDrag();
+                formDrag.AllowOpacityChangesWhileDragging = false;
+                formDrag.ContainerControl = createDbDialog;
+                formDrag.DockIndicatorsOpacity = 0.5D;
+                formDrag.DockingIndicatorsColor = Color.FromArgb(202, 215, 233);
+                formDrag.DockingOptions.DockAll = true;
+                formDrag.DragOpacity = 0.9D;
+                formDrag.Enabled = true;
+                formDrag.ParentForm = createDbDialog;
+                formDrag.ShowCursorChanges = true;
+                formDrag.ShowDockingIndicators = true;
+                formDrag.TitleBarOptions.DoubleClickToExpandWindow = true;
+                formDrag.TitleBarOptions.Enabled = true;
+                formDrag.TitleBarOptions.UseBackColorOnDockingIndicators = false;
+
+                // Create title label
+                Bunifu.UI.WinForms.BunifuLabel lblTitle = new Bunifu.UI.WinForms.BunifuLabel();
+                lblTitle.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+                lblTitle.Location = new Point(105, 37);
+                lblTitle.Size = new Size(190, 21);
+                lblTitle.Text = "Create New Database";
+                lblTitle.TextFormat = Bunifu.UI.WinForms.BunifuLabel.TextFormattingOptions.Default;
+                createDbDialog.Controls.Add(lblTitle);
+
+                // Database name field
+                Bunifu.UI.WinForms.BunifuLabel lblDbName = new Bunifu.UI.WinForms.BunifuLabel();
+                lblDbName.Text = "Database Name:";
+                lblDbName.Location = new Point(20, 80);
+                lblDbName.Size = new Size(120, 20);
+                lblDbName.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+                createDbDialog.Controls.Add(lblDbName);
+
+                Bunifu.UI.WinForms.BunifuTextBox txtDbName = new Bunifu.UI.WinForms.BunifuTextBox();
+                txtDbName.Location = new Point(150, 75);
+                txtDbName.Size = new Size(200, 38);
+                txtDbName.Text = "SpaManagement";
+                txtDbName.BorderRadius = 15;
+                txtDbName.DefaultFont = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+                txtDbName.BorderColorActive = Color.DarkGoldenrod;
+                txtDbName.BorderColorHover = Color.DarkGoldenrod;
+                txtDbName.PlaceholderText = "Enter database name";
+                createDbDialog.Controls.Add(txtDbName);
+
+                // For SQL Authentication checkbox
+                Bunifu.UI.WinForms.BunifuCheckBox chkSqlAuth = new Bunifu.UI.WinForms.BunifuCheckBox();
+                chkSqlAuth.Location = new Point(20, 125);
+                chkSqlAuth.Size = new Size(21, 21);
+                chkSqlAuth.Checked = false;
+                chkSqlAuth.OnCheck.BorderColor = Color.DarkGoldenrod;
+                chkSqlAuth.OnCheck.CheckBoxColor = Color.DarkGoldenrod;
+                chkSqlAuth.OnCheck.CheckmarkColor = Color.White;
+                chkSqlAuth.BorderRadius = 12;
+                createDbDialog.Controls.Add(chkSqlAuth);
+
+                Bunifu.UI.WinForms.BunifuLabel lblSqlAuth = new Bunifu.UI.WinForms.BunifuLabel();
+                lblSqlAuth.Text = "Use SQL Server Authentication";
+                lblSqlAuth.Location = new Point(45, 128);
+                lblSqlAuth.Size = new Size(200, 20);
+                lblSqlAuth.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+                createDbDialog.Controls.Add(lblSqlAuth);
+
+                // Username and password fields
+                Bunifu.UI.WinForms.BunifuLabel lblUser = new Bunifu.UI.WinForms.BunifuLabel();
+                lblUser.Text = "Username:";
+                lblUser.Location = new Point(45, 165);
+                lblUser.Size = new Size(80, 20);
+                lblUser.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+                lblUser.Enabled = false;
+                createDbDialog.Controls.Add(lblUser);
+
+                Bunifu.UI.WinForms.BunifuTextBox txtUser = new Bunifu.UI.WinForms.BunifuTextBox();
+                txtUser.Location = new Point(150, 160);
+                txtUser.Size = new Size(200, 38);
+                txtUser.BorderRadius = 15;
+                txtUser.DefaultFont = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+                txtUser.BorderColorActive = Color.DarkGoldenrod;
+                txtUser.BorderColorHover = Color.DarkGoldenrod;
+                txtUser.PlaceholderText = "Enter username";
+                txtUser.Enabled = false;
+                createDbDialog.Controls.Add(txtUser);
+
+                Bunifu.UI.WinForms.BunifuLabel lblPass = new Bunifu.UI.WinForms.BunifuLabel();
+                lblPass.Text = "Password:";
+                lblPass.Location = new Point(45, 205);
+                lblPass.Size = new Size(80, 20);
+                lblPass.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+                lblPass.Enabled = false;
+                createDbDialog.Controls.Add(lblPass);
+
+                Bunifu.UI.WinForms.BunifuTextBox txtPass = new Bunifu.UI.WinForms.BunifuTextBox();
+                txtPass.Location = new Point(150, 200);
+                txtPass.Size = new Size(200, 38);
+                txtPass.BorderRadius = 15;
+                txtPass.DefaultFont = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+                txtPass.BorderColorActive = Color.DarkGoldenrod;
+                txtPass.BorderColorHover = Color.DarkGoldenrod;
+                txtPass.PlaceholderText = "Enter password";
+                txtPass.PasswordChar = '•';
+                txtPass.UseSystemPasswordChar = true;
+                txtPass.Enabled = false;
+                createDbDialog.Controls.Add(txtPass);
+
+                // Schema creation option
+                Bunifu.UI.WinForms.BunifuCheckBox chkCreateSchema = new Bunifu.UI.WinForms.BunifuCheckBox();
+                chkCreateSchema.Location = new Point(20, 250);
+                chkCreateSchema.Size = new Size(21, 21);
+                chkCreateSchema.Checked = true;
+                chkCreateSchema.OnCheck.BorderColor = Color.DarkGoldenrod;
+                chkCreateSchema.OnCheck.CheckBoxColor = Color.DarkGoldenrod;
+                chkCreateSchema.OnCheck.CheckmarkColor = Color.White;
+                chkCreateSchema.BorderRadius = 12;
+                createDbDialog.Controls.Add(chkCreateSchema);
+
+                Bunifu.UI.WinForms.BunifuLabel lblCreateSchema = new Bunifu.UI.WinForms.BunifuLabel();
+                lblCreateSchema.Text = "Create tables and schema after database creation";
+                lblCreateSchema.Location = new Point(45, 253);
+                lblCreateSchema.Size = new Size(300, 20);
+                lblCreateSchema.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+                createDbDialog.Controls.Add(lblCreateSchema);
+
                 // Update script status message
-                Label lblScriptStatus = new Label { 
-                    Location = new System.Drawing.Point(20, 190),
-                    Width = 350,
-                    AutoSize = false,
-                    Height = 40
-                };
-                
-                // Check specifically for the path mentioned in the image
+                Bunifu.UI.WinForms.BunifuLabel lblScriptStatus = new Bunifu.UI.WinForms.BunifuLabel();
+                lblScriptStatus.Location = new Point(20, 280);
+                lblScriptStatus.Size = new Size(350, 20);
+                lblScriptStatus.AutoEllipsis = true;
+                createDbDialog.Controls.Add(lblScriptStatus);
+
+                // Check for script file
                 string specificPath = "SpaManagement.sql";
                 
                 // Check multiple possible locations for the SQL file
@@ -493,24 +602,33 @@ namespace Spa_Management_System
                     if (File.Exists(path))
                     {
                         scriptPath = path;
-                    scriptExists = true;
+                        scriptExists = true;
                         lblScriptStatus.Text = "SpaManagement.sql found";
-                    lblScriptStatus.ForeColor = System.Drawing.Color.Green;
+                        lblScriptStatus.ForeColor = Color.Green;
                         break;
-                }
+                    }
                 }
                 
                 if (!scriptExists)
                 {
                     lblScriptStatus.Text = "SpaManagement.sql not found in any of the expected locations";
-                    lblScriptStatus.ForeColor = System.Drawing.Color.Red;
+                    lblScriptStatus.ForeColor = Color.Red;
                     
                     // Add a browse button when file is not found
-                    Button btnBrowse = new Button {
-                        Text = "Browse...",
-                        Location = new System.Drawing.Point(275, 190),
-                        Size = new System.Drawing.Size(75, 23)
-                    };
+                    Bunifu.UI.WinForms.BunifuButton.BunifuButton btnBrowse = new Bunifu.UI.WinForms.BunifuButton.BunifuButton();
+                    btnBrowse.Text = "Browse...";
+                    btnBrowse.Location = new Point(275, 275);
+                    btnBrowse.Size = new Size(80, 30);
+                    btnBrowse.BackColor = Color.Transparent;
+                    btnBrowse.ForeColor = Color.White;
+                    btnBrowse.OnIdleState.BorderColor = Color.DarkGoldenrod;
+                    btnBrowse.OnIdleState.FillColor = Color.DarkGoldenrod;
+                    btnBrowse.OnIdleState.BorderRadius = 15;
+                    btnBrowse.onHoverState.BorderColor = Color.DarkGoldenrod;
+                    btnBrowse.onHoverState.FillColor = Color.DarkGoldenrod;
+                    btnBrowse.OnPressedState.BorderColor = Color.DarkGoldenrod;
+                    btnBrowse.OnPressedState.FillColor = Color.DarkGoldenrod;
+                    btnBrowse.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
                     
                     btnBrowse.Click += (s, args) => {
                         using (OpenFileDialog openFileDialog = new OpenFileDialog())
@@ -530,7 +648,7 @@ namespace Spa_Management_System
                                     scriptPath = destFile;
                                     scriptExists = true;
                                     lblScriptStatus.Text = "SpaManagement.sql found";
-                                    lblScriptStatus.ForeColor = System.Drawing.Color.Green;
+                                    lblScriptStatus.ForeColor = Color.Green;
                                     btnBrowse.Visible = false;
                                 }
                                 catch (Exception ex) {
@@ -554,16 +672,48 @@ namespace Spa_Management_System
                 };
 
                 // Buttons
-                Button btnCreate = new Button { Text = "Create", Location = new System.Drawing.Point(150, 230), Width = 100, DialogResult = DialogResult.OK };
-                Button btnCancel = new Button { Text = "Cancel", Location = new System.Drawing.Point(260, 230), Width = 100, DialogResult = DialogResult.Cancel };
+                Bunifu.UI.WinForms.BunifuButton.BunifuButton btnCreate = new Bunifu.UI.WinForms.BunifuButton.BunifuButton();
+                btnCreate.Text = "Create";
+                btnCreate.Location = new Point(130, 310);
+                btnCreate.Size = new Size(100, 30);
+                btnCreate.BackColor = Color.Transparent;
+                btnCreate.ForeColor = Color.White;
+                btnCreate.OnIdleState.BorderColor = Color.DarkGoldenrod;
+                btnCreate.OnIdleState.FillColor = Color.DarkGoldenrod;
+                btnCreate.OnIdleState.BorderRadius = 15;
+                btnCreate.onHoverState.BorderColor = Color.DarkGoldenrod;
+                btnCreate.onHoverState.FillColor = Color.DarkGoldenrod;
+                btnCreate.OnPressedState.BorderColor = Color.DarkGoldenrod;
+                btnCreate.OnPressedState.FillColor = Color.DarkGoldenrod;
+                btnCreate.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+                createDbDialog.Controls.Add(btnCreate);
 
-                // Add controls to form
-                createDbDialog.Controls.AddRange(new Control[] { 
-                    lblDbName, txtDbName, chkSqlAuth, 
-                    lblUser, txtUser, lblPass, txtPass,
-                    chkCreateSchema, lblScriptStatus,
-                    btnCreate, btnCancel 
-                });
+                Bunifu.UI.WinForms.BunifuButton.BunifuButton btnCancel = new Bunifu.UI.WinForms.BunifuButton.BunifuButton();
+                btnCancel.Text = "Cancel";
+                btnCancel.Location = new Point(240, 310);
+                btnCancel.Size = new Size(100, 30);
+                btnCancel.BackColor = Color.Transparent;
+                btnCancel.ForeColor = Color.White;
+                btnCancel.OnIdleState.BorderColor = Color.DarkGray;
+                btnCancel.OnIdleState.FillColor = Color.DarkGray;
+                btnCancel.OnIdleState.BorderRadius = 15;
+                btnCancel.onHoverState.BorderColor = Color.DarkGray;
+                btnCancel.onHoverState.FillColor = Color.DarkGray;
+                btnCancel.OnPressedState.BorderColor = Color.DarkGray;
+                btnCancel.OnPressedState.FillColor = Color.DarkGray;
+                btnCancel.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+                createDbDialog.Controls.Add(btnCancel);
+
+                // Set up dialog result handlers
+                btnCreate.Click += (s, args) => {
+                    createDbDialog.DialogResult = DialogResult.OK;
+                    createDbDialog.Close();
+                };
+                
+                btnCancel.Click += (s, args) => {
+                    createDbDialog.DialogResult = DialogResult.Cancel;
+                    createDbDialog.Close();
+                };
 
                 // Show dialog
                 if (createDbDialog.ShowDialog() == DialogResult.OK)
@@ -1801,7 +1951,7 @@ END"
             return script;
         }
 
-        private void chkIntegratedSecurity_CheckedChanged(object sender, EventArgs e)
+        private void chkIntegratedSecurity_CheckedChanged(object sender, Bunifu.UI.WinForms.BunifuCheckBox.CheckedChangedEventArgs e)
         {
             bool useSqlAuth = !chkIntegratedSecurity.Checked;
             txtUsername.Enabled = useSqlAuth;
@@ -1860,18 +2010,134 @@ END"
                     // Check for missing stored procedure and create if needed
                     CreateMissingStoredProcedures(connection);
                     
-                    // Check if users exist and prompt to create admin user if needed
-                    PromptForUserCreation(connection);
+                    // Store the connection string for later use
+                    SqlConnectionManager.ConnectionString = ConnectionString;
                     
-                    // No success message, just close the dialog with OK result
+                    // Check if users exist and prompt to create admin user if needed
+                    // Instead of setting DialogResult inside PromptForUserCreation, 
+                    // capture its return value and only set this form's DialogResult if authentication succeeds
+                    bool authenticationSuccessful = PromptForUserCreation(connection);
+                    
+                    if (authenticationSuccessful)
+                    {
+                        // Only close with OK result if user authentication was successful
                     this.DialogResult = DialogResult.OK;
                     this.Close();
+                    }
+                    // Otherwise just return to the form - DialogResult remains None
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Connection failed: {ex.Message}", 
                     "Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private bool PromptForUserCreation(SqlConnection connection)
+        {
+            try
+            {
+                // Check if any users exist
+                string checkUsersQuery = @"
+                    SELECT COUNT(*) 
+                    FROM sysobjects 
+                    WHERE name='tbUser' AND xtype='U'";
+                
+                bool tableExists = false;
+                int userCount = 0;
+                
+                using (SqlCommand cmd = new SqlCommand(checkUsersQuery, connection))
+                {
+                    tableExists = Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+                }
+                
+                // If table exists, count users
+                if (tableExists)
+                {
+                    string countUsersQuery = "SELECT COUNT(*) FROM tbUser";
+                    using (SqlCommand cmd = new SqlCommand(countUsersQuery, connection))
+                    {
+                        userCount = Convert.ToInt32(cmd.ExecuteScalar());
+                    }
+                }
+                
+                // Handle based on whether users exist
+                if (userCount > 0) 
+                {
+                    // Users exist - show login form
+                    using (LoginForm loginForm = new LoginForm())
+                    {
+                        DialogResult loginResult = loginForm.ShowDialog();
+                        
+                        if (loginResult != DialogResult.OK || !loginForm.LoginSuccessful)
+                        {
+                            MessageBox.Show("Login is required to use the application.",
+                                "Login Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return false;
+                        }
+                            
+                        return true;
+                        }
+                    }
+                
+                    // No users exist - prompt to create users
+                    DialogResult result = MessageBox.Show(
+                        "No users exist in the database. You must create a user to continue.",
+                        "Create User", 
+                        MessageBoxButtons.OKCancel, 
+                        MessageBoxIcon.Information);
+                        
+                if (result != DialogResult.OK)
+                {
+                    // User canceled user creation
+                    return false;
+                }
+                        
+                        // Show the User form
+                        using (User userForm = new User())
+                        {
+                    userForm.ShowDialog();
+                    
+                    // Check if a user was created by querying the database again
+                    string recheckUsersQuery = "SELECT COUNT(*) FROM tbUser";
+                    using (SqlConnection recheckConn = new SqlConnection(ConnectionString))
+                    {
+                        recheckConn.Open();
+                        using (SqlCommand cmd = new SqlCommand(recheckUsersQuery, recheckConn))
+                        {
+                            userCount = Convert.ToInt32(cmd.ExecuteScalar());
+                        }
+                    }
+                    
+                    if (userCount == 0)
+                    {
+                        MessageBox.Show("User creation is required to use the application.",
+                            "User Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return false;
+                    }
+                    
+                                // Automatically show login form after user creation
+                                using (LoginForm loginForm = new LoginForm())
+                                {
+                                    DialogResult loginResult = loginForm.ShowDialog();
+                                    
+                                    if (loginResult != DialogResult.OK || !loginForm.LoginSuccessful)
+                                    {
+                            MessageBox.Show("Login is required to use the application.",
+                                            "Login Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return false;
+                        }
+                        
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error checking for users: {ex.Message}",
+                    "User Check Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
         }
 
@@ -1941,248 +2207,643 @@ END";
             }
         }
 
-        private void PromptForUserCreation(SqlConnection connection)
-        {
-            try
-            {
-                // Check if any users exist
-                string checkUsersQuery = @"
-                    SELECT COUNT(*) 
-                    FROM sysobjects 
-                    WHERE name='tbUser' AND xtype='U'";
-                
-                bool tableExists = false;
-                int userCount = 0;
-                
-                using (SqlCommand cmd = new SqlCommand(checkUsersQuery, connection))
-                {
-                    tableExists = Convert.ToInt32(cmd.ExecuteScalar()) > 0;
-                }
-                
-                // If table exists, count users
-                if (tableExists)
-                {
-                    string countUsersQuery = "SELECT COUNT(*) FROM tbUser";
-                    using (SqlCommand cmd = new SqlCommand(countUsersQuery, connection))
-                    {
-                        userCount = Convert.ToInt32(cmd.ExecuteScalar());
-                    }
-                }
-                
-                // Store the connection string
-                SqlConnectionManager.ConnectionString = ConnectionString;
-                
-                // Handle based on whether users exist
-                if (userCount > 0) 
-                {
-                    // Users exist - force login by closing this dialog and showing login form
-                    this.DialogResult = DialogResult.OK;
-                    this.Close();
-                    
-                    // Show login form
-                    using (LoginForm loginForm = new LoginForm())
-                    {
-                        DialogResult loginResult = loginForm.ShowDialog();
-                        
-                        if (loginResult != DialogResult.OK || !loginForm.LoginSuccessful)
-                        {
-                            MessageBox.Show("Login is required to use the application. The application will now close.",
-                                "Login Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            
-                            // Force application to exit if login fails
-                            Application.Exit();
-                        }
-                    }
-                }
-                else if (userCount == 0 || isNewDatabase)
-                {
-                    // No users exist - prompt to create users
-                    DialogResult result = MessageBox.Show(
-                        "No users exist in the database. You must create a user to continue.",
-                        "Create User", 
-                        MessageBoxButtons.OKCancel, 
-                        MessageBoxIcon.Information);
-                        
-                    if (result == DialogResult.OK)
-                    {
-                        // Close this dialog
-                        this.DialogResult = DialogResult.OK;
-                        this.Close();
-                        
-                        // Show the User form
-                        using (User userForm = new User())
-                        {
-                            DialogResult userFormResult = userForm.ShowDialog();
-                            
-                            // Check if a user was created
-                            if (userFormResult != DialogResult.OK)
-                            {
-                                MessageBox.Show("User creation is required to use the application. The application will now close.",
-                                    "User Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                Application.Exit();
-                            }
-                            else
-                            {
-                                // Automatically show login form after user creation
-                                using (LoginForm loginForm = new LoginForm())
-                                {
-                                    DialogResult loginResult = loginForm.ShowDialog();
-                                    
-                                    if (loginResult != DialogResult.OK || !loginForm.LoginSuccessful)
-                                    {
-                                        MessageBox.Show("Login is required to use the application. The application will now close.",
-                                            "Login Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                        Application.Exit();
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // User canceled - exit application
-                        MessageBox.Show("User creation is required to use the application. The application will now close.",
-                            "User Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        Application.Exit();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error checking for users: {ex.Message}",
-                    "User Check Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Application.Exit();
-            }
-        }
-
         private void InitializeComponent()
         {
-            this.lblServer = new System.Windows.Forms.Label();
-            this.txtServer = new System.Windows.Forms.ComboBox();
-            this.chkIntegratedSecurity = new System.Windows.Forms.CheckBox();
-            this.lblDatabase = new System.Windows.Forms.Label();
-            this.txtDatabase = new System.Windows.Forms.ComboBox();
-            this.lblUsername = new System.Windows.Forms.Label();
-            this.txtUsername = new System.Windows.Forms.TextBox();
-            this.lblPassword = new System.Windows.Forms.Label();
-            this.txtPassword = new System.Windows.Forms.TextBox();
-            this.btnConnect = new System.Windows.Forms.Button();
-            this.SuspendLayout();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConnectionDialog));
+            Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderEdges borderEdges1 = new Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderEdges();
+            Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderEdges borderEdges2 = new Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderEdges();
+            Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties1 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
+            Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties2 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
+            Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties3 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
+            Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties4 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
+            Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties5 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
+            Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties6 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
+            Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties7 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
+            Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties8 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
+            bunifuFormControlBox1 = new Bunifu.UI.WinForms.BunifuFormControlBox();
+            btnConnect = new Bunifu.UI.WinForms.BunifuButton.BunifuButton();
+            btnCreateDatabase = new Bunifu.UI.WinForms.BunifuButton.BunifuButton();
+            bunifuLabel1 = new Bunifu.UI.WinForms.BunifuLabel();
+            txtPassword = new Bunifu.UI.WinForms.BunifuTextBox();
+            txtUsername = new Bunifu.UI.WinForms.BunifuTextBox();
+            txtServer = new Bunifu.UI.WinForms.BunifuDropdown();
+            txtDatabase = new Bunifu.UI.WinForms.BunifuDropdown();
+            chkIntegratedSecurity = new Bunifu.UI.WinForms.BunifuCheckBox();
+            lblUseWinAuth = new Bunifu.UI.WinForms.BunifuLabel();
+            bunifuFormDrag1 = new Bunifu.UI.WinForms.BunifuFormDrag();
+            SuspendLayout();
             // 
-            // lblServer
+            // bunifuFormControlBox1
             // 
-            this.lblServer.AutoSize = true;
-            this.lblServer.Location = new System.Drawing.Point(20, 25);
-            this.lblServer.Name = "lblServer";
-            this.lblServer.Size = new System.Drawing.Size(93, 17);
-            this.lblServer.TabIndex = 0;
-            this.lblServer.Text = "Server name:";
-            // 
-            // txtServer
-            // 
-            this.txtServer.Location = new System.Drawing.Point(150, 22);
-            this.txtServer.Name = "txtServer";
-            this.txtServer.Size = new System.Drawing.Size(250, 24);
-            this.txtServer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDown;
-            this.txtServer.TabIndex = 1;
-            // 
-            // chkIntegratedSecurity
-            // 
-            this.chkIntegratedSecurity.AutoSize = true;
-            this.chkIntegratedSecurity.Checked = true;
-            this.chkIntegratedSecurity.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkIntegratedSecurity.Location = new System.Drawing.Point(150, 120);
-            this.chkIntegratedSecurity.Name = "chkIntegratedSecurity";
-            this.chkIntegratedSecurity.Size = new System.Drawing.Size(203, 21);
-            this.chkIntegratedSecurity.TabIndex = 5;
-            this.chkIntegratedSecurity.Text = "Use Windows Authentication";
-            this.chkIntegratedSecurity.UseVisualStyleBackColor = true;
-            this.chkIntegratedSecurity.CheckedChanged += new System.EventHandler(this.chkIntegratedSecurity_CheckedChanged);
-            // 
-            // lblDatabase
-            // 
-            this.lblDatabase.AutoSize = true;
-            this.lblDatabase.Location = new System.Drawing.Point(20, 65);
-            this.lblDatabase.Name = "lblDatabase";
-            this.lblDatabase.Size = new System.Drawing.Size(75, 17);
-            this.lblDatabase.TabIndex = 2;
-            this.lblDatabase.Text = "Database:";
-            // 
-            // txtDatabase
-            // 
-            this.txtDatabase.Location = new System.Drawing.Point(150, 62);
-            this.txtDatabase.Name = "txtDatabase";
-            this.txtDatabase.Size = new System.Drawing.Size(250, 24);
-            this.txtDatabase.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.txtDatabase.TabIndex = 3;
-            // 
-            // lblUsername
-            // 
-            this.lblUsername.AutoSize = true;
-            this.lblUsername.Location = new System.Drawing.Point(20, 165);
-            this.lblUsername.Name = "lblUsername";
-            this.lblUsername.Size = new System.Drawing.Size(77, 17);
-            this.lblUsername.TabIndex = 6;
-            this.lblUsername.Text = "Username:";
-            // 
-            // txtUsername
-            // 
-            this.txtUsername.Enabled = false;
-            this.txtUsername.Location = new System.Drawing.Point(150, 162);
-            this.txtUsername.Name = "txtUsername";
-            this.txtUsername.Size = new System.Drawing.Size(250, 22);
-            this.txtUsername.TabIndex = 7;
-            // 
-            // lblPassword
-            // 
-            this.lblPassword.AutoSize = true;
-            this.lblPassword.Location = new System.Drawing.Point(20, 205);
-            this.lblPassword.Name = "lblPassword";
-            this.lblPassword.Size = new System.Drawing.Size(73, 17);
-            this.lblPassword.TabIndex = 8;
-            this.lblPassword.Text = "Password:";
-            // 
-            // txtPassword
-            // 
-            this.txtPassword.Enabled = false;
-            this.txtPassword.Location = new System.Drawing.Point(150, 202);
-            this.txtPassword.Name = "txtPassword";
-            this.txtPassword.PasswordChar = '•';
-            this.txtPassword.Size = new System.Drawing.Size(250, 22);
-            this.txtPassword.TabIndex = 9;
+            bunifuFormControlBox1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            bunifuFormControlBox1.BackColor = SystemColors.Control;
+            bunifuFormControlBox1.BunifuFormDrag = null;
+            bunifuFormControlBox1.CloseBoxOptions.BackColor = Color.Transparent;
+            bunifuFormControlBox1.CloseBoxOptions.BorderRadius = 0;
+            bunifuFormControlBox1.CloseBoxOptions.Enabled = true;
+            bunifuFormControlBox1.CloseBoxOptions.EnableDefaultAction = true;
+            bunifuFormControlBox1.CloseBoxOptions.HoverColor = Color.FromArgb(232, 17, 35);
+            bunifuFormControlBox1.CloseBoxOptions.Icon = (Image)resources.GetObject("bunifuFormControlBox1.CloseBoxOptions.Icon");
+            bunifuFormControlBox1.CloseBoxOptions.IconAlt = null;
+            bunifuFormControlBox1.CloseBoxOptions.IconColor = Color.Black;
+            bunifuFormControlBox1.CloseBoxOptions.IconHoverColor = Color.White;
+            bunifuFormControlBox1.CloseBoxOptions.IconPressedColor = Color.White;
+            bunifuFormControlBox1.CloseBoxOptions.IconSize = new Size(18, 18);
+            bunifuFormControlBox1.CloseBoxOptions.PressedColor = Color.FromArgb(232, 17, 35);
+            bunifuFormControlBox1.HelpBox = false;
+            bunifuFormControlBox1.HelpBoxOptions.BackColor = Color.Transparent;
+            bunifuFormControlBox1.HelpBoxOptions.BorderRadius = 0;
+            bunifuFormControlBox1.HelpBoxOptions.Enabled = true;
+            bunifuFormControlBox1.HelpBoxOptions.EnableDefaultAction = true;
+            bunifuFormControlBox1.HelpBoxOptions.HoverColor = Color.LightGray;
+            bunifuFormControlBox1.HelpBoxOptions.Icon = (Image)resources.GetObject("bunifuFormControlBox1.HelpBoxOptions.Icon");
+            bunifuFormControlBox1.HelpBoxOptions.IconAlt = null;
+            bunifuFormControlBox1.HelpBoxOptions.IconColor = Color.Black;
+            bunifuFormControlBox1.HelpBoxOptions.IconHoverColor = Color.Black;
+            bunifuFormControlBox1.HelpBoxOptions.IconPressedColor = Color.Black;
+            bunifuFormControlBox1.HelpBoxOptions.IconSize = new Size(22, 22);
+            bunifuFormControlBox1.HelpBoxOptions.PressedColor = Color.Silver;
+            bunifuFormControlBox1.Location = new Point(365, 0);
+            bunifuFormControlBox1.MaximizeBox = false;
+            bunifuFormControlBox1.MaximizeBoxOptions.BackColor = Color.Transparent;
+            bunifuFormControlBox1.MaximizeBoxOptions.BorderRadius = 0;
+            bunifuFormControlBox1.MaximizeBoxOptions.Enabled = true;
+            bunifuFormControlBox1.MaximizeBoxOptions.EnableDefaultAction = true;
+            bunifuFormControlBox1.MaximizeBoxOptions.HoverColor = Color.LightGray;
+            bunifuFormControlBox1.MaximizeBoxOptions.Icon = (Image)resources.GetObject("bunifuFormControlBox1.MaximizeBoxOptions.Icon");
+            bunifuFormControlBox1.MaximizeBoxOptions.IconAlt = (Image)resources.GetObject("bunifuFormControlBox1.MaximizeBoxOptions.IconAlt");
+            bunifuFormControlBox1.MaximizeBoxOptions.IconColor = Color.Black;
+            bunifuFormControlBox1.MaximizeBoxOptions.IconHoverColor = Color.Black;
+            bunifuFormControlBox1.MaximizeBoxOptions.IconPressedColor = Color.Black;
+            bunifuFormControlBox1.MaximizeBoxOptions.IconSize = new Size(16, 16);
+            bunifuFormControlBox1.MaximizeBoxOptions.PressedColor = Color.Silver;
+            bunifuFormControlBox1.MinimizeBox = true;
+            bunifuFormControlBox1.MinimizeBoxOptions.BackColor = Color.Transparent;
+            bunifuFormControlBox1.MinimizeBoxOptions.BorderRadius = 0;
+            bunifuFormControlBox1.MinimizeBoxOptions.Enabled = true;
+            bunifuFormControlBox1.MinimizeBoxOptions.EnableDefaultAction = true;
+            bunifuFormControlBox1.MinimizeBoxOptions.HoverColor = Color.LightGray;
+            bunifuFormControlBox1.MinimizeBoxOptions.Icon = (Image)resources.GetObject("bunifuFormControlBox1.MinimizeBoxOptions.Icon");
+            bunifuFormControlBox1.MinimizeBoxOptions.IconAlt = null;
+            bunifuFormControlBox1.MinimizeBoxOptions.IconColor = Color.Black;
+            bunifuFormControlBox1.MinimizeBoxOptions.IconHoverColor = Color.Black;
+            bunifuFormControlBox1.MinimizeBoxOptions.IconPressedColor = Color.Black;
+            bunifuFormControlBox1.MinimizeBoxOptions.IconSize = new Size(14, 14);
+            bunifuFormControlBox1.MinimizeBoxOptions.PressedColor = Color.Silver;
+            bunifuFormControlBox1.Name = "bunifuFormControlBox1";
+            bunifuFormControlBox1.ShowDesignBorders = false;
+            bunifuFormControlBox1.Size = new Size(60, 30);
+            bunifuFormControlBox1.TabIndex = 11;
             // 
             // btnConnect
             // 
-            this.btnConnect.Location = new System.Drawing.Point(152, 245);
-            this.btnConnect.Name = "btnConnect";
-            this.btnConnect.Size = new System.Drawing.Size(150, 30);
-            this.btnConnect.TabIndex = 10;
-            this.btnConnect.Text = "Connect";
-            this.btnConnect.UseVisualStyleBackColor = true;
-            this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
+            btnConnect.AllowAnimations = true;
+            btnConnect.AllowMouseEffects = true;
+            btnConnect.AllowToggling = false;
+            btnConnect.AnimationSpeed = 200;
+            btnConnect.AutoGenerateColors = false;
+            btnConnect.AutoRoundBorders = false;
+            btnConnect.AutoSizeLeftIcon = true;
+            btnConnect.AutoSizeRightIcon = true;
+            btnConnect.BackColor = Color.Transparent;
+            btnConnect.BackColor1 = Color.FromArgb(51, 122, 183);
+            btnConnect.BackgroundImage = (Image)resources.GetObject("btnConnect.BackgroundImage");
+            btnConnect.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderStyles.Solid;
+            btnConnect.ButtonText = "Connect";
+            btnConnect.ButtonTextMarginLeft = 0;
+            btnConnect.ColorContrastOnClick = 45;
+            btnConnect.ColorContrastOnHover = 45;
+            borderEdges1.BottomLeft = true;
+            borderEdges1.BottomRight = true;
+            borderEdges1.TopLeft = true;
+            borderEdges1.TopRight = true;
+            btnConnect.CustomizableEdges = borderEdges1;
+            btnConnect.DialogResult = DialogResult.None;
+            btnConnect.DisabledBorderColor = Color.FromArgb(191, 191, 191);
+            btnConnect.DisabledFillColor = Color.Empty;
+            btnConnect.DisabledForecolor = Color.Empty;
+            btnConnect.FocusState = Bunifu.UI.WinForms.BunifuButton.BunifuButton.ButtonStates.Pressed;
+            btnConnect.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnConnect.ForeColor = Color.White;
+            btnConnect.IconLeft = null;
+            btnConnect.IconLeftAlign = ContentAlignment.MiddleLeft;
+            btnConnect.IconLeftCursor = Cursors.Default;
+            btnConnect.IconLeftPadding = new Padding(11, 3, 3, 3);
+            btnConnect.IconMarginLeft = 11;
+            btnConnect.IconPadding = 10;
+            btnConnect.IconRight = null;
+            btnConnect.IconRightAlign = ContentAlignment.MiddleRight;
+            btnConnect.IconRightCursor = Cursors.Default;
+            btnConnect.IconRightPadding = new Padding(3, 3, 7, 3);
+            btnConnect.IconSize = 25;
+            btnConnect.IdleBorderColor = Color.Empty;
+            btnConnect.IdleBorderRadius = 0;
+            btnConnect.IdleBorderThickness = 0;
+            btnConnect.IdleFillColor = Color.Empty;
+            btnConnect.IdleIconLeftImage = null;
+            btnConnect.IdleIconRightImage = null;
+            btnConnect.IndicateFocus = false;
+            btnConnect.Location = new Point(215, 308);
+            btnConnect.Name = "btnConnect";
+            btnConnect.OnDisabledState.BorderColor = Color.FromArgb(191, 191, 191);
+            btnConnect.OnDisabledState.BorderRadius = 15;
+            btnConnect.OnDisabledState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderStyles.Solid;
+            btnConnect.OnDisabledState.BorderThickness = 1;
+            btnConnect.OnDisabledState.FillColor = Color.FromArgb(204, 204, 204);
+            btnConnect.OnDisabledState.ForeColor = Color.FromArgb(168, 160, 168);
+            btnConnect.OnDisabledState.IconLeftImage = null;
+            btnConnect.OnDisabledState.IconRightImage = null;
+            btnConnect.onHoverState.BorderColor = Color.DarkGoldenrod;
+            btnConnect.onHoverState.BorderRadius = 15;
+            btnConnect.onHoverState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderStyles.Solid;
+            btnConnect.onHoverState.BorderThickness = 1;
+            btnConnect.onHoverState.FillColor = Color.DarkGoldenrod;
+            btnConnect.onHoverState.ForeColor = Color.White;
+            btnConnect.onHoverState.IconLeftImage = null;
+            btnConnect.onHoverState.IconRightImage = null;
+            btnConnect.OnIdleState.BorderColor = Color.DarkGoldenrod;
+            btnConnect.OnIdleState.BorderRadius = 15;
+            btnConnect.OnIdleState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderStyles.Solid;
+            btnConnect.OnIdleState.BorderThickness = 1;
+            btnConnect.OnIdleState.FillColor = Color.DarkGoldenrod;
+            btnConnect.OnIdleState.ForeColor = Color.White;
+            btnConnect.OnIdleState.IconLeftImage = null;
+            btnConnect.OnIdleState.IconRightImage = null;
+            btnConnect.OnPressedState.BorderColor = Color.DarkGoldenrod;
+            btnConnect.OnPressedState.BorderRadius = 15;
+            btnConnect.OnPressedState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderStyles.Solid;
+            btnConnect.OnPressedState.BorderThickness = 1;
+            btnConnect.OnPressedState.FillColor = Color.DarkGoldenrod;
+            btnConnect.OnPressedState.ForeColor = Color.White;
+            btnConnect.OnPressedState.IconLeftImage = null;
+            btnConnect.OnPressedState.IconRightImage = null;
+            btnConnect.Size = new Size(120, 30);
+            btnConnect.TabIndex = 12;
+            btnConnect.TextAlign = ContentAlignment.MiddleCenter;
+            btnConnect.TextAlignment = HorizontalAlignment.Center;
+            btnConnect.TextMarginLeft = 0;
+            btnConnect.TextPadding = new Padding(0);
+            btnConnect.UseDefaultRadiusAndThickness = true;
+            // 
+            // btnCreateDatabase
+            // 
+            btnCreateDatabase.AllowAnimations = true;
+            btnCreateDatabase.AllowMouseEffects = true;
+            btnCreateDatabase.AllowToggling = false;
+            btnCreateDatabase.AnimationSpeed = 200;
+            btnCreateDatabase.AutoGenerateColors = false;
+            btnCreateDatabase.AutoRoundBorders = false;
+            btnCreateDatabase.AutoSizeLeftIcon = true;
+            btnCreateDatabase.AutoSizeRightIcon = true;
+            btnCreateDatabase.BackColor = Color.Transparent;
+            btnCreateDatabase.BackColor1 = Color.FromArgb(51, 122, 183);
+            btnCreateDatabase.BackgroundImage = (Image)resources.GetObject("btnCreateDatabase.BackgroundImage");
+            btnCreateDatabase.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderStyles.Solid;
+            btnCreateDatabase.ButtonText = "Create Database";
+            btnCreateDatabase.ButtonTextMarginLeft = 0;
+            btnCreateDatabase.ColorContrastOnClick = 45;
+            btnCreateDatabase.ColorContrastOnHover = 45;
+            borderEdges2.BottomLeft = true;
+            borderEdges2.BottomRight = true;
+            borderEdges2.TopLeft = true;
+            borderEdges2.TopRight = true;
+            btnCreateDatabase.CustomizableEdges = borderEdges2;
+            btnCreateDatabase.DialogResult = DialogResult.None;
+            btnCreateDatabase.DisabledBorderColor = Color.FromArgb(191, 191, 191);
+            btnCreateDatabase.DisabledFillColor = Color.Empty;
+            btnCreateDatabase.DisabledForecolor = Color.Empty;
+            btnCreateDatabase.FocusState = Bunifu.UI.WinForms.BunifuButton.BunifuButton.ButtonStates.Pressed;
+            btnCreateDatabase.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnCreateDatabase.ForeColor = Color.White;
+            btnCreateDatabase.IconLeft = null;
+            btnCreateDatabase.IconLeftAlign = ContentAlignment.MiddleLeft;
+            btnCreateDatabase.IconLeftCursor = Cursors.Default;
+            btnCreateDatabase.IconLeftPadding = new Padding(11, 3, 3, 3);
+            btnCreateDatabase.IconMarginLeft = 11;
+            btnCreateDatabase.IconPadding = 10;
+            btnCreateDatabase.IconRight = null;
+            btnCreateDatabase.IconRightAlign = ContentAlignment.MiddleRight;
+            btnCreateDatabase.IconRightCursor = Cursors.Default;
+            btnCreateDatabase.IconRightPadding = new Padding(3, 3, 7, 3);
+            btnCreateDatabase.IconSize = 25;
+            btnCreateDatabase.IdleBorderColor = Color.Empty;
+            btnCreateDatabase.IdleBorderRadius = 0;
+            btnCreateDatabase.IdleBorderThickness = 0;
+            btnCreateDatabase.IdleFillColor = Color.Empty;
+            btnCreateDatabase.IdleIconLeftImage = null;
+            btnCreateDatabase.IdleIconRightImage = null;
+            btnCreateDatabase.IndicateFocus = false;
+            btnCreateDatabase.Location = new Point(60, 308);
+            btnCreateDatabase.Name = "btnCreateDatabase";
+            btnCreateDatabase.OnDisabledState.BorderColor = Color.FromArgb(191, 191, 191);
+            btnCreateDatabase.OnDisabledState.BorderRadius = 15;
+            btnCreateDatabase.OnDisabledState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderStyles.Solid;
+            btnCreateDatabase.OnDisabledState.BorderThickness = 1;
+            btnCreateDatabase.OnDisabledState.FillColor = Color.FromArgb(204, 204, 204);
+            btnCreateDatabase.OnDisabledState.ForeColor = Color.FromArgb(168, 160, 168);
+            btnCreateDatabase.OnDisabledState.IconLeftImage = null;
+            btnCreateDatabase.OnDisabledState.IconRightImage = null;
+            btnCreateDatabase.onHoverState.BorderColor = Color.DarkGoldenrod;
+            btnCreateDatabase.onHoverState.BorderRadius = 15;
+            btnCreateDatabase.onHoverState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderStyles.Solid;
+            btnCreateDatabase.onHoverState.BorderThickness = 1;
+            btnCreateDatabase.onHoverState.FillColor = Color.DarkGoldenrod;
+            btnCreateDatabase.onHoverState.ForeColor = Color.White;
+            btnCreateDatabase.onHoverState.IconLeftImage = null;
+            btnCreateDatabase.onHoverState.IconRightImage = null;
+            btnCreateDatabase.OnIdleState.BorderColor = Color.DarkGoldenrod;
+            btnCreateDatabase.OnIdleState.BorderRadius = 15;
+            btnCreateDatabase.OnIdleState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderStyles.Solid;
+            btnCreateDatabase.OnIdleState.BorderThickness = 1;
+            btnCreateDatabase.OnIdleState.FillColor = Color.DarkGoldenrod;
+            btnCreateDatabase.OnIdleState.ForeColor = Color.White;
+            btnCreateDatabase.OnIdleState.IconLeftImage = null;
+            btnCreateDatabase.OnIdleState.IconRightImage = null;
+            btnCreateDatabase.OnPressedState.BorderColor = Color.DarkGoldenrod;
+            btnCreateDatabase.OnPressedState.BorderRadius = 15;
+            btnCreateDatabase.OnPressedState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton.BorderStyles.Solid;
+            btnCreateDatabase.OnPressedState.BorderThickness = 1;
+            btnCreateDatabase.OnPressedState.FillColor = Color.DarkGoldenrod;
+            btnCreateDatabase.OnPressedState.ForeColor = Color.White;
+            btnCreateDatabase.OnPressedState.IconLeftImage = null;
+            btnCreateDatabase.OnPressedState.IconRightImage = null;
+            btnCreateDatabase.Size = new Size(120, 30);
+            btnCreateDatabase.TabIndex = 13;
+            btnCreateDatabase.TextAlign = ContentAlignment.MiddleCenter;
+            btnCreateDatabase.TextAlignment = HorizontalAlignment.Center;
+            btnCreateDatabase.TextMarginLeft = 0;
+            btnCreateDatabase.TextPadding = new Padding(0);
+            btnCreateDatabase.UseDefaultRadiusAndThickness = true;
+            // 
+            // bunifuLabel1
+            // 
+            bunifuLabel1.AllowParentOverrides = false;
+            bunifuLabel1.AutoEllipsis = false;
+            bunifuLabel1.CursorType = Cursors.Default;
+            bunifuLabel1.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            bunifuLabel1.Location = new Point(93, 37);
+            bunifuLabel1.Name = "bunifuLabel1";
+            bunifuLabel1.RightToLeft = RightToLeft.No;
+            bunifuLabel1.Size = new Size(212, 21);
+            bunifuLabel1.TabIndex = 14;
+            bunifuLabel1.Text = "Database Connection Setting";
+            bunifuLabel1.TextAlignment = ContentAlignment.TopLeft;
+            bunifuLabel1.TextFormat = Bunifu.UI.WinForms.BunifuLabel.TextFormattingOptions.Default;
+            // 
+            // txtPassword
+            // 
+            txtPassword.AcceptsReturn = false;
+            txtPassword.AcceptsTab = false;
+            txtPassword.AnimationSpeed = 200;
+            txtPassword.AutoCompleteMode = AutoCompleteMode.None;
+            txtPassword.AutoCompleteSource = AutoCompleteSource.None;
+            txtPassword.AutoSizeHeight = true;
+            txtPassword.BackColor = Color.Transparent;
+            txtPassword.BackgroundImage = (Image)resources.GetObject("txtPassword.BackgroundImage");
+            txtPassword.BorderColorActive = Color.DarkGoldenrod;
+            txtPassword.BorderColorDisabled = Color.FromArgb(204, 204, 204);
+            txtPassword.BorderColorHover = Color.DarkGoldenrod;
+            txtPassword.BorderColorIdle = Color.Silver;
+            txtPassword.BorderRadius = 15;
+            txtPassword.BorderThickness = 1;
+            txtPassword.CharacterCase = Bunifu.UI.WinForms.BunifuTextBox.CharacterCases.Normal;
+            txtPassword.CharacterCasing = CharacterCasing.Normal;
+            txtPassword.DefaultFont = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            txtPassword.DefaultText = "";
+            txtPassword.Enabled = false;
+            txtPassword.FillColor = Color.White;
+            txtPassword.HideSelection = true;
+            txtPassword.IconLeft = null;
+            txtPassword.IconLeftCursor = Cursors.IBeam;
+            txtPassword.IconPadding = 10;
+            txtPassword.IconRight = null;
+            txtPassword.IconRightCursor = Cursors.IBeam;
+            txtPassword.Location = new Point(60, 246);
+            txtPassword.MaxLength = 32767;
+            txtPassword.MinimumSize = new Size(1, 1);
+            txtPassword.Modified = false;
+            txtPassword.Multiline = false;
+            txtPassword.Name = "txtPassword";
+            stateProperties1.BorderColor = Color.DarkGoldenrod;
+            stateProperties1.FillColor = Color.Empty;
+            stateProperties1.ForeColor = Color.Empty;
+            stateProperties1.PlaceholderForeColor = Color.Empty;
+            txtPassword.OnActiveState = stateProperties1;
+            stateProperties2.BorderColor = Color.FromArgb(204, 204, 204);
+            stateProperties2.FillColor = Color.FromArgb(240, 240, 240);
+            stateProperties2.ForeColor = Color.FromArgb(109, 109, 109);
+            stateProperties2.PlaceholderForeColor = Color.DarkGray;
+            txtPassword.OnDisabledState = stateProperties2;
+            stateProperties3.BorderColor = Color.DarkGoldenrod;
+            stateProperties3.FillColor = Color.Empty;
+            stateProperties3.ForeColor = Color.Empty;
+            stateProperties3.PlaceholderForeColor = Color.Empty;
+            txtPassword.OnHoverState = stateProperties3;
+            stateProperties4.BorderColor = Color.Silver;
+            stateProperties4.FillColor = Color.White;
+            stateProperties4.ForeColor = Color.Empty;
+            stateProperties4.PlaceholderForeColor = Color.Empty;
+            txtPassword.OnIdleState = stateProperties4;
+            txtPassword.Padding = new Padding(3);
+            txtPassword.PasswordChar = '\0';
+            txtPassword.PlaceholderForeColor = Color.Silver;
+            txtPassword.PlaceholderText = "Enter password";
+            txtPassword.ReadOnly = false;
+            txtPassword.ScrollBars = ScrollBars.None;
+            txtPassword.SelectedText = "";
+            txtPassword.SelectionLength = 0;
+            txtPassword.SelectionStart = 0;
+            txtPassword.ShortcutsEnabled = true;
+            txtPassword.Size = new Size(275, 38);
+            txtPassword.Style = Bunifu.UI.WinForms.BunifuTextBox._Style.Bunifu;
+            txtPassword.TabIndex = 16;
+            txtPassword.TextAlign = HorizontalAlignment.Left;
+            txtPassword.TextMarginBottom = 0;
+            txtPassword.TextMarginLeft = 3;
+            txtPassword.TextMarginTop = 1;
+            txtPassword.TextPlaceholder = "Enter password";
+            txtPassword.UseSystemPasswordChar = false;
+            txtPassword.WordWrap = true;
+            // 
+            // txtUsername
+            // 
+            txtUsername.AcceptsReturn = false;
+            txtUsername.AcceptsTab = false;
+            txtUsername.AnimationSpeed = 200;
+            txtUsername.AutoCompleteMode = AutoCompleteMode.None;
+            txtUsername.AutoCompleteSource = AutoCompleteSource.None;
+            txtUsername.AutoSizeHeight = true;
+            txtUsername.BackColor = Color.Transparent;
+            txtUsername.BackgroundImage = (Image)resources.GetObject("txtUsername.BackgroundImage");
+            txtUsername.BorderColorActive = Color.DarkGoldenrod;
+            txtUsername.BorderColorDisabled = Color.FromArgb(204, 204, 204);
+            txtUsername.BorderColorHover = Color.DarkGoldenrod;
+            txtUsername.BorderColorIdle = Color.Silver;
+            txtUsername.BorderRadius = 15;
+            txtUsername.BorderThickness = 1;
+            txtUsername.CharacterCase = Bunifu.UI.WinForms.BunifuTextBox.CharacterCases.Normal;
+            txtUsername.CharacterCasing = CharacterCasing.Normal;
+            txtUsername.DefaultFont = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            txtUsername.DefaultText = "";
+            txtUsername.Enabled = false;
+            txtUsername.FillColor = Color.White;
+            txtUsername.HideSelection = true;
+            txtUsername.IconLeft = null;
+            txtUsername.IconLeftCursor = Cursors.IBeam;
+            txtUsername.IconPadding = 10;
+            txtUsername.IconRight = null;
+            txtUsername.IconRightCursor = Cursors.IBeam;
+            txtUsername.Location = new Point(60, 202);
+            txtUsername.MaxLength = 32767;
+            txtUsername.MinimumSize = new Size(1, 1);
+            txtUsername.Modified = false;
+            txtUsername.Multiline = false;
+            txtUsername.Name = "txtUsername";
+            stateProperties5.BorderColor = Color.DarkGoldenrod;
+            stateProperties5.FillColor = Color.Empty;
+            stateProperties5.ForeColor = Color.Empty;
+            stateProperties5.PlaceholderForeColor = Color.Empty;
+            txtUsername.OnActiveState = stateProperties5;
+            stateProperties6.BorderColor = Color.FromArgb(204, 204, 204);
+            stateProperties6.FillColor = Color.FromArgb(240, 240, 240);
+            stateProperties6.ForeColor = Color.FromArgb(109, 109, 109);
+            stateProperties6.PlaceholderForeColor = Color.DarkGray;
+            txtUsername.OnDisabledState = stateProperties6;
+            stateProperties7.BorderColor = Color.DarkGoldenrod;
+            stateProperties7.FillColor = Color.Empty;
+            stateProperties7.ForeColor = Color.Empty;
+            stateProperties7.PlaceholderForeColor = Color.Empty;
+            txtUsername.OnHoverState = stateProperties7;
+            stateProperties8.BorderColor = Color.Silver;
+            stateProperties8.FillColor = Color.White;
+            stateProperties8.ForeColor = Color.Empty;
+            stateProperties8.PlaceholderForeColor = Color.Empty;
+            txtUsername.OnIdleState = stateProperties8;
+            txtUsername.Padding = new Padding(3);
+            txtUsername.PasswordChar = '\0';
+            txtUsername.PlaceholderForeColor = Color.Silver;
+            txtUsername.PlaceholderText = "Enter username";
+            txtUsername.ReadOnly = false;
+            txtUsername.ScrollBars = ScrollBars.None;
+            txtUsername.SelectedText = "";
+            txtUsername.SelectionLength = 0;
+            txtUsername.SelectionStart = 0;
+            txtUsername.ShortcutsEnabled = true;
+            txtUsername.Size = new Size(275, 38);
+            txtUsername.Style = Bunifu.UI.WinForms.BunifuTextBox._Style.Bunifu;
+            txtUsername.TabIndex = 15;
+            txtUsername.TextAlign = HorizontalAlignment.Left;
+            txtUsername.TextMarginBottom = 0;
+            txtUsername.TextMarginLeft = 3;
+            txtUsername.TextMarginTop = 1;
+            txtUsername.TextPlaceholder = "Enter username";
+            txtUsername.UseSystemPasswordChar = false;
+            txtUsername.WordWrap = true;
+            // 
+            // txtServer
+            // 
+            txtServer.BackColor = Color.Transparent;
+            txtServer.BackgroundColor = Color.White;
+            txtServer.BorderColor = Color.Silver;
+            txtServer.BorderRadius = 15;
+            txtServer.Color = Color.Silver;
+            txtServer.Direction = Bunifu.UI.WinForms.BunifuDropdown.Directions.Down;
+            txtServer.DisabledBackColor = Color.FromArgb(240, 240, 240);
+            txtServer.DisabledBorderColor = Color.FromArgb(204, 204, 204);
+            txtServer.DisabledColor = Color.FromArgb(240, 240, 240);
+            txtServer.DisabledForeColor = Color.FromArgb(109, 109, 109);
+            txtServer.DisabledIndicatorColor = Color.DarkGray;
+            txtServer.DrawMode = DrawMode.OwnerDrawFixed;
+            txtServer.DropdownBorderThickness = Bunifu.UI.WinForms.BunifuDropdown.BorderThickness.Thin;
+            txtServer.DropDownStyle = ComboBoxStyle.DropDownList;
+            txtServer.DropDownTextAlign = Bunifu.UI.WinForms.BunifuDropdown.TextAlign.Left;
+            txtServer.FillDropDown = true;
+            txtServer.FillIndicator = false;
+            txtServer.FlatStyle = FlatStyle.Flat;
+            txtServer.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            txtServer.ForeColor = Color.Black;
+            txtServer.FormattingEnabled = true;
+            txtServer.Icon = null;
+            txtServer.IndicatorAlignment = Bunifu.UI.WinForms.BunifuDropdown.Indicator.Right;
+            txtServer.IndicatorColor = Color.DarkGray;
+            txtServer.IndicatorLocation = Bunifu.UI.WinForms.BunifuDropdown.Indicator.Right;
+            txtServer.IndicatorThickness = 2;
+            txtServer.IsDropdownOpened = false;
+            txtServer.ItemBackColor = Color.White;
+            txtServer.ItemBorderColor = Color.White;
+            txtServer.ItemForeColor = Color.Black;
+            txtServer.ItemHeight = 26;
+            txtServer.ItemHighLightColor = Color.DarkGoldenrod;
+            txtServer.ItemHighLightForeColor = Color.White;
+            txtServer.ItemTopMargin = 3;
+            txtServer.Location = new Point(60, 82);
+            txtServer.Name = "txtServer";
+            txtServer.Size = new Size(275, 32);
+            txtServer.TabIndex = 17;
+            txtServer.Text = null;
+            txtServer.TextAlignment = Bunifu.UI.WinForms.BunifuDropdown.TextAlign.Left;
+            txtServer.TextLeftMargin = 5;
+            // 
+            // txtDatabase
+            // 
+            txtDatabase.BackColor = Color.Transparent;
+            txtDatabase.BackgroundColor = Color.White;
+            txtDatabase.BorderColor = Color.Silver;
+            txtDatabase.BorderRadius = 15;
+            txtDatabase.Color = Color.Silver;
+            txtDatabase.Direction = Bunifu.UI.WinForms.BunifuDropdown.Directions.Down;
+            txtDatabase.DisabledBackColor = Color.FromArgb(240, 240, 240);
+            txtDatabase.DisabledBorderColor = Color.FromArgb(204, 204, 204);
+            txtDatabase.DisabledColor = Color.FromArgb(240, 240, 240);
+            txtDatabase.DisabledForeColor = Color.FromArgb(109, 109, 109);
+            txtDatabase.DisabledIndicatorColor = Color.DarkGray;
+            txtDatabase.DrawMode = DrawMode.OwnerDrawFixed;
+            txtDatabase.DropdownBorderThickness = Bunifu.UI.WinForms.BunifuDropdown.BorderThickness.Thin;
+            txtDatabase.DropDownStyle = ComboBoxStyle.DropDownList;
+            txtDatabase.DropDownTextAlign = Bunifu.UI.WinForms.BunifuDropdown.TextAlign.Left;
+            txtDatabase.FillDropDown = true;
+            txtDatabase.FillIndicator = false;
+            txtDatabase.FlatStyle = FlatStyle.Flat;
+            txtDatabase.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            txtDatabase.ForeColor = Color.Black;
+            txtDatabase.FormattingEnabled = true;
+            txtDatabase.Icon = null;
+            txtDatabase.IndicatorAlignment = Bunifu.UI.WinForms.BunifuDropdown.Indicator.Right;
+            txtDatabase.IndicatorColor = Color.DarkGray;
+            txtDatabase.IndicatorLocation = Bunifu.UI.WinForms.BunifuDropdown.Indicator.Right;
+            txtDatabase.IndicatorThickness = 2;
+            txtDatabase.IsDropdownOpened = false;
+            txtDatabase.ItemBackColor = Color.White;
+            txtDatabase.ItemBorderColor = Color.White;
+            txtDatabase.ItemForeColor = Color.Black;
+            txtDatabase.ItemHeight = 26;
+            txtDatabase.ItemHighLightColor = Color.DarkGoldenrod;
+            txtDatabase.ItemHighLightForeColor = Color.White;
+            txtDatabase.ItemTopMargin = 3;
+            txtDatabase.Location = new Point(60, 120);
+            txtDatabase.Name = "txtDatabase";
+            txtDatabase.Size = new Size(275, 32);
+            txtDatabase.TabIndex = 18;
+            txtDatabase.Text = null;
+            txtDatabase.TextAlignment = Bunifu.UI.WinForms.BunifuDropdown.TextAlign.Left;
+            txtDatabase.TextLeftMargin = 5;
+            // 
+            // chkIntegratedSecurity
+            // 
+            chkIntegratedSecurity.AllowBindingControlAnimation = true;
+            chkIntegratedSecurity.AllowBindingControlColorChanges = false;
+            chkIntegratedSecurity.AllowBindingControlLocation = true;
+            chkIntegratedSecurity.AllowCheckBoxAnimation = false;
+            chkIntegratedSecurity.AllowCheckmarkAnimation = true;
+            chkIntegratedSecurity.AllowOnHoverStates = true;
+            chkIntegratedSecurity.AutoCheck = true;
+            chkIntegratedSecurity.BackColor = Color.Transparent;
+            chkIntegratedSecurity.BackgroundImage = (Image)resources.GetObject("chkIntegratedSecurity.BackgroundImage");
+            chkIntegratedSecurity.BackgroundImageLayout = ImageLayout.Zoom;
+            chkIntegratedSecurity.BindingControl = lblUseWinAuth;
+            chkIntegratedSecurity.BindingControlPosition = Bunifu.UI.WinForms.BunifuCheckBox.BindingControlPositions.Right;
+            chkIntegratedSecurity.BorderRadius = 12;
+            chkIntegratedSecurity.Checked = true;
+            chkIntegratedSecurity.CheckState = Bunifu.UI.WinForms.BunifuCheckBox.CheckStates.Checked;
+            chkIntegratedSecurity.CustomCheckmarkImage = null;
+            chkIntegratedSecurity.Location = new Point(69, 164);
+            chkIntegratedSecurity.MinimumSize = new Size(17, 17);
+            chkIntegratedSecurity.Name = "chkIntegratedSecurity";
+            chkIntegratedSecurity.OnCheck.BorderColor = Color.DarkGoldenrod;
+            chkIntegratedSecurity.OnCheck.BorderRadius = 12;
+            chkIntegratedSecurity.OnCheck.BorderThickness = 2;
+            chkIntegratedSecurity.OnCheck.CheckBoxColor = Color.DarkGoldenrod;
+            chkIntegratedSecurity.OnCheck.CheckmarkColor = Color.White;
+            chkIntegratedSecurity.OnCheck.CheckmarkThickness = 2;
+            chkIntegratedSecurity.OnDisable.BorderColor = Color.LightGray;
+            chkIntegratedSecurity.OnDisable.BorderRadius = 12;
+            chkIntegratedSecurity.OnDisable.BorderThickness = 2;
+            chkIntegratedSecurity.OnDisable.CheckBoxColor = Color.Transparent;
+            chkIntegratedSecurity.OnDisable.CheckmarkColor = Color.LightGray;
+            chkIntegratedSecurity.OnDisable.CheckmarkThickness = 2;
+            chkIntegratedSecurity.OnHoverChecked.BorderColor = Color.FromArgb(105, 181, 255);
+            chkIntegratedSecurity.OnHoverChecked.BorderRadius = 12;
+            chkIntegratedSecurity.OnHoverChecked.BorderThickness = 2;
+            chkIntegratedSecurity.OnHoverChecked.CheckBoxColor = Color.FromArgb(105, 181, 255);
+            chkIntegratedSecurity.OnHoverChecked.CheckmarkColor = Color.White;
+            chkIntegratedSecurity.OnHoverChecked.CheckmarkThickness = 2;
+            chkIntegratedSecurity.OnHoverUnchecked.BorderColor = Color.FromArgb(105, 181, 255);
+            chkIntegratedSecurity.OnHoverUnchecked.BorderRadius = 12;
+            chkIntegratedSecurity.OnHoverUnchecked.BorderThickness = 1;
+            chkIntegratedSecurity.OnHoverUnchecked.CheckBoxColor = Color.Transparent;
+            chkIntegratedSecurity.OnUncheck.BorderColor = Color.DarkGray;
+            chkIntegratedSecurity.OnUncheck.BorderRadius = 12;
+            chkIntegratedSecurity.OnUncheck.BorderThickness = 1;
+            chkIntegratedSecurity.OnUncheck.CheckBoxColor = Color.Transparent;
+            chkIntegratedSecurity.Size = new Size(21, 21);
+            chkIntegratedSecurity.Style = Bunifu.UI.WinForms.BunifuCheckBox.CheckBoxStyles.Bunifu;
+            chkIntegratedSecurity.TabIndex = 19;
+            chkIntegratedSecurity.ThreeState = false;
+            chkIntegratedSecurity.ToolTipText = "";
+            chkIntegratedSecurity.CheckedChanged += chkIntegratedSecurity_CheckedChanged;
+            // 
+            // lblUseWinAuth
+            // 
+            lblUseWinAuth.AccessibleRole = AccessibleRole.CheckButton;
+            lblUseWinAuth.AllowParentOverrides = false;
+            lblUseWinAuth.AutoEllipsis = false;
+            lblUseWinAuth.CursorType = Cursors.Default;
+            lblUseWinAuth.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblUseWinAuth.Location = new Point(93, 168);
+            lblUseWinAuth.Name = "lblUseWinAuth";
+            lblUseWinAuth.RightToLeft = RightToLeft.No;
+            lblUseWinAuth.Size = new Size(154, 15);
+            lblUseWinAuth.TabIndex = 20;
+            lblUseWinAuth.Text = "Use Windows Authentication";
+            lblUseWinAuth.TextAlignment = ContentAlignment.TopLeft;
+            lblUseWinAuth.TextFormat = Bunifu.UI.WinForms.BunifuLabel.TextFormattingOptions.Default;
+            // 
+            // bunifuFormDrag1
+            // 
+            bunifuFormDrag1.AllowOpacityChangesWhileDragging = false;
+            bunifuFormDrag1.ContainerControl = this;
+            bunifuFormDrag1.DockIndicatorsOpacity = 0.5D;
+            bunifuFormDrag1.DockingIndicatorsColor = Color.FromArgb(202, 215, 233);
+            bunifuFormDrag1.DockingOptions.DockAll = true;
+            bunifuFormDrag1.DockingOptions.DockBottomLeft = true;
+            bunifuFormDrag1.DockingOptions.DockBottomRight = true;
+            bunifuFormDrag1.DockingOptions.DockFullScreen = true;
+            bunifuFormDrag1.DockingOptions.DockLeft = true;
+            bunifuFormDrag1.DockingOptions.DockRight = true;
+            bunifuFormDrag1.DockingOptions.DockTopLeft = true;
+            bunifuFormDrag1.DockingOptions.DockTopRight = true;
+            bunifuFormDrag1.DragOpacity = 0.9D;
+            bunifuFormDrag1.Enabled = true;
+            bunifuFormDrag1.ParentForm = this;
+            bunifuFormDrag1.ShowCursorChanges = true;
+            bunifuFormDrag1.ShowDockingIndicators = true;
+            bunifuFormDrag1.TitleBarOptions.BunifuFormDrag = bunifuFormDrag1;
+            bunifuFormDrag1.TitleBarOptions.DoubleClickToExpandWindow = true;
+            bunifuFormDrag1.TitleBarOptions.Enabled = true;
+            bunifuFormDrag1.TitleBarOptions.TitleBarControl = null;
+            bunifuFormDrag1.TitleBarOptions.UseBackColorOnDockingIndicators = false;
             // 
             // ConnectionDialog
             // 
-            this.AcceptButton = this.btnConnect;
-            this.ClientSize = new System.Drawing.Size(424, 301);
-            this.Controls.Add(this.lblServer);
-            this.Controls.Add(this.txtServer);
-            this.Controls.Add(this.lblDatabase);
-            this.Controls.Add(this.txtDatabase);
-            this.Controls.Add(this.chkIntegratedSecurity);
-            this.Controls.Add(this.lblUsername);
-            this.Controls.Add(this.txtUsername);
-            this.Controls.Add(this.lblPassword);
-            this.Controls.Add(this.txtPassword);
-            this.Controls.Add(this.btnConnect);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "ConnectionDialog";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Database Connection Settings";
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            ClientSize = new Size(425, 350);
+            Controls.Add(lblUseWinAuth);
+            Controls.Add(chkIntegratedSecurity);
+            Controls.Add(txtDatabase);
+            Controls.Add(txtServer);
+            Controls.Add(txtPassword);
+            Controls.Add(txtUsername);
+            Controls.Add(bunifuLabel1);
+            Controls.Add(btnCreateDatabase);
+            Controls.Add(btnConnect);
+            Controls.Add(bunifuFormControlBox1);
+            FormBorderStyle = FormBorderStyle.None;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "ConnectionDialog";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Database Connection Settings";
+            ResumeLayout(false);
+            PerformLayout();
         }
     }
 } 

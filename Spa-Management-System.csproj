@@ -34,6 +34,12 @@
     <Folder Include="Images\Services\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="SpaManagement.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy &quot;$(ProjectDir)Images&quot; &quot;$(TargetDir)Images&quot; /E /I /Y" />
   </Target>
