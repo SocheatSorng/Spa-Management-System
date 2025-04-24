@@ -57,6 +57,7 @@
             Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties18 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
             Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties19 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
             Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties20 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
+            Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderEdges borderEdges6 = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderEdges();
             bunifuPanel2 = new Bunifu.UI.WinForms.BunifuPanel();
             label11 = new Label();
             btnExitProgram = new Bunifu.UI.WinForms.BunifuButton.BunifuIconButton();
@@ -67,15 +68,11 @@
             btnNew = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
             dgvCustomer = new Bunifu.UI.WinForms.BunifuDataGridView();
             txtID = new Bunifu.UI.WinForms.BunifuTextBox();
-            label1 = new Label();
             txtCustomerID = new Bunifu.UI.WinForms.BunifuTextBox();
-            label2 = new Label();
             txtIssuedTime = new Bunifu.UI.WinForms.BunifuTextBox();
-            label3 = new Label();
             txtNote = new Bunifu.UI.WinForms.BunifuTextBox();
-            label4 = new Label();
             bunifuFormDock1 = new Bunifu.UI.WinForms.BunifuFormDock();
-            btnSetDamaged = new Button();
+            btnSetDamaged = new Bunifu.UI.WinForms.BunifuButton.BunifuButton2();
             bunifuPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvCustomer).BeginInit();
             SuspendLayout();
@@ -94,7 +91,7 @@
             bunifuPanel2.Location = new Point(0, 0);
             bunifuPanel2.Name = "bunifuPanel2";
             bunifuPanel2.ShowBorders = true;
-            bunifuPanel2.Size = new Size(1148, 65);
+            bunifuPanel2.Size = new Size(870, 65);
             bunifuPanel2.TabIndex = 92;
             // 
             // label11
@@ -102,7 +99,7 @@
             label11.AutoSize = true;
             label11.BackColor = Color.Transparent;
             label11.Font = new Font("Microsoft Sans Serif", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label11.Location = new Point(474, 15);
+            label11.Location = new Point(355, 20);
             label11.Name = "label11";
             label11.Size = new Size(181, 24);
             label11.TabIndex = 74;
@@ -130,7 +127,7 @@
             btnExitProgram.DialogResult = DialogResult.None;
             btnExitProgram.Image = (Image)resources.GetObject("btnExitProgram.Image");
             btnExitProgram.ImageMargin = new Padding(0);
-            btnExitProgram.Location = new Point(1113, 13);
+            btnExitProgram.Location = new Point(832, 15);
             btnExitProgram.Name = "btnExitProgram";
             btnExitProgram.RoundBorders = true;
             btnExitProgram.ShowBorders = true;
@@ -152,11 +149,11 @@
             txtSearch.BorderColorDisabled = Color.FromArgb(204, 204, 204);
             txtSearch.BorderColorHover = Color.DarkGoldenrod;
             txtSearch.BorderColorIdle = Color.Silver;
-            txtSearch.BorderRadius = 35;
+            txtSearch.BorderRadius = 15;
             txtSearch.BorderThickness = 1;
             txtSearch.CharacterCase = Bunifu.UI.WinForms.BunifuTextBox.CharacterCases.Normal;
             txtSearch.CharacterCasing = CharacterCasing.Normal;
-            txtSearch.DefaultFont = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            txtSearch.DefaultFont = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             txtSearch.DefaultText = "";
             txtSearch.FillColor = Color.White;
             txtSearch.HideSelection = true;
@@ -165,7 +162,7 @@
             txtSearch.IconPadding = 10;
             txtSearch.IconRight = null;
             txtSearch.IconRightCursor = Cursors.IBeam;
-            txtSearch.Location = new Point(474, 81);
+            txtSearch.Location = new Point(356, 71);
             txtSearch.MaxLength = 32767;
             txtSearch.MinimumSize = new Size(1, 1);
             txtSearch.Modified = false;
@@ -201,7 +198,7 @@
             txtSearch.SelectionLength = 0;
             txtSearch.SelectionStart = 0;
             txtSearch.ShortcutsEnabled = true;
-            txtSearch.Size = new Size(661, 44);
+            txtSearch.Size = new Size(502, 38);
             txtSearch.Style = Bunifu.UI.WinForms.BunifuTextBox._Style.Bunifu;
             txtSearch.TabIndex = 113;
             txtSearch.TextAlign = HorizontalAlignment.Left;
@@ -240,7 +237,7 @@
             btnClear.DisabledFillColor = Color.FromArgb(204, 204, 204);
             btnClear.DisabledForecolor = Color.FromArgb(168, 160, 168);
             btnClear.FocusState = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.ButtonStates.Pressed;
-            btnClear.Font = new Font("Sitka Text", 9F);
+            btnClear.Font = new Font("Segoe UI", 9F);
             btnClear.ForeColor = Color.Black;
             btnClear.IconLeftAlign = ContentAlignment.MiddleLeft;
             btnClear.IconLeftCursor = Cursors.Default;
@@ -252,16 +249,16 @@
             btnClear.IconRightPadding = new Padding(3, 3, 7, 3);
             btnClear.IconSize = 25;
             btnClear.IdleBorderColor = Color.White;
-            btnClear.IdleBorderRadius = 35;
+            btnClear.IdleBorderRadius = 15;
             btnClear.IdleBorderThickness = 1;
             btnClear.IdleFillColor = Color.White;
             btnClear.IdleIconLeftImage = null;
             btnClear.IdleIconRightImage = null;
             btnClear.IndicateFocus = false;
-            btnClear.Location = new Point(271, 77);
+            btnClear.Location = new Point(270, 71);
             btnClear.Name = "btnClear";
             btnClear.OnDisabledState.BorderColor = Color.FromArgb(191, 191, 191);
-            btnClear.OnDisabledState.BorderRadius = 35;
+            btnClear.OnDisabledState.BorderRadius = 15;
             btnClear.OnDisabledState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
             btnClear.OnDisabledState.BorderThickness = 1;
             btnClear.OnDisabledState.FillColor = Color.FromArgb(204, 204, 204);
@@ -269,7 +266,7 @@
             btnClear.OnDisabledState.IconLeftImage = null;
             btnClear.OnDisabledState.IconRightImage = null;
             btnClear.onHoverState.BorderColor = Color.DarkGoldenrod;
-            btnClear.onHoverState.BorderRadius = 35;
+            btnClear.onHoverState.BorderRadius = 15;
             btnClear.onHoverState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
             btnClear.onHoverState.BorderThickness = 1;
             btnClear.onHoverState.FillColor = Color.White;
@@ -277,7 +274,7 @@
             btnClear.onHoverState.IconLeftImage = null;
             btnClear.onHoverState.IconRightImage = null;
             btnClear.OnIdleState.BorderColor = Color.White;
-            btnClear.OnIdleState.BorderRadius = 35;
+            btnClear.OnIdleState.BorderRadius = 15;
             btnClear.OnIdleState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
             btnClear.OnIdleState.BorderThickness = 1;
             btnClear.OnIdleState.FillColor = Color.White;
@@ -285,7 +282,7 @@
             btnClear.OnIdleState.IconLeftImage = null;
             btnClear.OnIdleState.IconRightImage = null;
             btnClear.OnPressedState.BorderColor = Color.FromArgb(40, 96, 144);
-            btnClear.OnPressedState.BorderRadius = 35;
+            btnClear.OnPressedState.BorderRadius = 15;
             btnClear.OnPressedState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
             btnClear.OnPressedState.BorderThickness = 1;
             btnClear.OnPressedState.FillColor = Color.FromArgb(40, 96, 144);
@@ -328,7 +325,7 @@
             btnUpdate.DisabledFillColor = Color.FromArgb(204, 204, 204);
             btnUpdate.DisabledForecolor = Color.FromArgb(168, 160, 168);
             btnUpdate.FocusState = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.ButtonStates.Pressed;
-            btnUpdate.Font = new Font("Sitka Text", 9F);
+            btnUpdate.Font = new Font("Segoe UI", 9F);
             btnUpdate.ForeColor = Color.Black;
             btnUpdate.IconLeftAlign = ContentAlignment.MiddleLeft;
             btnUpdate.IconLeftCursor = Cursors.Default;
@@ -340,16 +337,16 @@
             btnUpdate.IconRightPadding = new Padding(3, 3, 7, 3);
             btnUpdate.IconSize = 25;
             btnUpdate.IdleBorderColor = Color.White;
-            btnUpdate.IdleBorderRadius = 35;
+            btnUpdate.IdleBorderRadius = 15;
             btnUpdate.IdleBorderThickness = 1;
             btnUpdate.IdleFillColor = Color.White;
             btnUpdate.IdleIconLeftImage = null;
             btnUpdate.IdleIconRightImage = null;
             btnUpdate.IndicateFocus = false;
-            btnUpdate.Location = new Point(185, 77);
+            btnUpdate.Location = new Point(184, 71);
             btnUpdate.Name = "btnUpdate";
             btnUpdate.OnDisabledState.BorderColor = Color.FromArgb(191, 191, 191);
-            btnUpdate.OnDisabledState.BorderRadius = 35;
+            btnUpdate.OnDisabledState.BorderRadius = 15;
             btnUpdate.OnDisabledState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
             btnUpdate.OnDisabledState.BorderThickness = 1;
             btnUpdate.OnDisabledState.FillColor = Color.FromArgb(204, 204, 204);
@@ -357,7 +354,7 @@
             btnUpdate.OnDisabledState.IconLeftImage = null;
             btnUpdate.OnDisabledState.IconRightImage = null;
             btnUpdate.onHoverState.BorderColor = Color.DarkGoldenrod;
-            btnUpdate.onHoverState.BorderRadius = 35;
+            btnUpdate.onHoverState.BorderRadius = 15;
             btnUpdate.onHoverState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
             btnUpdate.onHoverState.BorderThickness = 1;
             btnUpdate.onHoverState.FillColor = Color.White;
@@ -365,7 +362,7 @@
             btnUpdate.onHoverState.IconLeftImage = null;
             btnUpdate.onHoverState.IconRightImage = null;
             btnUpdate.OnIdleState.BorderColor = Color.White;
-            btnUpdate.OnIdleState.BorderRadius = 35;
+            btnUpdate.OnIdleState.BorderRadius = 15;
             btnUpdate.OnIdleState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
             btnUpdate.OnIdleState.BorderThickness = 1;
             btnUpdate.OnIdleState.FillColor = Color.White;
@@ -373,7 +370,7 @@
             btnUpdate.OnIdleState.IconLeftImage = null;
             btnUpdate.OnIdleState.IconRightImage = null;
             btnUpdate.OnPressedState.BorderColor = Color.FromArgb(40, 96, 144);
-            btnUpdate.OnPressedState.BorderRadius = 35;
+            btnUpdate.OnPressedState.BorderRadius = 15;
             btnUpdate.OnPressedState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
             btnUpdate.OnPressedState.BorderThickness = 1;
             btnUpdate.OnPressedState.FillColor = Color.FromArgb(40, 96, 144);
@@ -416,7 +413,7 @@
             btnInsert.DisabledFillColor = Color.FromArgb(204, 204, 204);
             btnInsert.DisabledForecolor = Color.FromArgb(168, 160, 168);
             btnInsert.FocusState = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.ButtonStates.Pressed;
-            btnInsert.Font = new Font("Sitka Text", 9F);
+            btnInsert.Font = new Font("Segoe UI", 9F);
             btnInsert.ForeColor = Color.Black;
             btnInsert.IconLeftAlign = ContentAlignment.MiddleLeft;
             btnInsert.IconLeftCursor = Cursors.Default;
@@ -428,16 +425,16 @@
             btnInsert.IconRightPadding = new Padding(3, 3, 7, 3);
             btnInsert.IconSize = 25;
             btnInsert.IdleBorderColor = Color.White;
-            btnInsert.IdleBorderRadius = 35;
+            btnInsert.IdleBorderRadius = 15;
             btnInsert.IdleBorderThickness = 1;
             btnInsert.IdleFillColor = Color.White;
             btnInsert.IdleIconLeftImage = null;
             btnInsert.IdleIconRightImage = null;
             btnInsert.IndicateFocus = false;
-            btnInsert.Location = new Point(99, 77);
+            btnInsert.Location = new Point(98, 71);
             btnInsert.Name = "btnInsert";
             btnInsert.OnDisabledState.BorderColor = Color.FromArgb(191, 191, 191);
-            btnInsert.OnDisabledState.BorderRadius = 35;
+            btnInsert.OnDisabledState.BorderRadius = 15;
             btnInsert.OnDisabledState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
             btnInsert.OnDisabledState.BorderThickness = 1;
             btnInsert.OnDisabledState.FillColor = Color.FromArgb(204, 204, 204);
@@ -445,7 +442,7 @@
             btnInsert.OnDisabledState.IconLeftImage = null;
             btnInsert.OnDisabledState.IconRightImage = null;
             btnInsert.onHoverState.BorderColor = Color.DarkGoldenrod;
-            btnInsert.onHoverState.BorderRadius = 35;
+            btnInsert.onHoverState.BorderRadius = 15;
             btnInsert.onHoverState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
             btnInsert.onHoverState.BorderThickness = 1;
             btnInsert.onHoverState.FillColor = Color.White;
@@ -453,7 +450,7 @@
             btnInsert.onHoverState.IconLeftImage = null;
             btnInsert.onHoverState.IconRightImage = null;
             btnInsert.OnIdleState.BorderColor = Color.White;
-            btnInsert.OnIdleState.BorderRadius = 35;
+            btnInsert.OnIdleState.BorderRadius = 15;
             btnInsert.OnIdleState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
             btnInsert.OnIdleState.BorderThickness = 1;
             btnInsert.OnIdleState.FillColor = Color.White;
@@ -461,7 +458,7 @@
             btnInsert.OnIdleState.IconLeftImage = null;
             btnInsert.OnIdleState.IconRightImage = null;
             btnInsert.OnPressedState.BorderColor = Color.FromArgb(40, 96, 144);
-            btnInsert.OnPressedState.BorderRadius = 35;
+            btnInsert.OnPressedState.BorderRadius = 15;
             btnInsert.OnPressedState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
             btnInsert.OnPressedState.BorderThickness = 1;
             btnInsert.OnPressedState.FillColor = Color.FromArgb(40, 96, 144);
@@ -504,7 +501,7 @@
             btnNew.DisabledFillColor = Color.FromArgb(204, 204, 204);
             btnNew.DisabledForecolor = Color.FromArgb(168, 160, 168);
             btnNew.FocusState = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.ButtonStates.Pressed;
-            btnNew.Font = new Font("Sitka Text", 9F);
+            btnNew.Font = new Font("Segoe UI", 9F);
             btnNew.ForeColor = Color.Black;
             btnNew.IconLeftAlign = ContentAlignment.MiddleLeft;
             btnNew.IconLeftCursor = Cursors.Default;
@@ -516,16 +513,16 @@
             btnNew.IconRightPadding = new Padding(3, 3, 7, 3);
             btnNew.IconSize = 25;
             btnNew.IdleBorderColor = Color.White;
-            btnNew.IdleBorderRadius = 35;
+            btnNew.IdleBorderRadius = 15;
             btnNew.IdleBorderThickness = 1;
             btnNew.IdleFillColor = Color.White;
             btnNew.IdleIconLeftImage = null;
             btnNew.IdleIconRightImage = null;
             btnNew.IndicateFocus = false;
-            btnNew.Location = new Point(13, 77);
+            btnNew.Location = new Point(12, 71);
             btnNew.Name = "btnNew";
             btnNew.OnDisabledState.BorderColor = Color.FromArgb(191, 191, 191);
-            btnNew.OnDisabledState.BorderRadius = 35;
+            btnNew.OnDisabledState.BorderRadius = 15;
             btnNew.OnDisabledState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
             btnNew.OnDisabledState.BorderThickness = 1;
             btnNew.OnDisabledState.FillColor = Color.FromArgb(204, 204, 204);
@@ -533,7 +530,7 @@
             btnNew.OnDisabledState.IconLeftImage = null;
             btnNew.OnDisabledState.IconRightImage = null;
             btnNew.onHoverState.BorderColor = Color.DarkGoldenrod;
-            btnNew.onHoverState.BorderRadius = 35;
+            btnNew.onHoverState.BorderRadius = 15;
             btnNew.onHoverState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
             btnNew.onHoverState.BorderThickness = 1;
             btnNew.onHoverState.FillColor = Color.White;
@@ -541,7 +538,7 @@
             btnNew.onHoverState.IconLeftImage = null;
             btnNew.onHoverState.IconRightImage = null;
             btnNew.OnIdleState.BorderColor = Color.White;
-            btnNew.OnIdleState.BorderRadius = 35;
+            btnNew.OnIdleState.BorderRadius = 15;
             btnNew.OnIdleState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
             btnNew.OnIdleState.BorderThickness = 1;
             btnNew.OnIdleState.FillColor = Color.White;
@@ -549,7 +546,7 @@
             btnNew.OnIdleState.IconLeftImage = null;
             btnNew.OnIdleState.IconRightImage = null;
             btnNew.OnPressedState.BorderColor = Color.FromArgb(40, 96, 144);
-            btnNew.OnPressedState.BorderRadius = 35;
+            btnNew.OnPressedState.BorderRadius = 15;
             btnNew.OnPressedState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
             btnNew.OnPressedState.BorderThickness = 1;
             btnNew.OnPressedState.FillColor = Color.FromArgb(40, 96, 144);
@@ -616,13 +613,13 @@
             dgvCustomer.HeaderBackColor = Color.Orange;
             dgvCustomer.HeaderBgColor = Color.Empty;
             dgvCustomer.HeaderForeColor = Color.White;
-            dgvCustomer.Location = new Point(474, 151);
+            dgvCustomer.Location = new Point(357, 115);
             dgvCustomer.Name = "dgvCustomer";
             dgvCustomer.RowHeadersVisible = false;
             dgvCustomer.RowTemplate.Height = 40;
             dgvCustomer.ScrollBars = ScrollBars.Vertical;
             dgvCustomer.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvCustomer.Size = new Size(665, 506);
+            dgvCustomer.Size = new Size(501, 373);
             dgvCustomer.TabIndex = 123;
             dgvCustomer.Theme = Bunifu.UI.WinForms.BunifuDataGridView.PresetThemes.Orange;
             // 
@@ -640,11 +637,11 @@
             txtID.BorderColorDisabled = Color.FromArgb(204, 204, 204);
             txtID.BorderColorHover = Color.DarkGoldenrod;
             txtID.BorderColorIdle = Color.Silver;
-            txtID.BorderRadius = 35;
+            txtID.BorderRadius = 15;
             txtID.BorderThickness = 1;
             txtID.CharacterCase = Bunifu.UI.WinForms.BunifuTextBox.CharacterCases.Normal;
             txtID.CharacterCasing = CharacterCasing.Normal;
-            txtID.DefaultFont = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold);
+            txtID.DefaultFont = new Font("Segoe UI", 9F, FontStyle.Bold);
             txtID.DefaultText = "";
             txtID.Enabled = false;
             txtID.FillColor = Color.White;
@@ -654,7 +651,7 @@
             txtID.IconPadding = 10;
             txtID.IconRight = null;
             txtID.IconRightCursor = Cursors.IBeam;
-            txtID.Location = new Point(166, 151);
+            txtID.Location = new Point(13, 116);
             txtID.MaxLength = 32767;
             txtID.MinimumSize = new Size(1, 1);
             txtID.Modified = false;
@@ -683,33 +680,23 @@
             txtID.Padding = new Padding(3);
             txtID.PasswordChar = '\0';
             txtID.PlaceholderForeColor = Color.Silver;
-            txtID.PlaceholderText = "Enter text";
+            txtID.PlaceholderText = "Card ID";
             txtID.ReadOnly = true;
             txtID.ScrollBars = ScrollBars.None;
             txtID.SelectedText = "";
             txtID.SelectionLength = 0;
             txtID.SelectionStart = 0;
             txtID.ShortcutsEnabled = true;
-            txtID.Size = new Size(271, 44);
+            txtID.Size = new Size(338, 38);
             txtID.Style = Bunifu.UI.WinForms.BunifuTextBox._Style.Bunifu;
             txtID.TabIndex = 125;
             txtID.TextAlign = HorizontalAlignment.Left;
             txtID.TextMarginBottom = 0;
             txtID.TextMarginLeft = 3;
             txtID.TextMarginTop = 1;
-            txtID.TextPlaceholder = "Enter text";
+            txtID.TextPlaceholder = "Card ID";
             txtID.UseSystemPasswordChar = false;
             txtID.WordWrap = true;
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Sitka Text", 14.2499981F);
-            label1.Location = new Point(13, 151);
-            label1.Name = "label1";
-            label1.Size = new Size(32, 28);
-            label1.TabIndex = 124;
-            label1.Text = "ID";
             // 
             // txtCustomerID
             // 
@@ -725,11 +712,11 @@
             txtCustomerID.BorderColorDisabled = Color.FromArgb(204, 204, 204);
             txtCustomerID.BorderColorHover = Color.DarkGoldenrod;
             txtCustomerID.BorderColorIdle = Color.Silver;
-            txtCustomerID.BorderRadius = 35;
+            txtCustomerID.BorderRadius = 15;
             txtCustomerID.BorderThickness = 1;
             txtCustomerID.CharacterCase = Bunifu.UI.WinForms.BunifuTextBox.CharacterCases.Normal;
             txtCustomerID.CharacterCasing = CharacterCasing.Normal;
-            txtCustomerID.DefaultFont = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold);
+            txtCustomerID.DefaultFont = new Font("Segoe UI", 9F, FontStyle.Bold);
             txtCustomerID.DefaultText = "";
             txtCustomerID.FillColor = Color.White;
             txtCustomerID.HideSelection = false;
@@ -738,7 +725,7 @@
             txtCustomerID.IconPadding = 10;
             txtCustomerID.IconRight = null;
             txtCustomerID.IconRightCursor = Cursors.IBeam;
-            txtCustomerID.Location = new Point(166, 201);
+            txtCustomerID.Location = new Point(12, 160);
             txtCustomerID.MaxLength = 32767;
             txtCustomerID.MinimumSize = new Size(1, 1);
             txtCustomerID.Modified = false;
@@ -767,33 +754,23 @@
             txtCustomerID.Padding = new Padding(3);
             txtCustomerID.PasswordChar = '\0';
             txtCustomerID.PlaceholderForeColor = Color.Silver;
-            txtCustomerID.PlaceholderText = "Enter text";
+            txtCustomerID.PlaceholderText = "Card Number";
             txtCustomerID.ReadOnly = false;
             txtCustomerID.ScrollBars = ScrollBars.None;
             txtCustomerID.SelectedText = "";
             txtCustomerID.SelectionLength = 0;
             txtCustomerID.SelectionStart = 0;
             txtCustomerID.ShortcutsEnabled = true;
-            txtCustomerID.Size = new Size(271, 44);
+            txtCustomerID.Size = new Size(338, 38);
             txtCustomerID.Style = Bunifu.UI.WinForms.BunifuTextBox._Style.Bunifu;
             txtCustomerID.TabIndex = 127;
             txtCustomerID.TextAlign = HorizontalAlignment.Left;
             txtCustomerID.TextMarginBottom = 0;
             txtCustomerID.TextMarginLeft = 3;
             txtCustomerID.TextMarginTop = 1;
-            txtCustomerID.TextPlaceholder = "Enter text";
+            txtCustomerID.TextPlaceholder = "Card Number";
             txtCustomerID.UseSystemPasswordChar = false;
             txtCustomerID.WordWrap = true;
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Font = new Font("Sitka Text", 14.2499981F);
-            label2.Location = new Point(13, 201);
-            label2.Name = "label2";
-            label2.Size = new Size(132, 28);
-            label2.TabIndex = 126;
-            label2.Text = "Card Number";
             // 
             // txtIssuedTime
             // 
@@ -809,11 +786,11 @@
             txtIssuedTime.BorderColorDisabled = Color.FromArgb(204, 204, 204);
             txtIssuedTime.BorderColorHover = Color.DarkGoldenrod;
             txtIssuedTime.BorderColorIdle = Color.Silver;
-            txtIssuedTime.BorderRadius = 35;
+            txtIssuedTime.BorderRadius = 15;
             txtIssuedTime.BorderThickness = 1;
             txtIssuedTime.CharacterCase = Bunifu.UI.WinForms.BunifuTextBox.CharacterCases.Normal;
             txtIssuedTime.CharacterCasing = CharacterCasing.Normal;
-            txtIssuedTime.DefaultFont = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold);
+            txtIssuedTime.DefaultFont = new Font("Segoe UI", 9F, FontStyle.Bold);
             txtIssuedTime.DefaultText = "";
             txtIssuedTime.Enabled = false;
             txtIssuedTime.FillColor = Color.White;
@@ -823,7 +800,7 @@
             txtIssuedTime.IconPadding = 10;
             txtIssuedTime.IconRight = null;
             txtIssuedTime.IconRightCursor = Cursors.IBeam;
-            txtIssuedTime.Location = new Point(166, 251);
+            txtIssuedTime.Location = new Point(13, 204);
             txtIssuedTime.MaxLength = 32767;
             txtIssuedTime.MinimumSize = new Size(1, 1);
             txtIssuedTime.Modified = false;
@@ -852,33 +829,23 @@
             txtIssuedTime.Padding = new Padding(3);
             txtIssuedTime.PasswordChar = '\0';
             txtIssuedTime.PlaceholderForeColor = Color.Silver;
-            txtIssuedTime.PlaceholderText = "Enter text";
+            txtIssuedTime.PlaceholderText = "Issued Time";
             txtIssuedTime.ReadOnly = true;
             txtIssuedTime.ScrollBars = ScrollBars.None;
             txtIssuedTime.SelectedText = "";
             txtIssuedTime.SelectionLength = 0;
             txtIssuedTime.SelectionStart = 0;
             txtIssuedTime.ShortcutsEnabled = true;
-            txtIssuedTime.Size = new Size(271, 44);
+            txtIssuedTime.Size = new Size(338, 38);
             txtIssuedTime.Style = Bunifu.UI.WinForms.BunifuTextBox._Style.Bunifu;
             txtIssuedTime.TabIndex = 129;
             txtIssuedTime.TextAlign = HorizontalAlignment.Left;
             txtIssuedTime.TextMarginBottom = 0;
             txtIssuedTime.TextMarginLeft = 3;
             txtIssuedTime.TextMarginTop = 1;
-            txtIssuedTime.TextPlaceholder = "Enter text";
+            txtIssuedTime.TextPlaceholder = "Issued Time";
             txtIssuedTime.UseSystemPasswordChar = false;
             txtIssuedTime.WordWrap = true;
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Font = new Font("Sitka Text", 14.2499981F);
-            label3.Location = new Point(13, 251);
-            label3.Name = "label3";
-            label3.Size = new Size(119, 28);
-            label3.TabIndex = 128;
-            label3.Text = "Issued Time";
             // 
             // txtNote
             // 
@@ -894,11 +861,11 @@
             txtNote.BorderColorDisabled = Color.FromArgb(204, 204, 204);
             txtNote.BorderColorHover = Color.DarkGoldenrod;
             txtNote.BorderColorIdle = Color.Silver;
-            txtNote.BorderRadius = 35;
+            txtNote.BorderRadius = 15;
             txtNote.BorderThickness = 1;
             txtNote.CharacterCase = Bunifu.UI.WinForms.BunifuTextBox.CharacterCases.Normal;
             txtNote.CharacterCasing = CharacterCasing.Normal;
-            txtNote.DefaultFont = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold);
+            txtNote.DefaultFont = new Font("Segoe UI", 9F, FontStyle.Bold);
             txtNote.DefaultText = "";
             txtNote.FillColor = Color.White;
             txtNote.HideSelection = true;
@@ -907,7 +874,7 @@
             txtNote.IconPadding = 10;
             txtNote.IconRight = null;
             txtNote.IconRightCursor = Cursors.IBeam;
-            txtNote.Location = new Point(166, 301);
+            txtNote.Location = new Point(12, 248);
             txtNote.MaxLength = 32767;
             txtNote.MinimumSize = new Size(1, 1);
             txtNote.Modified = false;
@@ -936,33 +903,23 @@
             txtNote.Padding = new Padding(3);
             txtNote.PasswordChar = '\0';
             txtNote.PlaceholderForeColor = Color.Silver;
-            txtNote.PlaceholderText = "Enter text";
+            txtNote.PlaceholderText = "Enter note";
             txtNote.ReadOnly = false;
             txtNote.ScrollBars = ScrollBars.None;
             txtNote.SelectedText = "";
             txtNote.SelectionLength = 0;
             txtNote.SelectionStart = 0;
             txtNote.ShortcutsEnabled = true;
-            txtNote.Size = new Size(271, 44);
+            txtNote.Size = new Size(338, 38);
             txtNote.Style = Bunifu.UI.WinForms.BunifuTextBox._Style.Bunifu;
             txtNote.TabIndex = 131;
             txtNote.TextAlign = HorizontalAlignment.Left;
             txtNote.TextMarginBottom = 0;
             txtNote.TextMarginLeft = 3;
             txtNote.TextMarginTop = 1;
-            txtNote.TextPlaceholder = "Enter text";
+            txtNote.TextPlaceholder = "Enter note";
             txtNote.UseSystemPasswordChar = false;
             txtNote.WordWrap = true;
-            // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.Font = new Font("Sitka Text", 14.2499981F);
-            label4.Location = new Point(13, 301);
-            label4.Name = "label4";
-            label4.Size = new Size(55, 28);
-            label4.TabIndex = 130;
-            label4.Text = "Note";
             // 
             // bunifuFormDock1
             // 
@@ -1006,33 +963,102 @@
             // 
             // btnSetDamaged
             // 
-            btnSetDamaged.BackColor = Color.FromArgb(229, 57, 53);
-            btnSetDamaged.FlatAppearance.BorderSize = 0;
-            btnSetDamaged.FlatStyle = FlatStyle.Flat;
-            btnSetDamaged.Font = new Font("Sitka Text", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnSetDamaged.AllowAnimations = true;
+            btnSetDamaged.AllowMouseEffects = true;
+            btnSetDamaged.AllowToggling = false;
+            btnSetDamaged.AnimationSpeed = 200;
+            btnSetDamaged.AutoGenerateColors = false;
+            btnSetDamaged.AutoRoundBorders = false;
+            btnSetDamaged.AutoSizeLeftIcon = true;
+            btnSetDamaged.AutoSizeRightIcon = true;
+            btnSetDamaged.BackColor = Color.Transparent;
+            btnSetDamaged.BackColor1 = Color.Red;
+            btnSetDamaged.BackgroundImage = (Image)resources.GetObject("btnSetDamaged.BackgroundImage");
+            btnSetDamaged.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
+            btnSetDamaged.ButtonText = "Set as damaged";
+            btnSetDamaged.ButtonTextMarginLeft = 0;
+            btnSetDamaged.ColorContrastOnClick = 45;
+            btnSetDamaged.ColorContrastOnHover = 45;
+            borderEdges6.BottomLeft = true;
+            borderEdges6.BottomRight = true;
+            borderEdges6.TopLeft = true;
+            borderEdges6.TopRight = true;
+            btnSetDamaged.CustomizableEdges = borderEdges6;
+            btnSetDamaged.DialogResult = DialogResult.None;
+            btnSetDamaged.DisabledBorderColor = Color.FromArgb(191, 191, 191);
+            btnSetDamaged.DisabledFillColor = Color.FromArgb(204, 204, 204);
+            btnSetDamaged.DisabledForecolor = Color.FromArgb(168, 160, 168);
+            btnSetDamaged.FocusState = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.ButtonStates.Pressed;
+            btnSetDamaged.Font = new Font("Segoe UI", 9F);
             btnSetDamaged.ForeColor = Color.White;
-            btnSetDamaged.Location = new Point(13, 367);
+            btnSetDamaged.IconLeftAlign = ContentAlignment.MiddleLeft;
+            btnSetDamaged.IconLeftCursor = Cursors.Default;
+            btnSetDamaged.IconLeftPadding = new Padding(11, 3, 3, 3);
+            btnSetDamaged.IconMarginLeft = 11;
+            btnSetDamaged.IconPadding = 10;
+            btnSetDamaged.IconRightAlign = ContentAlignment.MiddleRight;
+            btnSetDamaged.IconRightCursor = Cursors.Default;
+            btnSetDamaged.IconRightPadding = new Padding(3, 3, 7, 3);
+            btnSetDamaged.IconSize = 25;
+            btnSetDamaged.IdleBorderColor = Color.Red;
+            btnSetDamaged.IdleBorderRadius = 15;
+            btnSetDamaged.IdleBorderThickness = 1;
+            btnSetDamaged.IdleFillColor = Color.Red;
+            btnSetDamaged.IdleIconLeftImage = null;
+            btnSetDamaged.IdleIconRightImage = null;
+            btnSetDamaged.IndicateFocus = false;
+            btnSetDamaged.Location = new Point(13, 292);
             btnSetDamaged.Name = "btnSetDamaged";
-            btnSetDamaged.Size = new Size(424, 40);
-            btnSetDamaged.TabIndex = 132;
-            btnSetDamaged.Text = "Set as Damaged";
-            btnSetDamaged.UseVisualStyleBackColor = false;
-            btnSetDamaged.Click += btnSetDamaged_Click;
+            btnSetDamaged.OnDisabledState.BorderColor = Color.FromArgb(191, 191, 191);
+            btnSetDamaged.OnDisabledState.BorderRadius = 15;
+            btnSetDamaged.OnDisabledState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
+            btnSetDamaged.OnDisabledState.BorderThickness = 1;
+            btnSetDamaged.OnDisabledState.FillColor = Color.FromArgb(204, 204, 204);
+            btnSetDamaged.OnDisabledState.ForeColor = Color.FromArgb(168, 160, 168);
+            btnSetDamaged.OnDisabledState.IconLeftImage = null;
+            btnSetDamaged.OnDisabledState.IconRightImage = null;
+            btnSetDamaged.onHoverState.BorderColor = Color.FromArgb(105, 181, 255);
+            btnSetDamaged.onHoverState.BorderRadius = 15;
+            btnSetDamaged.onHoverState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
+            btnSetDamaged.onHoverState.BorderThickness = 1;
+            btnSetDamaged.onHoverState.FillColor = Color.FromArgb(105, 181, 255);
+            btnSetDamaged.onHoverState.ForeColor = Color.White;
+            btnSetDamaged.onHoverState.IconLeftImage = null;
+            btnSetDamaged.onHoverState.IconRightImage = null;
+            btnSetDamaged.OnIdleState.BorderColor = Color.Red;
+            btnSetDamaged.OnIdleState.BorderRadius = 15;
+            btnSetDamaged.OnIdleState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
+            btnSetDamaged.OnIdleState.BorderThickness = 1;
+            btnSetDamaged.OnIdleState.FillColor = Color.Red;
+            btnSetDamaged.OnIdleState.ForeColor = Color.White;
+            btnSetDamaged.OnIdleState.IconLeftImage = null;
+            btnSetDamaged.OnIdleState.IconRightImage = null;
+            btnSetDamaged.OnPressedState.BorderColor = Color.FromArgb(40, 96, 144);
+            btnSetDamaged.OnPressedState.BorderRadius = 15;
+            btnSetDamaged.OnPressedState.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuButton2.BorderStyles.Solid;
+            btnSetDamaged.OnPressedState.BorderThickness = 1;
+            btnSetDamaged.OnPressedState.FillColor = Color.FromArgb(40, 96, 144);
+            btnSetDamaged.OnPressedState.ForeColor = Color.White;
+            btnSetDamaged.OnPressedState.IconLeftImage = null;
+            btnSetDamaged.OnPressedState.IconRightImage = null;
+            btnSetDamaged.Size = new Size(337, 39);
+            btnSetDamaged.TabIndex = 140;
+            btnSetDamaged.TextAlign = ContentAlignment.MiddleCenter;
+            btnSetDamaged.TextAlignment = HorizontalAlignment.Center;
+            btnSetDamaged.TextMarginLeft = 0;
+            btnSetDamaged.TextPadding = new Padding(0);
+            btnSetDamaged.UseDefaultRadiusAndThickness = true;
             // 
             // Customer
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1148, 670);
+            ClientSize = new Size(870, 500);
             Controls.Add(btnSetDamaged);
             Controls.Add(txtNote);
-            Controls.Add(label4);
             Controls.Add(txtIssuedTime);
-            Controls.Add(label3);
             Controls.Add(txtCustomerID);
-            Controls.Add(label2);
             Controls.Add(txtID);
-            Controls.Add(label1);
             Controls.Add(dgvCustomer);
             Controls.Add(btnClear);
             Controls.Add(btnUpdate);
@@ -1048,7 +1074,6 @@
             bunifuPanel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dgvCustomer).EndInit();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
@@ -1062,14 +1087,10 @@
         private Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnNew;
         private Bunifu.UI.WinForms.BunifuDataGridView dgvCustomer;
         private Bunifu.UI.WinForms.BunifuTextBox txtID;
-        private Label label1;
         private Bunifu.UI.WinForms.BunifuTextBox txtCustomerID;
-        private Label label2;
         private Bunifu.UI.WinForms.BunifuTextBox txtIssuedTime;
-        private Label label3;
         private Bunifu.UI.WinForms.BunifuTextBox txtNote;
-        private Label label4;
         private Bunifu.UI.WinForms.BunifuFormDock bunifuFormDock1;
-        private Button btnSetDamaged;
+        private Bunifu.UI.WinForms.BunifuButton.BunifuButton2 btnSetDamaged;
     }
 }

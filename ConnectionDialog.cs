@@ -577,7 +577,7 @@ namespace Spa_Management_System
                 lblCreateSchema.Size = new Size(300, 20);
                 lblCreateSchema.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
                 createDbDialog.Controls.Add(lblCreateSchema);
-
+                
                 // Update script status message
                 Bunifu.UI.WinForms.BunifuLabel lblScriptStatus = new Bunifu.UI.WinForms.BunifuLabel();
                 lblScriptStatus.Location = new Point(20, 280);
@@ -602,7 +602,7 @@ namespace Spa_Management_System
                     if (File.Exists(path))
                     {
                         scriptPath = path;
-                        scriptExists = true;
+                    scriptExists = true;
                         lblScriptStatus.Text = "SpaManagement.sql found";
                         lblScriptStatus.ForeColor = Color.Green;
                         break;
@@ -2220,7 +2220,6 @@ END";
             Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties6 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
             Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties7 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
             Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties8 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
-            bunifuFormControlBox1 = new Bunifu.UI.WinForms.BunifuFormControlBox();
             btnConnect = new Bunifu.UI.WinForms.BunifuButton.BunifuButton();
             btnCreateDatabase = new Bunifu.UI.WinForms.BunifuButton.BunifuButton();
             bunifuLabel1 = new Bunifu.UI.WinForms.BunifuLabel();
@@ -2231,69 +2230,8 @@ END";
             chkIntegratedSecurity = new Bunifu.UI.WinForms.BunifuCheckBox();
             lblUseWinAuth = new Bunifu.UI.WinForms.BunifuLabel();
             bunifuFormDrag1 = new Bunifu.UI.WinForms.BunifuFormDrag();
+            bunifuFormControlBox1 = new Bunifu.UI.WinForms.BunifuFormControlBox();
             SuspendLayout();
-            // 
-            // bunifuFormControlBox1
-            // 
-            bunifuFormControlBox1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            bunifuFormControlBox1.BackColor = SystemColors.Control;
-            bunifuFormControlBox1.BunifuFormDrag = null;
-            bunifuFormControlBox1.CloseBoxOptions.BackColor = Color.Transparent;
-            bunifuFormControlBox1.CloseBoxOptions.BorderRadius = 0;
-            bunifuFormControlBox1.CloseBoxOptions.Enabled = true;
-            bunifuFormControlBox1.CloseBoxOptions.EnableDefaultAction = true;
-            bunifuFormControlBox1.CloseBoxOptions.HoverColor = Color.FromArgb(232, 17, 35);
-            bunifuFormControlBox1.CloseBoxOptions.Icon = (Image)resources.GetObject("bunifuFormControlBox1.CloseBoxOptions.Icon");
-            bunifuFormControlBox1.CloseBoxOptions.IconAlt = null;
-            bunifuFormControlBox1.CloseBoxOptions.IconColor = Color.Black;
-            bunifuFormControlBox1.CloseBoxOptions.IconHoverColor = Color.White;
-            bunifuFormControlBox1.CloseBoxOptions.IconPressedColor = Color.White;
-            bunifuFormControlBox1.CloseBoxOptions.IconSize = new Size(18, 18);
-            bunifuFormControlBox1.CloseBoxOptions.PressedColor = Color.FromArgb(232, 17, 35);
-            bunifuFormControlBox1.HelpBox = false;
-            bunifuFormControlBox1.HelpBoxOptions.BackColor = Color.Transparent;
-            bunifuFormControlBox1.HelpBoxOptions.BorderRadius = 0;
-            bunifuFormControlBox1.HelpBoxOptions.Enabled = true;
-            bunifuFormControlBox1.HelpBoxOptions.EnableDefaultAction = true;
-            bunifuFormControlBox1.HelpBoxOptions.HoverColor = Color.LightGray;
-            bunifuFormControlBox1.HelpBoxOptions.Icon = (Image)resources.GetObject("bunifuFormControlBox1.HelpBoxOptions.Icon");
-            bunifuFormControlBox1.HelpBoxOptions.IconAlt = null;
-            bunifuFormControlBox1.HelpBoxOptions.IconColor = Color.Black;
-            bunifuFormControlBox1.HelpBoxOptions.IconHoverColor = Color.Black;
-            bunifuFormControlBox1.HelpBoxOptions.IconPressedColor = Color.Black;
-            bunifuFormControlBox1.HelpBoxOptions.IconSize = new Size(22, 22);
-            bunifuFormControlBox1.HelpBoxOptions.PressedColor = Color.Silver;
-            bunifuFormControlBox1.Location = new Point(365, 0);
-            bunifuFormControlBox1.MaximizeBox = false;
-            bunifuFormControlBox1.MaximizeBoxOptions.BackColor = Color.Transparent;
-            bunifuFormControlBox1.MaximizeBoxOptions.BorderRadius = 0;
-            bunifuFormControlBox1.MaximizeBoxOptions.Enabled = true;
-            bunifuFormControlBox1.MaximizeBoxOptions.EnableDefaultAction = true;
-            bunifuFormControlBox1.MaximizeBoxOptions.HoverColor = Color.LightGray;
-            bunifuFormControlBox1.MaximizeBoxOptions.Icon = (Image)resources.GetObject("bunifuFormControlBox1.MaximizeBoxOptions.Icon");
-            bunifuFormControlBox1.MaximizeBoxOptions.IconAlt = (Image)resources.GetObject("bunifuFormControlBox1.MaximizeBoxOptions.IconAlt");
-            bunifuFormControlBox1.MaximizeBoxOptions.IconColor = Color.Black;
-            bunifuFormControlBox1.MaximizeBoxOptions.IconHoverColor = Color.Black;
-            bunifuFormControlBox1.MaximizeBoxOptions.IconPressedColor = Color.Black;
-            bunifuFormControlBox1.MaximizeBoxOptions.IconSize = new Size(16, 16);
-            bunifuFormControlBox1.MaximizeBoxOptions.PressedColor = Color.Silver;
-            bunifuFormControlBox1.MinimizeBox = true;
-            bunifuFormControlBox1.MinimizeBoxOptions.BackColor = Color.Transparent;
-            bunifuFormControlBox1.MinimizeBoxOptions.BorderRadius = 0;
-            bunifuFormControlBox1.MinimizeBoxOptions.Enabled = true;
-            bunifuFormControlBox1.MinimizeBoxOptions.EnableDefaultAction = true;
-            bunifuFormControlBox1.MinimizeBoxOptions.HoverColor = Color.LightGray;
-            bunifuFormControlBox1.MinimizeBoxOptions.Icon = (Image)resources.GetObject("bunifuFormControlBox1.MinimizeBoxOptions.Icon");
-            bunifuFormControlBox1.MinimizeBoxOptions.IconAlt = null;
-            bunifuFormControlBox1.MinimizeBoxOptions.IconColor = Color.Black;
-            bunifuFormControlBox1.MinimizeBoxOptions.IconHoverColor = Color.Black;
-            bunifuFormControlBox1.MinimizeBoxOptions.IconPressedColor = Color.Black;
-            bunifuFormControlBox1.MinimizeBoxOptions.IconSize = new Size(14, 14);
-            bunifuFormControlBox1.MinimizeBoxOptions.PressedColor = Color.Silver;
-            bunifuFormControlBox1.Name = "bunifuFormControlBox1";
-            bunifuFormControlBox1.ShowDesignBorders = false;
-            bunifuFormControlBox1.Size = new Size(60, 30);
-            bunifuFormControlBox1.TabIndex = 11;
             // 
             // btnConnect
             // 
@@ -2701,6 +2639,7 @@ END";
             txtDatabase.DropdownBorderThickness = Bunifu.UI.WinForms.BunifuDropdown.BorderThickness.Thin;
             txtDatabase.DropDownStyle = ComboBoxStyle.DropDownList;
             txtDatabase.DropDownTextAlign = Bunifu.UI.WinForms.BunifuDropdown.TextAlign.Left;
+            txtDatabase.Enabled = false;
             txtDatabase.FillDropDown = true;
             txtDatabase.FillIndicator = false;
             txtDatabase.FlatStyle = FlatStyle.Flat;
@@ -2714,7 +2653,7 @@ END";
             txtDatabase.IndicatorThickness = 2;
             txtDatabase.IsDropdownOpened = false;
             txtDatabase.ItemBackColor = Color.White;
-            txtDatabase.ItemBorderColor = Color.White;
+            txtDatabase.ItemBorderColor = Color.DarkGoldenrod;
             txtDatabase.ItemForeColor = Color.Black;
             txtDatabase.ItemHeight = 26;
             txtDatabase.ItemHighLightColor = Color.DarkGoldenrod;
@@ -2823,9 +2762,71 @@ END";
             bunifuFormDrag1.TitleBarOptions.TitleBarControl = null;
             bunifuFormDrag1.TitleBarOptions.UseBackColorOnDockingIndicators = false;
             // 
+            // bunifuFormControlBox1
+            // 
+            bunifuFormControlBox1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            bunifuFormControlBox1.BunifuFormDrag = null;
+            bunifuFormControlBox1.CloseBoxOptions.BackColor = Color.Transparent;
+            bunifuFormControlBox1.CloseBoxOptions.BorderRadius = 0;
+            bunifuFormControlBox1.CloseBoxOptions.Enabled = true;
+            bunifuFormControlBox1.CloseBoxOptions.EnableDefaultAction = true;
+            bunifuFormControlBox1.CloseBoxOptions.HoverColor = Color.FromArgb(232, 17, 35);
+            bunifuFormControlBox1.CloseBoxOptions.Icon = (Image)resources.GetObject("bunifuFormControlBox1.CloseBoxOptions.Icon");
+            bunifuFormControlBox1.CloseBoxOptions.IconAlt = null;
+            bunifuFormControlBox1.CloseBoxOptions.IconColor = Color.Black;
+            bunifuFormControlBox1.CloseBoxOptions.IconHoverColor = Color.White;
+            bunifuFormControlBox1.CloseBoxOptions.IconPressedColor = Color.White;
+            bunifuFormControlBox1.CloseBoxOptions.IconSize = new Size(18, 18);
+            bunifuFormControlBox1.CloseBoxOptions.PressedColor = Color.FromArgb(232, 17, 35);
+            bunifuFormControlBox1.HelpBox = false;
+            bunifuFormControlBox1.HelpBoxOptions.BackColor = Color.Transparent;
+            bunifuFormControlBox1.HelpBoxOptions.BorderRadius = 0;
+            bunifuFormControlBox1.HelpBoxOptions.Enabled = true;
+            bunifuFormControlBox1.HelpBoxOptions.EnableDefaultAction = true;
+            bunifuFormControlBox1.HelpBoxOptions.HoverColor = Color.LightGray;
+            bunifuFormControlBox1.HelpBoxOptions.Icon = (Image)resources.GetObject("bunifuFormControlBox1.HelpBoxOptions.Icon");
+            bunifuFormControlBox1.HelpBoxOptions.IconAlt = null;
+            bunifuFormControlBox1.HelpBoxOptions.IconColor = Color.Black;
+            bunifuFormControlBox1.HelpBoxOptions.IconHoverColor = Color.Black;
+            bunifuFormControlBox1.HelpBoxOptions.IconPressedColor = Color.Black;
+            bunifuFormControlBox1.HelpBoxOptions.IconSize = new Size(22, 22);
+            bunifuFormControlBox1.HelpBoxOptions.PressedColor = Color.Silver;
+            bunifuFormControlBox1.Location = new Point(365, 0);
+            bunifuFormControlBox1.MaximizeBox = false;
+            bunifuFormControlBox1.MaximizeBoxOptions.BackColor = Color.Transparent;
+            bunifuFormControlBox1.MaximizeBoxOptions.BorderRadius = 0;
+            bunifuFormControlBox1.MaximizeBoxOptions.Enabled = true;
+            bunifuFormControlBox1.MaximizeBoxOptions.EnableDefaultAction = true;
+            bunifuFormControlBox1.MaximizeBoxOptions.HoverColor = Color.LightGray;
+            bunifuFormControlBox1.MaximizeBoxOptions.Icon = (Image)resources.GetObject("bunifuFormControlBox1.MaximizeBoxOptions.Icon");
+            bunifuFormControlBox1.MaximizeBoxOptions.IconAlt = (Image)resources.GetObject("bunifuFormControlBox1.MaximizeBoxOptions.IconAlt");
+            bunifuFormControlBox1.MaximizeBoxOptions.IconColor = Color.Black;
+            bunifuFormControlBox1.MaximizeBoxOptions.IconHoverColor = Color.Black;
+            bunifuFormControlBox1.MaximizeBoxOptions.IconPressedColor = Color.Black;
+            bunifuFormControlBox1.MaximizeBoxOptions.IconSize = new Size(16, 16);
+            bunifuFormControlBox1.MaximizeBoxOptions.PressedColor = Color.Silver;
+            bunifuFormControlBox1.MinimizeBox = true;
+            bunifuFormControlBox1.MinimizeBoxOptions.BackColor = Color.Transparent;
+            bunifuFormControlBox1.MinimizeBoxOptions.BorderRadius = 0;
+            bunifuFormControlBox1.MinimizeBoxOptions.Enabled = true;
+            bunifuFormControlBox1.MinimizeBoxOptions.EnableDefaultAction = true;
+            bunifuFormControlBox1.MinimizeBoxOptions.HoverColor = Color.LightGray;
+            bunifuFormControlBox1.MinimizeBoxOptions.Icon = (Image)resources.GetObject("bunifuFormControlBox1.MinimizeBoxOptions.Icon");
+            bunifuFormControlBox1.MinimizeBoxOptions.IconAlt = null;
+            bunifuFormControlBox1.MinimizeBoxOptions.IconColor = Color.Black;
+            bunifuFormControlBox1.MinimizeBoxOptions.IconHoverColor = Color.Black;
+            bunifuFormControlBox1.MinimizeBoxOptions.IconPressedColor = Color.Black;
+            bunifuFormControlBox1.MinimizeBoxOptions.IconSize = new Size(14, 14);
+            bunifuFormControlBox1.MinimizeBoxOptions.PressedColor = Color.Silver;
+            bunifuFormControlBox1.Name = "bunifuFormControlBox1";
+            bunifuFormControlBox1.ShowDesignBorders = false;
+            bunifuFormControlBox1.Size = new Size(60, 30);
+            bunifuFormControlBox1.TabIndex = 21;
+            // 
             // ConnectionDialog
             // 
             ClientSize = new Size(425, 350);
+            Controls.Add(bunifuFormControlBox1);
             Controls.Add(lblUseWinAuth);
             Controls.Add(chkIntegratedSecurity);
             Controls.Add(txtDatabase);
@@ -2835,7 +2836,6 @@ END";
             Controls.Add(bunifuLabel1);
             Controls.Add(btnCreateDatabase);
             Controls.Add(btnConnect);
-            Controls.Add(bunifuFormControlBox1);
             FormBorderStyle = FormBorderStyle.None;
             MaximizeBox = false;
             MinimizeBox = false;

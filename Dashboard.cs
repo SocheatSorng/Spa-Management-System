@@ -33,9 +33,6 @@ namespace Spa_Management_System
         {
             InitializeComponent();
 
-            // Hide fixed panels
-            bunifuPanel3.Visible = false;
-
             // Enable the built-in vertical scrollbar of panOrderDetailOuter
             panOrderDetailOuter.AutoScroll = true;
 
@@ -254,29 +251,31 @@ namespace Spa_Management_System
         private void SetCategoryButtonStyles(string activeCategory)
         {
             // Reset all buttons to default style
-            btnServices.BackColor = Color.White;
-            btnServices.ForeColor = Color.Black;
-
-            btnFoods.BackColor = Color.White;
-            btnFoods.ForeColor = Color.Black;
-
-            btnDrinks.BackColor = Color.White;
-            btnDrinks.ForeColor = Color.Black;
+            // Skip modifying button properties to preserve properties set in designer
+            // btnServices.BackColor = Color.White;
+            // btnServices.ForeColor = Color.Black;
+            // btnFoods.BackColor = Color.White;
+            // btnFoods.ForeColor = Color.Black;
+            // btnDrinks.BackColor = Color.White;
+            // btnDrinks.ForeColor = Color.Black;
 
             // Highlight the active button
             switch (activeCategory)
             {
                 case "Services":
-                    btnServices.BackColor = Color.DarkGoldenrod;
-                    btnServices.ForeColor = Color.White;
+                    // Skip modifying btnServices to preserve properties set in designer
+                    // btnServices.BackColor = Color.DarkGoldenrod;
+                    // btnServices.ForeColor = Color.White;
                     break;
                 case "Foods":
-                    btnFoods.BackColor = Color.DarkGoldenrod;
-                    btnFoods.ForeColor = Color.White;
+                    // Skip modifying btnFoods to preserve properties set in designer
+                    // btnFoods.BackColor = Color.DarkGoldenrod;
+                    // btnFoods.ForeColor = Color.White;
                     break;
                 case "Drinks":
-                    btnDrinks.BackColor = Color.DarkGoldenrod;
-                    btnDrinks.ForeColor = Color.White;
+                    // Skip modifying btnDrinks to preserve properties set in designer
+                    // btnDrinks.BackColor = Color.DarkGoldenrod;
+                    // btnDrinks.ForeColor = Color.White;
                     break;
             }
         }
@@ -288,7 +287,7 @@ namespace Spa_Management_System
         private void SetupEventHandlers()
         {
             // Navigation buttons
-            btnDashboard.Click += (s, e) => { /* Toggle home view */ };
+            //btnDashboard.Click += (s, e) => { /* Dashboard home view */ };
             btnAllForm.Click += BtnAllForm_Click;
             btnStatistic.Click += btnStatistic_Click;
             btnInvoice.Click += btnInvoice_Click;
@@ -576,7 +575,7 @@ namespace Spa_Management_System
             // Styling the button
             button.BackColor = Color.Transparent;
             button.ForeColor = Color.Black;
-            button.Font = new Font("Century Gothic", 10, FontStyle.Regular);
+            button.Font = new Font("Verdana", 10, FontStyle.Regular);
 
             // Set initial background color to a light gray that blends with your theme
             button.IdleFillColor = Color.FromArgb(245, 245, 245);
@@ -724,14 +723,14 @@ namespace Spa_Management_System
                 // Create name label
                 Bunifu.UI.WinForms.BunifuLabel nameLabel = new Bunifu.UI.WinForms.BunifuLabel();
                 nameLabel.Text = service.ServiceName;
-                nameLabel.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+                nameLabel.Font = new Font("Verdana", 12, FontStyle.Bold);
                 nameLabel.Size = new Size(itemWidth - 20, 20);
                 nameLabel.Location = new Point(10, 170);
 
                 // Create description label
                 Bunifu.UI.WinForms.BunifuLabel descLabel = new Bunifu.UI.WinForms.BunifuLabel();
                 descLabel.Text = service.Description ?? "";
-                descLabel.Font = new Font("Century Gothic", 10, FontStyle.Regular);
+                descLabel.Font = new Font("Verdana", 10, FontStyle.Regular);
                 descLabel.ForeColor = SystemColors.ActiveBorder;
                 descLabel.Size = new Size(itemWidth - 20, 40);
                 descLabel.Location = new Point(10, 205);
@@ -739,7 +738,7 @@ namespace Spa_Management_System
                 // Create price label
                 Bunifu.UI.WinForms.BunifuLabel priceLabel = new Bunifu.UI.WinForms.BunifuLabel();
                 priceLabel.Text = "$" + service.Price.ToString("0.00");
-                priceLabel.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+                priceLabel.Font = new Font("Verdana", 12, FontStyle.Bold);
                 priceLabel.ForeColor = Color.DarkGoldenrod;
                 priceLabel.Size = new Size(itemWidth - 20, 20);
                 priceLabel.Location = new Point(10, 250);
@@ -839,14 +838,14 @@ namespace Spa_Management_System
                 // Create name label
                 Bunifu.UI.WinForms.BunifuLabel nameLabel = new Bunifu.UI.WinForms.BunifuLabel();
                 nameLabel.Text = consumable.Name;
-                nameLabel.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+                nameLabel.Font = new Font("Verdana", 12, FontStyle.Bold);
                 nameLabel.Size = new Size(itemWidth - 20, 20);
                 nameLabel.Location = new Point(10, 170);
 
                 // Create description label
                 Bunifu.UI.WinForms.BunifuLabel descLabel = new Bunifu.UI.WinForms.BunifuLabel();
                 descLabel.Text = consumable.Description ?? "";
-                descLabel.Font = new Font("Century Gothic", 10, FontStyle.Regular);
+                descLabel.Font = new Font("Verdana", 10, FontStyle.Regular);
                 descLabel.ForeColor = SystemColors.ActiveBorder;
                 descLabel.Size = new Size(itemWidth - 20, 40);
                 descLabel.Location = new Point(10, 205);
@@ -854,7 +853,7 @@ namespace Spa_Management_System
                 // Create price label
                 Bunifu.UI.WinForms.BunifuLabel priceLabel = new Bunifu.UI.WinForms.BunifuLabel();
                 priceLabel.Text = "$" + consumable.Price.ToString("0.00");
-                priceLabel.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+                priceLabel.Font = new Font("Verdana", 12, FontStyle.Bold);
                 priceLabel.ForeColor = Color.DarkGoldenrod;
                 priceLabel.Size = new Size(itemWidth - 20, 20);
                 priceLabel.Location = new Point(10, 250);
@@ -944,17 +943,17 @@ namespace Spa_Management_System
 
             // Dynamically create order item panels
             int yPos = 0;
-            int itemHeight = 93; // Height from your panOrderDetailInner
-            int panelWidth = panOrderDetailInner.Width;
+            int itemHeight = 93; // Standard height for order item panel
+            int panelWidth = panOrderDetailOuter.Width - 10; // Adjust width for scrollbar
 
             foreach (var item in groupedItems)
             {
-                // Clone the panOrderDetailInner panel for this item
+                // Create a panel for this item
                 Bunifu.UI.WinForms.BunifuPanel itemPanel = new Bunifu.UI.WinForms.BunifuPanel();
                 itemPanel.Size = new System.Drawing.Size(panelWidth, itemHeight);
                 itemPanel.Location = new System.Drawing.Point(3, yPos);
                 itemPanel.BackgroundColor = Color.Transparent;
-                itemPanel.BorderColor = Color.Transparent;
+                itemPanel.BorderColor = Color.LightGray;
                 itemPanel.BorderRadius = 3;
                 itemPanel.BorderThickness = 1;
                 itemPanel.ShowBorders = true;
@@ -963,7 +962,7 @@ namespace Spa_Management_System
                 Bunifu.UI.WinForms.BunifuPictureBox itemImage = new Bunifu.UI.WinForms.BunifuPictureBox();
                 if (item.ItemType == "Service")
                 {
-                    var service = _services.FirstOrDefault(s => s.ServiceId == item.ItemId);  // Changed from s.ItemId
+                    var service = _services.FirstOrDefault(s => s.ServiceId == item.ItemId);
                     if (service != null && !string.IsNullOrEmpty(service.ImagePath))
                     {
                         Image img = LoadImageSafely(service.ImagePath);
@@ -981,59 +980,81 @@ namespace Spa_Management_System
                             itemImage.Image = img;
                     }
                 }
-                itemImage.Size = new Size(60, 60);
-                itemImage.Location = new Point(10, 15);
-                itemImage.BorderRadius = 10;
-                itemImage.BackColor = Color.LightBlue;
+                
+                // Configure image properties
+                itemImage.Size = new Size(56, 56);
+                itemImage.Location = new Point(9, 11);
+                itemImage.BorderRadius = 0;
+                itemImage.SizeMode = PictureBoxSizeMode.StretchImage;
+                itemImage.IsCircle = false;
+                itemImage.Type = Bunifu.UI.WinForms.BunifuPictureBox.Types.Square;
 
                 // Create name label
                 Bunifu.UI.WinForms.BunifuLabel nameLabel = new Bunifu.UI.WinForms.BunifuLabel();
-                nameLabel.Text = "Service / Consumable's Name";
                 nameLabel.AutoSize = false;
-                nameLabel.Size = bunifuLabel28.Size;
-                nameLabel.Location = bunifuLabel28.Location;
-                nameLabel.Font = bunifuLabel28.Font;
+                nameLabel.Size = new Size(131, 45);
+                nameLabel.Location = new Point(69, 11);
+                nameLabel.Font = new Font("Verdana", 9F, FontStyle.Bold);
                 nameLabel.Text = item.ItemName;
+                nameLabel.AutoEllipsis = true;
 
                 // Create price label
                 Bunifu.UI.WinForms.BunifuLabel priceLabel = new Bunifu.UI.WinForms.BunifuLabel();
-                priceLabel.Size = bunifuLabel29.Size;
-                priceLabel.Location = bunifuLabel29.Location;
-                priceLabel.Font = bunifuLabel29.Font;
+                priceLabel.Size = new Size(80, 15);
+                priceLabel.Location = new Point(69, 65);
+                priceLabel.Font = new Font("Verdana", 9F, FontStyle.Bold);
                 priceLabel.ForeColor = Color.DarkGoldenrod;
                 priceLabel.Text = "$" + item.UnitPrice.ToString("0.00");
 
-                // Clone the quantity label
+                // Create quantity control
+                // Quantity label
                 Bunifu.UI.WinForms.BunifuLabel qtyLabel = new Bunifu.UI.WinForms.BunifuLabel();
-                qtyLabel.Size = txtItemAmount.Size;
-                qtyLabel.Location = txtItemAmount.Location;
-                qtyLabel.Font = txtItemAmount.Font;
-                qtyLabel.TextFormat = txtItemAmount.TextFormat;
+                qtyLabel.Size = new Size(15, 15);
+                qtyLabel.Location = new Point(175, 64);
+                qtyLabel.Font = new Font("Verdana", 9F, FontStyle.Bold);
                 qtyLabel.Text = item.Quantity.ToString();
 
-                // Clone the plus button
+                // Plus button
                 Bunifu.UI.WinForms.BunifuButton.BunifuIconButton plusBtn = new Bunifu.UI.WinForms.BunifuButton.BunifuIconButton();
-                plusBtn.Size = btnPlusItem.Size;
-                plusBtn.Location = btnPlusItem.Location;
-                plusBtn.BackgroundColor = btnPlusItem.BackgroundColor;
-                plusBtn.BorderColor = btnPlusItem.BorderColor;
-                plusBtn.BorderRadius = btnPlusItem.BorderRadius;
-                plusBtn.BorderThickness = btnPlusItem.BorderThickness;
+                plusBtn.Size = new Size(20, 20);
+                plusBtn.Location = new Point(149, 60);
+                plusBtn.BackColor = Color.Transparent;
+                plusBtn.BackgroundColor = Color.White;
+                plusBtn.BorderColor = Color.Silver;
+                plusBtn.BorderRadius = 1;
+                plusBtn.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuIconButton.BorderStyles.Solid;
+                plusBtn.BorderThickness = 1;
                 plusBtn.RoundBorders = true;
-                plusBtn.Image = btnPlusItem.Image;
+                plusBtn.ShowBorders = true;
+                
+                // Set plus image from resources
+                if (Properties.Resources.plus != null)
+                    plusBtn.Image = Properties.Resources.plus;
+                else
+                    plusBtn.Text = "+";
+                    
                 plusBtn.Tag = item; // Store the item information
                 plusBtn.Click += (sender, e) => IncreaseItemQuantity((dynamic)((Control)sender).Tag);
 
-                // Clone the minus button
+                // Minus button
                 Bunifu.UI.WinForms.BunifuButton.BunifuIconButton minusBtn = new Bunifu.UI.WinForms.BunifuButton.BunifuIconButton();
-                minusBtn.Size = btnMinusItem.Size;
-                minusBtn.Location = btnMinusItem.Location;
-                minusBtn.BackgroundColor = btnMinusItem.BackgroundColor;
-                minusBtn.BorderColor = btnMinusItem.BorderColor;
-                minusBtn.BorderRadius = btnMinusItem.BorderRadius;
-                minusBtn.BorderThickness = btnMinusItem.BorderThickness;
+                minusBtn.Size = new Size(20, 20);
+                minusBtn.Location = new Point(189, 60);
+                minusBtn.BackColor = Color.Transparent;
+                minusBtn.BackgroundColor = Color.White;
+                minusBtn.BorderColor = Color.Silver;
+                minusBtn.BorderRadius = 1;
+                minusBtn.BorderStyle = Bunifu.UI.WinForms.BunifuButton.BunifuIconButton.BorderStyles.Solid;
+                minusBtn.BorderThickness = 1;
                 minusBtn.RoundBorders = true;
-                minusBtn.Image = btnMinusItem.Image;
+                minusBtn.ShowBorders = true;
+                
+                // Set minus image from resources
+                if (Properties.Resources.minus != null)
+                    minusBtn.Image = Properties.Resources.minus;
+                else
+                    minusBtn.Text = "-";
+                    
                 minusBtn.Tag = item; // Store the item information
                 minusBtn.Click += (sender, e) => DecreaseItemQuantity((dynamic)((Control)sender).Tag);
 
@@ -1050,23 +1071,6 @@ namespace Spa_Management_System
 
                 // Update Y position for next item
                 yPos += itemHeight + 5;
-            }
-
-            // Configure scrollbar if needed
-            if (groupedItems.Count > 0)
-            {
-                int contentHeight = yPos;
-                int visibleHeight = panOrderDetailOuter.Height;
-
-                if (contentHeight > visibleHeight)
-                {
-                }
-                else
-                {
-                }
-            }
-            else
-            {
             }
 
             // Update order totals
@@ -1339,14 +1343,14 @@ namespace Spa_Management_System
                 // Create name label
                 Bunifu.UI.WinForms.BunifuLabel nameLabel = new Bunifu.UI.WinForms.BunifuLabel();
                 nameLabel.Text = service.ServiceName;
-                nameLabel.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+                nameLabel.Font = new Font("Verdana", 12, FontStyle.Bold);
                 nameLabel.Size = new Size(itemWidth - 20, 20);
                 nameLabel.Location = new Point(10, 170);
 
                 // Create description label
                 Bunifu.UI.WinForms.BunifuLabel descLabel = new Bunifu.UI.WinForms.BunifuLabel();
                 descLabel.Text = service.Description ?? "";
-                descLabel.Font = new Font("Century Gothic", 10, FontStyle.Regular);
+                descLabel.Font = new Font("Verdana", 10, FontStyle.Regular);
                 descLabel.ForeColor = SystemColors.ActiveBorder;
                 descLabel.Size = new Size(itemWidth - 20, 40);
                 descLabel.Location = new Point(10, 205);
@@ -1354,7 +1358,7 @@ namespace Spa_Management_System
                 // Create price label
                 Bunifu.UI.WinForms.BunifuLabel priceLabel = new Bunifu.UI.WinForms.BunifuLabel();
                 priceLabel.Text = "$" + service.Price.ToString("0.00");
-                priceLabel.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+                priceLabel.Font = new Font("Verdana", 12, FontStyle.Bold);
                 priceLabel.ForeColor = Color.DarkGoldenrod;
                 priceLabel.Size = new Size(itemWidth - 20, 20);
                 priceLabel.Location = new Point(10, 250);
@@ -1422,14 +1426,14 @@ namespace Spa_Management_System
                 // Create name label
                 Bunifu.UI.WinForms.BunifuLabel nameLabel = new Bunifu.UI.WinForms.BunifuLabel();
                 nameLabel.Text = consumable.Name;
-                nameLabel.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+                nameLabel.Font = new Font("Verdana", 12, FontStyle.Bold);
                 nameLabel.Size = new Size(itemWidth - 20, 20);
                 nameLabel.Location = new Point(10, 170);
 
                 // Create description label
                 Bunifu.UI.WinForms.BunifuLabel descLabel = new Bunifu.UI.WinForms.BunifuLabel();
                 descLabel.Text = consumable.Description ?? "";
-                descLabel.Font = new Font("Century Gothic", 10, FontStyle.Regular);
+                descLabel.Font = new Font("Verdana", 10, FontStyle.Regular);
                 descLabel.ForeColor = SystemColors.ActiveBorder;
                 descLabel.Size = new Size(itemWidth - 20, 40);
                 descLabel.Location = new Point(10, 205);
@@ -1437,7 +1441,7 @@ namespace Spa_Management_System
                 // Create price label
                 Bunifu.UI.WinForms.BunifuLabel priceLabel = new Bunifu.UI.WinForms.BunifuLabel();
                 priceLabel.Text = "$" + consumable.Price.ToString("0.00");
-                priceLabel.Font = new Font("Century Gothic", 12, FontStyle.Bold);
+                priceLabel.Font = new Font("Verdana", 12, FontStyle.Bold);
                 priceLabel.ForeColor = Color.DarkGoldenrod;
                 priceLabel.Size = new Size(itemWidth - 20, 20);
                 priceLabel.Location = new Point(10, 250);
@@ -1865,23 +1869,29 @@ namespace Spa_Management_System
                 imagePath = imagePath.TrimStart('\\', '/').Replace('\\', '/');
 
                 // Try multiple path variations
-                string[] pathVariations = new string[]
+                List<string> pathVariations = new List<string>
                 {
-            // Direct application path join
-            Path.Combine(Application.StartupPath, imagePath),
-            
-            // Without "Images" folder prefix if it exists in the path
-            Path.Combine(Application.StartupPath,
-                imagePath.StartsWith("Images/") ? imagePath : "Images/" + imagePath),
-                
-            // Just the filename in the Images/Consumables folder
-            Path.Combine(Application.StartupPath, "Images", "Consumables",
-                Path.GetFileName(imagePath)),
-                
-            // Just the filename in the Images/Services folder
-            Path.Combine(Application.StartupPath, "Images", "Services",
-                Path.GetFileName(imagePath))
+                    // Direct application path join
+                    Path.Combine(Application.StartupPath, imagePath),
+                    
+                    // Without "Images" folder prefix if it exists in the path
+                    Path.Combine(Application.StartupPath,
+                        imagePath.StartsWith("Images/") ? imagePath : "Images/" + imagePath),
+                        
+                    // Just the filename in the Images/Consumables folder
+                    Path.Combine(Application.StartupPath, "Images", "Consumables",
+                        Path.GetFileName(imagePath)),
+                        
+                    // Just the filename in the Images/Services folder
+                    Path.Combine(Application.StartupPath, "Images", "Services",
+                        Path.GetFileName(imagePath))
                 };
+                
+                // Add the My Documents location as a fallback for MSI installations
+                string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                pathVariations.Add(Path.Combine(documentsPath, "SpaManagement", imagePath));
+                pathVariations.Add(Path.Combine(documentsPath, "SpaManagement", "Images", "Services", Path.GetFileName(imagePath)));
+                pathVariations.Add(Path.Combine(documentsPath, "SpaManagement", "Images", "Consumables", Path.GetFileName(imagePath)));
 
                 // Try each path variation
                 foreach (string path in pathVariations)
@@ -1891,6 +1901,7 @@ namespace Spa_Management_System
                     if (File.Exists(path))
                     {
                         Console.WriteLine($"Image found at: {path}");
+                        // Use a memory stream to avoid file locking issues
                         using (var stream = new MemoryStream(File.ReadAllBytes(path)))
                         {
                             return Image.FromStream(stream);
@@ -1909,9 +1920,32 @@ namespace Spa_Management_System
         }
         private void EnsureImageDirectoriesExist()
         {
-            string baseDir = Application.StartupPath;
-            Directory.CreateDirectory(Path.Combine(baseDir, "Images", "Services"));
-            Directory.CreateDirectory(Path.Combine(baseDir, "Images", "Consumables"));
+            // Try to create directories in the application folder
+            try
+            {
+                string baseDir = Application.StartupPath;
+                Directory.CreateDirectory(Path.Combine(baseDir, "Images", "Services"));
+                Directory.CreateDirectory(Path.Combine(baseDir, "Images", "Consumables"));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unable to create directories in application folder: {ex.Message}");
+                // If this fails, it's likely due to permissions
+            }
+            
+            // Always ensure we have a fallback location in the user's Documents folder
+            try 
+            {
+                string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                Directory.CreateDirectory(Path.Combine(documentsPath, "SpaManagement", "Images", "Services"));
+                Directory.CreateDirectory(Path.Combine(documentsPath, "SpaManagement", "Images", "Consumables"));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unable to create directories in Documents folder: {ex.Message}");
+                MessageBox.Show("Warning: Unable to create image directories. Some features may not work correctly.", 
+                    "Directory Creation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
         private PictureBox CloneItemDisplay()
         {
@@ -1975,7 +2009,7 @@ namespace Spa_Management_System
                 Bunifu.UI.WinForms.BunifuLabel tickLabel = new Bunifu.UI.WinForms.BunifuLabel();
                 tickLabel.Text = priceLabels[i];
                 tickLabel.AutoSize = true;
-                tickLabel.Font = new Font("Century Gothic", 8F, FontStyle.Regular);
+                tickLabel.Font = new Font("Verdana", 8F, FontStyle.Regular);
                 tickLabel.ForeColor = Color.Gray;
 
                 // Position below the slider
@@ -2066,7 +2100,7 @@ namespace Spa_Management_System
                 {
                     Text = "System Settings",
                     ForeColor = Color.White,
-                    Font = new Font("Century Gothic", 16, FontStyle.Bold),
+                    Font = new Font("Verdana", 16, FontStyle.Bold),
                     AutoSize = true
                 };
                 titleLabel.Location = new Point(10, (titlePanel.Height - titleLabel.Height) / 2);
@@ -2077,7 +2111,7 @@ namespace Spa_Management_System
                 {
                     Dock = DockStyle.Fill,
                     Padding = new Point(20, 10),
-                    Font = new Font("Century Gothic", 10)
+                    Font = new Font("Verdana", 10)
                 };
                 
                 // Add General Settings tab
@@ -2098,7 +2132,7 @@ namespace Spa_Management_System
                     Text = "This feature is currently under development.\nCheck back in a future update!",
                     Location = new Point(50, 100),
                     Size = new Size(300, 50),
-                    Font = new Font("Century Gothic", 10),
+                    Font = new Font("Verdana", 10),
                     ForeColor = Color.Gray,
                     TextAlign = ContentAlignment.MiddleCenter
                 };
@@ -2145,7 +2179,7 @@ namespace Spa_Management_System
                     Text = $"{server} / {database}",
                     Location = new Point(180, 30),
                     Width = 200,
-                    Font = new Font("Century Gothic", 10, FontStyle.Bold)
+                    Font = new Font("Verdana", 10, FontStyle.Bold)
                 };
                 
                 Button btnChangeConnection = new Button
@@ -2241,7 +2275,7 @@ namespace Spa_Management_System
                     Location = new Point(20, 280),
                     Width = 400,
                     ForeColor = Color.Gray,
-                    Font = new Font("Century Gothic", 9)
+                    Font = new Font("Verdana", 9)
                 };
                 
                 // Add only a Close button
@@ -2261,7 +2295,7 @@ namespace Spa_Management_System
                     Location = new Point(20, 320),
                     Width = 150,
                     ForeColor = Color.Gray,
-                    Font = new Font("Century Gothic", 8, FontStyle.Italic)
+                    Font = new Font("Verdana", 8, FontStyle.Italic)
                 };
                 
                 // Add controls to tabs
@@ -2567,29 +2601,13 @@ namespace Spa_Management_System
             }
             
             // Apply to navigation buttons specifically
-            btnDashboard.BackColor = buttonColor;
+            //btnDashboard.BackColor = buttonColor;
             btnAllForm.BackColor = buttonColor;
             btnStatistic.BackColor = buttonColor;
             btnInvoice.BackColor = buttonColor;
             btnSetting.BackColor = buttonColor;
             btnLogout.BackColor = buttonColor;
             btnExitProgram.BackColor = buttonColor;
-            
-            // Apply to order panel - ensure all controls in the order panel get themed
-            if (bunifuPanel3 != null)
-            {
-                Console.WriteLine($"Applying to bunifuPanel3: {orderPanelColor}");
-                bunifuPanel3.BackgroundColor = orderPanelColor;
-                
-                // Apply theme to all controls in the order panel
-                ApplyColorToControlsOfType<Bunifu.UI.WinForms.BunifuLabel>(bunifuPanel3, 
-                    Color.Transparent, themeName == "Dark" ? Color.White : textColor);
-                
-                // Special handling for price labels in the order panel
-                if (bunifuLabel35 != null) bunifuLabel35.ForeColor = accentColor; // Subtotal
-                if (bunifuLabel36 != null) bunifuLabel36.ForeColor = accentColor; // Discount
-                if (bunifuLabel38 != null) bunifuLabel38.ForeColor = accentColor; // Total
-            }
             
             // Apply to the order details container
             if (panOrderDetailOuter != null)
@@ -2662,15 +2680,16 @@ namespace Spa_Management_System
             }
             
             // Apply to category buttons with special handling to preserve the active category
-            btnServices.BackColor = panelColor;
-            btnFoods.BackColor = panelColor;
-            btnDrinks.BackColor = panelColor;
-            btnServices.ForeColor = textColor;
-            btnFoods.ForeColor = textColor;
-            btnDrinks.ForeColor = textColor;
-            
-            // Reset and apply the active category style with the new theme colors
-            SetCategoryButtonStyles(_currentCategory);
+            // Skip modifying buttons to preserve properties set in designer
+            // btnServices.BackColor = panelColor;
+            // btnFoods.BackColor = panelColor;
+            // btnDrinks.BackColor = panelColor;
+            // btnServices.ForeColor = textColor;
+            // btnFoods.ForeColor = textColor;
+            // btnDrinks.ForeColor = textColor;
+
+            // Modified to skip resetting styles
+            // SetCategoryButtonStyles(_currentCategory);
             
             // Apply to labels throughout the application
             ApplyColorToControlsOfType<Label>(this, Color.Transparent, textColor);
