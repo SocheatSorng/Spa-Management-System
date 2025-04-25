@@ -38,6 +38,9 @@ namespace Spa_Management_System
             
             // Add an event handler for grid layout
             dgvPayment.DataBindingComplete += DgvOrder_DataBindingComplete;
+            
+            // Add handler for data errors
+            dgvPayment.DataError += DgvPayment_DataError;
 
             // Add the same dragging capability to the top panel
             bunifuPanel2.MouseDown += (s, e) => {
@@ -110,6 +113,32 @@ namespace Spa_Management_System
                 
                 // Make sure columns are configured before setting DataSource
                 ConfigureDataGridViewColumns();
+                
+                // Add any new status values from the data to the Status combo box
+                if (_ordersTable != null && _ordersTable.Columns.Contains("Status"))
+                {
+                    DataGridViewComboBoxColumn statusColumn = dgvPayment.Columns["Status"] as DataGridViewComboBoxColumn;
+                    if (statusColumn != null)
+                    {
+                        // Get all unique status values from the data
+                        var existingItems = statusColumn.Items.Cast<string>().ToList();
+                        var uniqueStatuses = new HashSet<string>(existingItems);
+                        
+                        // Add any status values from the data that aren't already in the combo box
+                        foreach (DataRow row in _ordersTable.Rows)
+                        {
+                            if (row["Status"] != DBNull.Value && row["Status"] != null)
+                            {
+                                string status = row["Status"].ToString();
+                                if (!string.IsNullOrEmpty(status) && !uniqueStatuses.Contains(status))
+                                {
+                                    statusColumn.Items.Add(status);
+                                    uniqueStatuses.Add(status);
+                                }
+                            }
+                        }
+                    }
+                }
                 
                 // Apply the data
                 dgvPayment.DataSource = _ordersTable;
@@ -531,7 +560,7 @@ namespace Spa_Management_System
                 };
                 
                 // Add status options
-                statusColumn.Items.AddRange(new[] { "New", "Processing", "Completed", "Cancelled" });
+                statusColumn.Items.AddRange(new[] { "New", "Processing", "Completed", "Cancelled", "Active" });
                 dgvPayment.Columns.Add(statusColumn);
 
                 // Create Notes column - NINTH position
@@ -772,6 +801,35 @@ namespace Spa_Management_System
                 // Log error instead of showing message box
                 Console.WriteLine("Error saving changes: " + ex.Message);
             }
+        }
+        
+        // Handle DataError events (e.g., invalid values in combo boxes)
+        private void DgvPayment_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            // Log the error
+            Console.WriteLine($"DataError in cell [{e.RowIndex}, {e.ColumnIndex}]: {e.Exception.Message}");
+            
+            // Add any specific column handling if needed
+            if (dgvPayment.Columns[e.ColumnIndex] is DataGridViewComboBoxColumn)
+            {
+                // Specifically handle ComboBox errors
+                DataGridViewComboBoxCell cell = dgvPayment.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewComboBoxCell;
+                
+                // Get the current value
+                string currentValue = cell.Value?.ToString();
+                if (!string.IsNullOrEmpty(currentValue) && cell.Items.Cast<string>().All(item => item != currentValue))
+                {
+                    // Value not in list - add it dynamically
+                    ((DataGridViewComboBoxColumn)dgvPayment.Columns[e.ColumnIndex]).Items.Add(currentValue);
+                    
+                    // Refresh the cell
+                    dgvPayment.RefreshEdit();
+                }
+            }
+            
+            // Prevent the default error dialog
+            e.ThrowException = false;
+            e.Cancel = true;
         }
     }
 
